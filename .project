@@ -3,7 +3,6 @@
 	<name>ActiveSalesforce</name>
 	<comment></comment>
 	<projects>
-		<project>sfdcOnRails</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
