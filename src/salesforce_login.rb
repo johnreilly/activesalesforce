@@ -4,7 +4,7 @@ require 'cgi'
 require 'pp'
 require 'soap/header/simplehandler'
 
-require 'salesforce_soap.rb'
+require File.dirname(__FILE__) + '/salesforce_soap.rb'
 
 class SessionHeaderHandler < SOAP::Header::SimpleHandler
   HeaderName = XSD::QName.new('urn:partner.soap.sforce.com', 'SessionHeader')

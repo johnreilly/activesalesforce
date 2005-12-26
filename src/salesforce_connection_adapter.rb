@@ -1,6 +1,6 @@
 require 'active_record/connection_adapters/abstract_adapter'
-require 'salesforce_login'
-require 'sobject_attributes'
+require File.dirname(__FILE__) + '/salesforce_login'
+require File.dirname(__FILE__) + '/sobject_attributes'
 
 
 module ActiveRecord
