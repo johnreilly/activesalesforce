@@ -1,9 +1,11 @@
-require 'test/unit/testcase'
+puts "Yahoo"
+
+require 'test/unit'
 require File.dirname(__FILE__) + '/../../src/sobject_attributes'
 
 class SobjectAttributesTest < Test::Unit::TestCase
 
-  def setup
+  def setup 
     @attributes = Salesforce::SObjectAttributes.new 
   end
   
