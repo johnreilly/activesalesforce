@@ -15,9 +15,6 @@ module Salesforce
     
     def []=(key, value)
       @values[key] = value
-      
-      puts "Setting #{key} = #{value}"
-      
       @changed = Set.new unless @changed
       @changed.add(key)
     end

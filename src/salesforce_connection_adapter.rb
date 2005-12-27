@@ -1,9 +1,14 @@
 require 'active_record/connection_adapters/abstract_adapter'
 require File.dirname(__FILE__) + '/salesforce_login'
 require File.dirname(__FILE__) + '/sobject_attributes'
+require File.dirname(__FILE__) + '/salesforce_active_record'
+
+ActiveRecord::Base.class_eval do
+    include ActiveRecord::SalesforceRecord
+end
 
 
-module ActiveRecord
+module ActiveRecord    
   class Base
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.salesforce_connection(config) # :nodoc:
@@ -25,7 +30,6 @@ module ActiveRecord
       
       ConnectionAdapters::SalesforceAdapter.new(connection, logger, [username, password, organizationId], config)
     end
-
   end
 
   module ConnectionAdapters
@@ -100,7 +104,17 @@ module ActiveRecord
           attributes = Salesforce::SObjectAttributes.new
           result << attributes
           
-          record.__xmlele.each { |qname, value| attributes[qname.name] = value }
+          record.__xmlele.each do |qname, value| 
+            name = qname.name
+
+            # Replace nil element with nil
+            value = nil if value.respond_to?(:xmlattr_nil) and value.xmlattr_nil
+                           
+            # Ids are returned in an array with 2 duplicate entries...
+            value = value[0] if name == "Id"
+            
+            attributes[name] = value 
+          end
           
           attributes.clear_changed!
         end
@@ -122,9 +136,9 @@ module ActiveRecord
         id_value || @connection.insert_id
       end
 
-      def update(sql, name = nil) #:nodoc:
-        execute(sql, name)
-        @connection.affected_rows
+      def update(sobject, name = nil) #:nodoc:
+        @connection.update(sobject)
+        # @connection.affected_rows
       end
 
       alias_method :delete, :update #:nodoc:
