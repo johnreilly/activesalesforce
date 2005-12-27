@@ -30,6 +30,8 @@ module ActiveRecord
     end
 
     def update_with_sforce_api #:nodoc:
+      return if not @attributes.changed?
+      
       puts "update_with_sforce_api updating #{self.class}('#{self.Id}')"
       result = connection.update(create_command("update", @attributes.changed_fields))
     end
@@ -47,6 +49,9 @@ module ActiveRecord
       end
       
       element.add(sobj)
+      
+      pp element
+      
       element
     end
   end 

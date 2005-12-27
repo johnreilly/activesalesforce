@@ -45,11 +45,9 @@ class CallOptionsHandler < SOAP::Header::SimpleHandler
 end
 
 class SfdcLogin
-  WSDL_URL = '/home/dchasman/Desktop/ruby101/partner.wsdl.xml'
-  
   attr_reader :proxy
   
-  def initialize
+  def initialize(url, username, password) 
     puts "SfdcLogin.initialize()"
     
     sessionid_handler = SessionHeaderHandler.new
@@ -57,11 +55,14 @@ class SfdcLogin
     calloptions_handler.client = 'sfdcOnRailsClient'
     
     @proxy = SalesforceSoap.new
+    
+    @proxy.endpoint_url = url if url
+    
     @proxy.headerhandler << sessionid_handler
     @proxy.headerhandler << calloptions_handler
     #@proxy.wiredump_dev = STDOUT
     
-    login_result = @proxy.login(:username => "dchasman@chasman.com", :password => "123456").result
+    login_result = @proxy.login(:username => username, :password => password).result
     sessionid_handler.sessionid = login_result.sessionId
   end
 end

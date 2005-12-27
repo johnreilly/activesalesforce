@@ -16,25 +16,29 @@ module ActiveRecord
 
       config = config.symbolize_keys
 
+      url = config[:url].to_s
       username = config[:username].to_s
       password = config[:password].to_s
 
-      if config.has_key?(:organizationId)
-        organizationId = config[:organizationId]
-      else
-        raise ArgumentError, "No organizationId specified. Missing argument: organizationId."
-      end
-
-      connection = SfdcLogin.new().proxy
+      connection = SfdcLogin.new(url, username, password).proxy
       puts "connected to Salesforce as #{connection.getUserInfo(nil).result['userFullName']}"
       
-      ConnectionAdapters::SalesforceAdapter.new(connection, logger, [username, password, organizationId], config)
+      ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, username, password], config)
     end
   end
 
   module ConnectionAdapters
     class SalesforceColumn < Column #:nodoc:
+      def initialize(name, type)
+        @name = name
+        @type = type
+        @limit = 255
+        
+        @text = true
+        @number = false
+      end
     end
+    
 
     class SalesforceAdapter < AbstractAdapter
 
@@ -191,7 +195,7 @@ module ActiveRecord
         
         metadata = @connection.describeSObject(:sObjectType => table_name).result
         metadata.fields.each do |field| 
-          columns << SalesforceColumn.new(field.name, '', :text)
+          columns << SalesforceColumn.new(field.name, :string) 
         end
         
         columns
