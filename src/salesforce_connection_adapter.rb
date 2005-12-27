@@ -191,7 +191,7 @@ module ActiveRecord
         
         metadata = @connection.describeSObject(:sObjectType => table_name).result
         metadata.fields.each do |field| 
-          columns << SalesforceColumn.new(field.name, '')
+          columns << SalesforceColumn.new(field.name, '', :text)
         end
         
         columns
