@@ -1,6 +1,8 @@
 require 'xsd/qname'
 require 'soap/rpc/element'
 
+require File.dirname(__FILE__) + '/sobject_attributes'
+
 
 module ActiveRecord
   # Active Records will automatically record creation and/or update timestamps of database objects
@@ -24,34 +26,37 @@ module ActiveRecord
       end
     end    
       
-    def create_with_sforce_api #:nodoc:
+    def create_with_sforce_api
+      return if not @attributes.changed?
       puts "create_with_sforce_api creating #{self.class}"
-      result = connection.update(create_command("create", @attributes.keys))      
+      connection.create(create_command("create"))      
     end
 
-    def update_with_sforce_api #:nodoc:
+    def update_with_sforce_api
       return if not @attributes.changed?
-      
       puts "update_with_sforce_api updating #{self.class}('#{self.Id}')"
-      result = connection.update(create_command("update", @attributes.changed_fields))
+      connection.update(create_command("update"))
     end
     
-    def create_command(command, fields)
+    def create_command(command)
+      fields = @attributes.changed_fields
+      
       element = SOAPElement.new(QName.new(NS1, command))
 
       sobj = SOAPElement.new(QName.new(NS1, 'sObjects'))
       sobj.add(SOAPElement.new(QName.new(NS2, "type"), self.class.name))
-      sobj.add(SOAPElement.new(QName.new(NS2, 'Id'),  self.Id))
+      sobj.add(SOAPElement.new(QName.new(NS2, 'Id'),  self.Id)) if self.Id
 
       # now add any changed fields
       fields.each do |fieldName|
         value = @attributes[fieldName]
-        
-        value = value.xmlschema if value.is_a?(Time)
-
-        value = value.to_s if value.is_a?(Date)
-        
-        sobj.add(SOAPElement.new(QName.new(nil, fieldName), value))
+        if value
+          value = value.xmlschema(3) if value.is_a?(Time)
+  
+          value = value.to_s if value.is_a?(Date) or value.is_a?(Fixnum)
+          
+          sobj.add(SOAPElement.new(QName.new(nil, fieldName), value))
+        end
       end
       
       element.add(sobj)
@@ -67,6 +72,18 @@ module ActiveRecord
     set_inheritance_column nil
     lock_optimistically = false
     record_timestamps = false
+    default_timezone = :utc
+    
+    def after_initialize() 
+      if not @attributes.is_a?(Salesforce::SObjectAttributes)
+        # Insure that SObjectAttributes is always used for our atttributes
+        originalAttributes = @attributes 
+        
+        @attributes = Salesforce::SObjectAttributes.new(connection.columns_map(self.class.table_name))
+        
+        originalAttributes.each { |name, value| self[name] = value }
+      end
+    end
   
     def self.table_name
       class_name_of_active_record_descendant(self)

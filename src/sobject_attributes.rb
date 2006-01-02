@@ -5,22 +5,26 @@ module Salesforce
   class SObjectAttributes 
     include Enumerable
     
-    def initialize(record, columns)
+    def initialize(columns, record = nil)
       @columns = columns
       @values = {}
       
-      record.__xmlele.each do |qname, value| 
-        name = qname.name
-
-        # Replace nil element with nil
-        value = nil if value.respond_to?(:xmlattr_nil) and value.xmlattr_nil
-                           
-        # Ids are returned in an array with 2 duplicate entries...
-        value = value[0] if name == "Id"
-            
-        self[name] = value
+      if record 
+        record.__xmlele.each do |qname, value| 
+          name = qname.name
+  
+          # Replace nil element with nil
+          value = nil if value.respond_to?(:xmlattr_nil) and value.xmlattr_nil
+                             
+          # Ids are returned in an array with 2 duplicate entries...
+          value = value[0] if name == "Id"
+              
+          self[name] = value
+        end
+      else
+        columns.values.each { |column| self[column.name] = nil }
       end
-          
+                 
       clear_changed!
     end
     
@@ -34,7 +38,10 @@ module Salesforce
       
       value = nil if value == ""
 
-      return if @values[key] == value && @values.include?(key)
+      return if @values[key] == value and @values.include?(key)
+      
+      originalClass = value.class
+      originalValue = value
       
       if value 
         # Convert strings representation of dates and datetimes to date and time objects
@@ -50,10 +57,12 @@ module Salesforce
 
       @values[key] = value
       
-      puts "setting #{key} = #{@values[key]} (#{column.type}, #{@values[key].class})"
+      #puts "setting #{key} = #{value} [#{originalValue}] (#{originalClass}, #{value.class})"
       
-      @changed = Set.new unless @changed
-      @changed.add(key)
+      if not column.readonly
+        @changed = Set.new unless @changed
+        @changed.add(key)
+      end
     end
     
     def include?(key)

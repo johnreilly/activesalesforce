@@ -33,8 +33,10 @@ class AccountTest < Test::Unit::TestCase
     acme.save
   end
     
-  def test_create_account
-    #dutchCo = Account.new   
+  def test_xcreate_account
+    dutchCo = Account.new 
+    dutchCo.Name = "DutchCo"
+    dutchCo.save
   end
   
 end

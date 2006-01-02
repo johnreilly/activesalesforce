@@ -4,7 +4,7 @@ require 'active_record/connection_adapters/abstract/schema_definitions'
 module ActiveRecord  
   module ConnectionAdapters
     class SalesforceColumn < Column
-      attr_reader :label, :updateable, :reference_to
+      attr_reader :label, :readonly, :reference_to
       
       def initialize(field)
         @name = field["name"]
@@ -15,7 +15,7 @@ module ActiveRecord
         @text = [:string, :text].include? @type
         @number = [:float, :integer].include? @type
         
-        @updateable = field["updateable"]
+        @readonly = (field["updateable"] != "true" or field["createable"] != "true")
         
         if field["type"] =~ /reference/i
           @reference_to = field["referenceTo"]

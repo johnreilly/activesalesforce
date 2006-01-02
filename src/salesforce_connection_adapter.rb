@@ -11,7 +11,7 @@ end
 
 
 module ActiveRecord    
-  class Base
+  class Base    
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.salesforce_connection(config) # :nodoc:
       puts "Using Salesforce connection!"
@@ -22,7 +22,7 @@ module ActiveRecord
       username = config[:username].to_s
       password = config[:password].to_s
 
-      connection = SfdcLogin.new(url, username, password).proxy
+      connection = SalesforceLogin.new(url, username, password).proxy
       puts "connected to Salesforce as #{connection.getUserInfo(nil).result['userFullName']}"
       
       ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, username, password], config)
@@ -100,7 +100,7 @@ module ActiveRecord
 
         result = []        
         records.each do |record|
-          attributes = Salesforce::SObjectAttributes.new(record, columns_map(record["type"]))
+          attributes = Salesforce::SObjectAttributes.new(columns_map(record["type"]), record)
           result << attributes
         end
         
@@ -121,6 +121,15 @@ module ActiveRecord
         id_value || @connection.insert_id
       end
 
+      def create(sobject, name = nil) #:nodoc:
+        result = @connection.create(sobject).result
+        pp result
+        
+        raise SalesforceError, result.errors.message  unless result.success == "true"
+        
+        # @connection.affected_rows
+      end
+      
       def update(sobject, name = nil) #:nodoc:
         result = @connection.update(sobject).result
         pp result

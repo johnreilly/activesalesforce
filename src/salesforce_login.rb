@@ -44,11 +44,11 @@ class CallOptionsHandler < SOAP::Header::SimpleHandler
   end
 end
 
-class SfdcLogin
+class SalesforceLogin
   attr_reader :proxy
   
   def initialize(url, username, password) 
-    puts "SfdcLogin.initialize()"
+    puts "SalesforceLogin.initialize()"
     
     sessionid_handler = SessionHeaderHandler.new
     calloptions_handler = CallOptionsHandler.new
