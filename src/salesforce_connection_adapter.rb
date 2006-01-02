@@ -125,7 +125,7 @@ module ActiveRecord
         result = @connection.update(sobject).result
         pp result
         
-        raise SalesforceError, result unless result["success"] == "true"
+        raise SalesforceError, result.errors.message  unless result.success == "true"
         
         # @connection.affected_rows
       end

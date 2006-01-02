@@ -33,14 +33,22 @@ module Salesforce
       return unless column
 
       return if @values[key] == value && @values.include?(key)
-
-      # Convert strings representation of dates and datetimes to date and time objects
-      if column and (column.type == :date or column.type == :datetime)
-        # DCHASMAN TODO Add date and datetime parsing code!
-        @values[key] = value
-      else
-        @values[key] = (value) ? value : ""
+      
+      if value 
+        # Convert strings representation of dates and datetimes to date and time objects
+        case column.type
+          when :date
+            value = value.is_a?(Date) ? value : Date.parse(value)
+          when :datetime
+            value = value.is_a?(Time) ? value : Time.parse(value)
+          else
+            value = column.type_cast(value)
+        end
       end
+
+      @values[key] = value
+      
+      puts "setting #{key} = #{@values[key]} (#{column.type}, #{@values[key].class})"
       
       @changed = Set.new unless @changed
       @changed.add(key)

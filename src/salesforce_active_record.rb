@@ -45,7 +45,13 @@ module ActiveRecord
 
       # now add any changed fields
       fields.each do |fieldName|
-        sobj.add(SOAPElement.new(QName.new(nil, fieldName), @attributes[fieldName]))
+        value = @attributes[fieldName]
+        
+        value = value.xmlschema if value.is_a?(Time)
+
+        value = value.to_s if value.is_a?(Date)
+        
+        sobj.add(SOAPElement.new(QName.new(nil, fieldName), value))
       end
       
       element.add(sobj)
