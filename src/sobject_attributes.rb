@@ -5,8 +5,23 @@ module Salesforce
   class SObjectAttributes 
     include Enumerable
     
-    def initialize
+    def initialize(record, columns)
+      @columns = columns
       @values = {}
+      
+      record.__xmlele.each do |qname, value| 
+        name = qname.name
+
+        # Replace nil element with nil
+        value = nil if value.respond_to?(:xmlattr_nil) and value.xmlattr_nil
+                           
+        # Ids are returned in an array with 2 duplicate entries...
+        value = value[0] if name == "Id"
+            
+        self[name] = value
+      end
+          
+      clear_changed!
     end
     
     def [](key)
@@ -14,7 +29,19 @@ module Salesforce
     end
     
     def []=(key, value)
-      @values[key] = value
+      column = @columns[key]
+      return unless column
+
+      return if @values[key] == value && @values.include?(key)
+
+      # Convert strings representation of dates and datetimes to date and time objects
+      if column and (column.type == :date or column.type == :datetime)
+        # DCHASMAN TODO Add date and datetime parsing code!
+        @values[key] = value
+      else
+        @values[key] = (value) ? value : ""
+      end
+      
       @changed = Set.new unless @changed
       @changed.add(key)
     end

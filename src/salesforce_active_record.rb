@@ -54,6 +54,7 @@ module ActiveRecord
       
       element
     end
+
   end 
   
   class Base
@@ -91,5 +92,6 @@ module ActiveRecord
     def self.count_by_sql(soql)
       connection.select_all(soql, "#{name} Count").length
     end  
+
   end
 end

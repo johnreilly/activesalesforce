@@ -40,6 +40,8 @@ module ActiveRecord
               :binary
             when /boolean/i
               :boolean
+            when /picklist/i
+              :text
             when /reference/i
               :text
           end
@@ -48,6 +50,7 @@ module ActiveRecord
       def human_name
         @label
       end
+
     end
   end
 end    

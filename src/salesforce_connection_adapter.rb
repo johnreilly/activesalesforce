@@ -31,13 +31,16 @@ module ActiveRecord
   
 
   module ConnectionAdapters
-
+    class SalesforceError < StandardError
+    end
+    
     class SalesforceAdapter < AbstractAdapter
 
       def initialize(connection, logger, connection_options, config)
         super(connection, logger)
         
         @connection_options, @config = connection_options, config
+        @columns_name_map = {}
       end
 
       def adapter_name #:nodoc:
@@ -97,22 +100,8 @@ module ActiveRecord
 
         result = []        
         records.each do |record|
-          attributes = Salesforce::SObjectAttributes.new
+          attributes = Salesforce::SObjectAttributes.new(record, columns_map(record["type"]))
           result << attributes
-          
-          record.__xmlele.each do |qname, value| 
-            name = qname.name
-
-            # Replace nil element with nil
-            value = nil if value.respond_to?(:xmlattr_nil) and value.xmlattr_nil
-                           
-            # Ids are returned in an array with 2 duplicate entries...
-            value = value[0] if name == "Id"
-            
-            attributes[name] = value 
-          end
-          
-          attributes.clear_changed!
         end
         
         result
@@ -133,13 +122,17 @@ module ActiveRecord
       end
 
       def update(sobject, name = nil) #:nodoc:
-        @connection.update(sobject)
+        result = @connection.update(sobject).result
+        pp result
+        
+        raise SalesforceError, result unless result["success"] == "true"
+        
         # @connection.affected_rows
       end
+      
+      alias_method :delete, :update 
 
-      alias_method :delete, :update #:nodoc:
-
-      def columns(table_name, name = nil)#:nodoc:
+      def columns(table_name, name = nil)
         columns = []
         
         metadata = @connection.describeSObject(:sObjectType => table_name).result
@@ -150,6 +143,17 @@ module ActiveRecord
         columns
       end
 
+      def columns_map(table_name, name = nil)
+        columns_map = @columns_name_map[table_name]
+        return columns_map if columns_map
+
+        columns_map = {}
+        @columns_name_map[table_name] = columns_map
+        
+        columns(table_name).each { |column| columns_map[column.name] = column }
+        
+        columns_map
+      end
 
       private
 
