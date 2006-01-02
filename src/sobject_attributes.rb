@@ -31,6 +31,8 @@ module Salesforce
     def []=(key, value)
       column = @columns[key]
       return unless column
+      
+      value = nil if value == ""
 
       return if @values[key] == value && @values.include?(key)
       
