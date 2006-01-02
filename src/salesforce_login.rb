@@ -49,7 +49,7 @@ class SalesforceLogin
   
   def initialize(url, username, password) 
     puts "SalesforceLogin.initialize()"
-    
+
     sessionid_handler = SessionHeaderHandler.new
     calloptions_handler = CallOptionsHandler.new
     calloptions_handler.client = 'sfdcOnRailsClient'
@@ -62,7 +62,10 @@ class SalesforceLogin
     @proxy.headerhandler << calloptions_handler
     #@proxy.wiredump_dev = STDOUT
     
+    puts "before login"
     login_result = @proxy.login(:username => username, :password => password).result
+    puts "after login"
+
     sessionid_handler.sessionid = login_result.sessionId
   end
 end

@@ -1,4 +1,5 @@
 require 'active_record/connection_adapters/abstract_adapter'
+require 'thread'
 
 require File.dirname(__FILE__) + '/salesforce_login'
 require File.dirname(__FILE__) + '/sobject_attributes'
@@ -11,7 +12,9 @@ end
 
 
 module ActiveRecord    
-  class Base    
+  class Base   
+    @@cache = {}
+
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.salesforce_connection(config) # :nodoc:
       puts "Using Salesforce connection!"
@@ -21,8 +24,15 @@ module ActiveRecord
       url = config[:url].to_s
       username = config[:username].to_s
       password = config[:password].to_s
+      
+      connection = @@cache["#{url}.#{username}.#{password}"]
 
-      connection = SalesforceLogin.new(url, username, password).proxy
+      if not connection
+        connection = SalesforceLogin.new(url, username, password).proxy 
+        @@cache["#{url}.#{username}.#{password}"] = connection
+        puts "Created new connection for [#{url}, #{username}]"
+      end
+            
       puts "connected to Salesforce as #{connection.getUserInfo(nil).result['userFullName']}"
       
       ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, username, password], config)
