@@ -1,7 +1,9 @@
 require 'active_record/connection_adapters/abstract_adapter'
+
 require File.dirname(__FILE__) + '/salesforce_login'
 require File.dirname(__FILE__) + '/sobject_attributes'
 require File.dirname(__FILE__) + '/salesforce_active_record'
+require File.dirname(__FILE__) + '/column_definition'
 
 ActiveRecord::Base.class_eval do
     include ActiveRecord::SalesforceRecord
@@ -26,19 +28,9 @@ module ActiveRecord
       ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, username, password], config)
     end
   end
+  
 
   module ConnectionAdapters
-    class SalesforceColumn < Column #:nodoc:
-      def initialize(name, type)
-        @name = name
-        @type = type
-        @limit = 255
-        
-        @text = true
-        @number = false
-      end
-    end
-    
 
     class SalesforceAdapter < AbstractAdapter
 
@@ -147,55 +139,12 @@ module ActiveRecord
 
       alias_method :delete, :update #:nodoc:
 
-
-      def add_limit_offset!(sql, options) #:nodoc
-        if limit = options[:limit]
-          unless offset = options[:offset]
-            sql << " LIMIT #{limit}"
-          else
-            sql << " LIMIT #{offset}, #{limit}"
-          end
-        end
-      end
-
-
-      # SCHEMA STATEMENTS ========================================
-
-      def structure_dump #:nodoc:
-        select_all("SHOW TABLES").inject("") do |structure, table|
-          structure += select_one("SHOW CREATE TABLE #{table.to_a.first.last}")["Create Table"] + ";\n\n"
-        end
-      end
-
-      def tables(name = nil) #:nodoc:
-        tables = []
-        execute("SHOW TABLES", name).each { |field| tables << field[0] }
-        tables
-      end
-
-      def indexes(table_name, name = nil)#:nodoc:
-        indexes = []
-        current_index = nil
-        execute("SHOW KEYS FROM #{table_name}", name).each do |row|
-          if current_index != row[2]
-            next if row[2] == "PRIMARY" # skip the primary key
-            current_index = row[2]
-            indexes << IndexDefinition.new(row[0], row[2], row[1] == "0", [])
-          end
-
-          indexes.last.columns << row[4]
-        end
-        indexes
-      end
-      
-
       def columns(table_name, name = nil)#:nodoc:
-        sql = "SHOW FIELDS FROM #{table_name}"
         columns = []
         
         metadata = @connection.describeSObject(:sObjectType => table_name).result
         metadata.fields.each do |field| 
-          columns << SalesforceColumn.new(field.name, :string) 
+          columns << SalesforceColumn.new(field) 
         end
         
         columns
