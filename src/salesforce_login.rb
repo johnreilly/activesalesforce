@@ -62,9 +62,7 @@ class SalesforceLogin
     @proxy.headerhandler << calloptions_handler
     #@proxy.wiredump_dev = STDOUT
     
-    puts "before login"
     login_result = @proxy.login(:username => username, :password => password).result
-    puts "after login"
 
     sessionid_handler.sessionid = login_result.sessionId
   end
