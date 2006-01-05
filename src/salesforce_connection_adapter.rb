@@ -33,7 +33,7 @@ module ActiveRecord
         puts "Created new connection for [#{url}, #{username}]"
       end
             
-      puts "connected to Salesforce as #{connection.getUserInfo(nil).result['userFullName']}"
+      #puts "connected to Salesforce as #{connection.getUserInfo(nil).result['userFullName']}"
       
       ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, username, password], config)
     end
@@ -122,18 +122,8 @@ module ActiveRecord
         result.nil? ? nil : result.first
       end
 
-      def execute(sql, name = nil, retries = 2) #:nodoc:
-        log(sql, name) { @connection.query(sql) }
-      end
-
-      def insert(sql, name = nil, pk = nil, id_value = nil, sequence_name = nil) #:nodoc:
-        execute(sql, name = nil)
-        id_value || @connection.insert_id
-      end
-
       def create(sobject, name = nil) #:nodoc:
         result = @connection.create(sobject).result
-        pp result
         
         raise SalesforceError, result.errors.message  unless result.success == "true"
         
@@ -142,8 +132,7 @@ module ActiveRecord
       
       def update(sobject, name = nil) #:nodoc:
         result = @connection.update(sobject).result
-        pp result
-        
+
         raise SalesforceError, result.errors.message  unless result.success == "true"
         
         # @connection.affected_rows

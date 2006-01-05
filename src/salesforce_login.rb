@@ -3,8 +3,8 @@
 require 'cgi'
 require 'pp'
 require 'soap/header/simplehandler'
+require 'soap/wsdlDriver'
 
-require File.dirname(__FILE__) + '/salesforce_soap.rb'
 
 class SessionHeaderHandler < SOAP::Header::SimpleHandler
   HeaderName = XSD::QName.new('urn:partner.soap.sforce.com', 'SessionHeader')
@@ -54,13 +54,12 @@ class SalesforceLogin
     calloptions_handler = CallOptionsHandler.new
     calloptions_handler.client = 'sfdcOnRailsClient'
     
-    @proxy = SalesforceSoap.new
-    
-    @proxy.endpoint_url = url if url
+    @proxy = SOAP::WSDLDriverFactory.new(File.dirname(__FILE__) + '/partner.wsdl.xml').create_rpc_driver
+    @proxy.endpoint_url = url
     
     @proxy.headerhandler << sessionid_handler
     @proxy.headerhandler << calloptions_handler
-    #@proxy.wiredump_dev = STDOUT
+    @proxy.wiredump_dev = STDOUT
     
     login_result = @proxy.login(:username => username, :password => password).result
 

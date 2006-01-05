@@ -1,5 +1,5 @@
-require 'xsd/qname'
-require 'soap/rpc/element'
+require 'xsd/datatypes'
+require 'soap/soap'
 
 require File.dirname(__FILE__) + '/sobject_attributes'
 
@@ -40,13 +40,13 @@ module ActiveRecord
     
     def create_command(command)
       fields = @attributes.changed_fields
-      
+            
       element = SOAPElement.new(QName.new(NS1, command))
 
       sobj = SOAPElement.new(QName.new(NS1, 'sObjects'))
       sobj.add(SOAPElement.new(QName.new(NS2, "type"), self.class.name))
       sobj.add(SOAPElement.new(QName.new(NS2, 'Id'),  self.Id)) if self.Id
-
+      
       # now add any changed fields
       fields.each do |fieldName|
         value = @attributes[fieldName]
@@ -55,13 +55,13 @@ module ActiveRecord
   
           value = value.to_s if value.is_a?(Date) or value.is_a?(Fixnum)
           
-          sobj.add(SOAPElement.new(QName.new(nil, fieldName), value))
+          fieldElement = SOAPElement.new(fieldName, value)
+          
+          sobj.add(fieldElement)
         end
       end
-      
+
       element.add(sobj)
-      
-      pp element
       
       element
     end
