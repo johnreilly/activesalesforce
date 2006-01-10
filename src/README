@@ -1,0 +1,23 @@
+== Welcome to Active Salesforce
+
+  ActiveSalesforce is an extension to the Rails Framework that allows for the dynamic creation and management of 
+  ActiveRecord objects through the use of Salesforce meta-data and uses a Salesforce.com organization as the backing store.
+
+
+== Getting started
+
+1. TBD
+
+
+== Description of contents
+
+lib
+  Application specific libraries. Basically, any kind of custom code that doesn't
+  belong under controllers, models, or helpers. This directory is in the load path.
+  
+script
+  Helper scripts for automation and generation.
+
+test
+  Unit and functional tests along with fixtures.
+
