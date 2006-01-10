@@ -1,5 +1,8 @@
-require 'active_record/connection_adapters/abstract_adapter'
-require 'active_record/connection_adapters/abstract/schema_definitions'
+require 'rubygems'
+require_gem 'rails', ">= 1.0.0"
+
+#require 'active_record/connection_adapters/abstract_adapter'
+#require 'active_record/connection_adapters/abstract/schema_definitions'
 
 module ActiveRecord  
   module ConnectionAdapters

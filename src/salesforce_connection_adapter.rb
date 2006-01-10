@@ -1,4 +1,6 @@
-require 'active_record/connection_adapters/abstract_adapter'
+require 'rubygems'
+require_gem 'rails', ">= 1.0.0"
+
 require 'thread'
 
 require File.dirname(__FILE__) + '/salesforce_login'
