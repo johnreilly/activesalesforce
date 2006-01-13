@@ -1,6 +1,6 @@
 require 'rubygems'
 SPEC = Gem::Specification.new do |s|
-  s.name = "ActiveSalesforce"
+  s.name = "activesalesforce"
   s.version = "1.0.0"
   s.author = "Doug Chasman"
   s.email = "dchasman@salesforce.com"
