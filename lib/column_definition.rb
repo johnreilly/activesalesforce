@@ -10,18 +10,18 @@ module ActiveRecord
       attr_reader :label, :readonly, :reference_to
       
       def initialize(field)
-        @name = field["name"]
-        @type = get_type(field["type"])
-        @limit = field["length"]
-        @label = field["label"]
+        @name = field[:name]
+        @type = get_type(field[:type])
+        @limit = field[:length]
+        @label = field[:label]
         
         @text = [:string, :text].include? @type
         @number = [:float, :integer].include? @type
         
-        @readonly = (field["updateable"] != "true" or field["createable"] != "true")
+        @readonly = (field[:updateable] != "true" or field[:createable] != "true")
         
-        if field["type"] =~ /reference/i
-          @reference_to = field["referenceTo"]
+        if field[:type] =~ /reference/i
+          @reference_to = field[:referenceTo]
         end
       end
       

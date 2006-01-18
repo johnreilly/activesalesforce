@@ -8,7 +8,7 @@ class AccountTest < Test::Unit::TestCase
 
   def test_get_account 
     products = Account.find(:all)
-    pp products
+    #pp products
       
     products.each { |product| puts "#{product.Name}, #{product.Id}, #{product.LastModifiedById}, #{product.Description}" }
   

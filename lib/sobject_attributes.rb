@@ -10,16 +10,14 @@ module Salesforce
       @values = {}
       
       if record 
-        record.__xmlele.each do |qname, value| 
-          name = qname.name
-  
+        record.each do |name, value| 
           # Replace nil element with nil
           value = nil if value.respond_to?(:xmlattr_nil) and value.xmlattr_nil
                              
           # Ids are returned in an array with 2 duplicate entries...
-          value = value[0] if name == "Id"
+          value = value[0] if name == :Id
               
-          self[name] = value
+          self[name.to_s] = value
         end
       else
         columns.values.each { |column| self[column.name] = nil }

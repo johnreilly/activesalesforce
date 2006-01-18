@@ -107,12 +107,14 @@ module ActiveRecord
 
       def select_all(soql, name = nil) #:nodoc:
         log(soql, name)
-        records = @connection.query(:queryString => soql).result.records
+        
+        records = @connection.query(:queryString => soql).queryResponse.result.records
+        
         records = [ records ] unless records.is_a?(Array)
 
         result = []        
         records.each do |record|
-          attributes = Salesforce::SObjectAttributes.new(columns_map(record["type"]), record)
+          attributes = Salesforce::SObjectAttributes.new(columns_map(record[:type]), record)
           result << attributes
         end
         
@@ -125,7 +127,7 @@ module ActiveRecord
       end
 
       def create(sobject, name = nil) #:nodoc:
-        result = @connection.create(sobject).result
+        result = @connection.create(sobject).createResponse.result
         
         raise SalesforceError, result.errors.message  unless result.success == "true"
         
@@ -133,7 +135,7 @@ module ActiveRecord
       end
       
       def update(sobject, name = nil) #:nodoc:
-        result = @connection.update(sobject).result
+        result = @connection.update(sobject).updateResponse.result
 
         raise SalesforceError, result.errors.message  unless result.success == "true"
         
@@ -145,7 +147,8 @@ module ActiveRecord
       def columns(table_name, name = nil)
         columns = []
         
-        metadata = @connection.describeSObject(:sObjectType => table_name).result
+        metadata = @connection.describeSObject(:sObjectType => table_name).describeSObjectResponse.result
+        
         metadata.fields.each do |field| 
           columns << SalesforceColumn.new(field) 
         end

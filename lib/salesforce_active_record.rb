@@ -29,41 +29,29 @@ module ActiveRecord
     def create_with_sforce_api
       return if not @attributes.changed?
       puts "create_with_sforce_api creating #{self.class}"
-      connection.create(create_command("create"))      
+      connection.create(:sObjects => create_sobject())
     end
 
     def update_with_sforce_api
       return if not @attributes.changed?
       puts "update_with_sforce_api updating #{self.class}('#{self.Id}')"
-      connection.update(create_command("update"))
+      connection.update(:sObjects => create_sobject())
     end
     
-    def create_command(command)
+    def create_sobject()
       fields = @attributes.changed_fields
-            
-      element = SOAPElement.new(QName.new(NS1, command))
 
-      sobj = SOAPElement.new(QName.new(NS1, 'sObjects'))
-      sobj.add(SOAPElement.new(QName.new(NS2, "type"), self.class.name))
-      sobj.add(SOAPElement.new(QName.new(NS2, 'Id'),  self.Id)) if self.Id
-      
+      sobj = [ 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }', self.class.name ]
+      sobj << 'Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << self.Id if self.Id    
+            
       # now add any changed fields
+      fieldValues = {}
       fields.each do |fieldName|
         value = @attributes[fieldName]
-        if value
-          value = value.xmlschema(3) if value.is_a?(Time)
-  
-          value = value.to_s if value.is_a?(Date) or value.is_a?(Fixnum)
-          
-          fieldElement = SOAPElement.new(fieldName, value)
-          
-          sobj.add(fieldElement)
-        end
+        sobj << fieldName.to_sym << value if value
       end
-
-      element.add(sobj)
       
-      element
+      sobj
     end
 
   end 
