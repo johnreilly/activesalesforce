@@ -21,9 +21,6 @@
   SOFTWARE.
 =end
 
-require 'xsd/datatypes'
-require 'soap/soap'
-
 require File.dirname(__FILE__) + '/sobject_attributes'
 
 
