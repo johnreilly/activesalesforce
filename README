@@ -6,8 +6,24 @@
 
 == Getting started
 
-1. TBD Add in info on editing scripts/generate and scripts/server + database.yml
+1. gem install activesalesforce
+2. if you have not already done so generate your initial rails app using "rails <myappname goes here>" 
+3. edit config/environment.rb and add "require_gem 'activesalesforce'" to the end of the "Rails::Initializer.run do |config|" block, e.g.
 
+		Rails::Initializer.run do |config|
+		  ...
+		  
+		  require_gem 'activesalesforce'
+		end
+
+4. edit database.yml
+
+		adapter: salesforce
+  		url: <salesforce api server url goes here>
+  		username: <salesforce user name goes here>
+  		password: <salesforce password goes here>
+  		
+5. proceed using standard Rails development techniques!  		
 
 == Description of contents
 
