@@ -1,17 +1,14 @@
 require File.join(File.dirname(__FILE__), '../../config/boot')
-
-require_gem 'activesalesforce'
-require  'salesforce_connection_adapter'
-
 require File.dirname(__FILE__) + '/../test_helper'
 
-
+require 'pp'
 
 class AccountTest < Test::Unit::TestCase
   def setup
     ActiveRecord::Base.allow_concurrency = true
   end
   
+
   def test_get_account 
     accounts = Account.find(:all)
 
@@ -33,12 +30,28 @@ class AccountTest < Test::Unit::TestCase
     
     acme.save
   end
+
  
   def test_create_account
     dutchCo = Account.new 
     dutchCo.Name = "DutchCo"
     dutchCo.Website = "www.dutchco.com"
     dutchCo.save
+
+    dutchCo2 = Account.new(:Name => "DutchCo2", :Website => "www.dutchco2.com") 
+    dutchCo2.save
+    
+    dutchCo3 = Account.create(:Name => "DutchCo3", :Website => "www.dutchco3.com") 
+
+    accounts = Account.create([ 
+      { :Name => "DutchCo4", :Website => "www.dutchco4.com" },
+      { :Name => "DutchCo5", :Website => "www.dutchco5.com" }])
   end 
+
+  
+  def test_destroy_account
+    account = Account.create(:Name => "DutchADelete", :Website => "www.dutchcodelete.com") 
+    Account.delete(account.Id)
+  end
        
 end

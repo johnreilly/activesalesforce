@@ -32,38 +32,37 @@ module ActiveRecord
   # This behavior can be turned off by setting <tt>ActiveRecord::Base.record_timestamps = false</tt>.
   # This behavior can use GMT by setting <tt>ActiveRecord::Base.timestamps_gmt = true</tt>
   module SalesforceRecord 
-    include SOAP, XSD
-
-    NS1 = 'urn:partner.soap.sforce.com'
-    NS2 = "urn:sobject.partner.soap.sforce.com"    
 
     def self.append_features(base) # :nodoc:
       super
-
+      
       base.class_eval do
         alias_method :create, :create_with_sforce_api
         alias_method :update, :update_with_sforce_api
       end
     end    
-      
+    
     def create_with_sforce_api
       return if not @attributes.changed?
       puts "create_with_sforce_api creating #{self.class}"
-      connection.create(:sObjects => create_sobject())
+      id = connection.create(:sObjects => create_sobject())
+      @attributes["Id"] = id
+      @attributes.clear_changed!
     end
-
+    
     def update_with_sforce_api
       return if not @attributes.changed?
       puts "update_with_sforce_api updating #{self.class}('#{self.Id}')"
       connection.update(:sObjects => create_sobject())
+      @attributes.clear_changed!
     end
     
     def create_sobject()
       fields = @attributes.changed_fields
-
+      
       sobj = [ 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }', self.class.name ]
       sobj << 'Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << self.Id if self.Id    
-            
+      
       # now add any changed fields
       fieldValues = {}
       fields.each do |fieldName|
@@ -73,7 +72,7 @@ module ActiveRecord
       
       sobj
     end
-
+    
   end 
   
   class Base
@@ -92,7 +91,7 @@ module ActiveRecord
         originalAttributes.each { |name, value| self[name] = value }
       end
     end
-  
+    
     def self.table_name
       class_name_of_active_record_descendant(self)
     end
@@ -100,7 +99,7 @@ module ActiveRecord
     def self.primary_key
       "Id"
     end
-  
+    
     def self.construct_finder_sql(options)
       soql = "SELECT #{column_names.join(', ')} FROM #{table_name} "
       add_conditions!(soql, options[:conditions])
@@ -114,15 +113,20 @@ module ActiveRecord
     end
     
     def self.count(conditions = nil, joins = nil)
-        soql  = "SELECT Id FROM #{table_name} "
-        add_conditions!(soql, conditions)
-        
-        count_by_sql(soql)
+      soql  = "SELECT Id FROM #{table_name} "
+      add_conditions!(soql, conditions)
+      
+      count_by_sql(soql)
     end
     
     def self.count_by_sql(soql)
       connection.select_all(soql, "#{name} Count").length
     end  
-
+    
+          
+    def self.delete(ids)
+      connection.delete(ids)
+    end
+    
   end
 end
