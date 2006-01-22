@@ -73,6 +73,8 @@ module ActiveRecord
         super(connection, logger)
         
         @connection_options, @config = connection_options, config
+        
+        @columns_map = {}
         @columns_name_map = {}
       end
       
@@ -173,15 +175,21 @@ module ActiveRecord
       end
             
       def columns(table_name, name = nil)
-        columns = []
+        cached_columns = @columns_map[table_name]
+        return cached_columns if cached_columns
+        
+        puts "describeSObject(#{table_name})"
+        
+        cached_columns = []
+        @columns_map[table_name] = cached_columns
         
         metadata = @connection.describeSObject(:sObjectType => table_name).describeSObjectResponse.result
         
         metadata.fields.each do |field| 
-          columns << SalesforceColumn.new(field) 
+          cached_columns << SalesforceColumn.new(field) 
         end
         
-        columns
+        cached_columns
       end
       
       def columns_map(table_name, name = nil)

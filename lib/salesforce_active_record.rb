@@ -82,13 +82,26 @@ module ActiveRecord
     default_timezone = :utc
     
     def after_initialize() 
+      sfdcObjectName = self.class.table_name
       if not @attributes.is_a?(Salesforce::SObjectAttributes)
-        # Insure that SObjectAttributes is always used for our atttributes
+        # Insure that SObjectAttributes is always used for our attributes
         originalAttributes = @attributes 
         
-        @attributes = Salesforce::SObjectAttributes.new(connection.columns_map(self.class.table_name))
+        @attributes = Salesforce::SObjectAttributes.new(connection.columns_map(sfdcObjectName))
         
         originalAttributes.each { |name, value| self[name] = value }
+      end
+      
+      # Create relationships for any reference field
+      connection.columns(sfdcObjectName).each do |column|
+        if column.reference_to
+          referenceName = column.name.chop.chop
+          
+          unless self.respond_to? referenceName.to_sym
+            puts "Creating relationship from #{sfdcObjectName} to #{column.reference_to} for #{referenceName}"
+            self.class.belongs_to referenceName.to_sym, :class_name => column.reference_to, :foreign_key => column.name, :dependent => false
+          end
+        end
       end
     end
     
@@ -121,8 +134,7 @@ module ActiveRecord
     
     def self.count_by_sql(soql)
       connection.select_all(soql, "#{name} Count").length
-    end  
-    
+    end     
           
     def self.delete(ids)
       connection.delete(ids)
