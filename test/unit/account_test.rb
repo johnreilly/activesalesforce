@@ -48,7 +48,7 @@ class AccountTest < Test::Unit::TestCase
       { :Name => "DutchCo5", :Website => "www.dutchco5.com" }])
   end 
   
-  
+
   def test_destroy_account
     account = Account.create(:Name => "DutchADelete", :Website => "www.dutchcodelete.com") 
     account = Account.find_by_Id(account.Id)
@@ -57,10 +57,10 @@ class AccountTest < Test::Unit::TestCase
     
     puts "Getting CreatedBy"
     createdBy = account.CreatedBy
+    createdBy = User.find_by_Id(account.CreatedById);
     puts createdBy.Email
         
     Account.delete(account.Id)
   end
-  
-       
+     
 end

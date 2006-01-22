@@ -97,7 +97,7 @@ module ActiveRecord
         if column.reference_to
           referenceName = column.name.chop.chop
           
-          unless self.respond_to? referenceName.to_sym
+          unless self.respond_to? referenceName.to_sym or column.reference_to == "Profile"
             puts "Creating relationship from #{sfdcObjectName} to #{column.reference_to} for #{referenceName}"
             self.class.belongs_to referenceName.to_sym, :class_name => column.reference_to, :foreign_key => column.name, :dependent => false
           end
