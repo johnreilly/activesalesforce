@@ -46,7 +46,7 @@ module ActiveRecord
       return if not @attributes.changed?
       puts "create_with_sforce_api creating #{self.class}"
       id = connection.create(:sObjects => create_sobject())
-      @attributes["Id"] = id
+      self.Id = id
       @attributes.clear_changed!
     end
     
