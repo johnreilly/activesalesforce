@@ -152,7 +152,7 @@ module RForce
       @server.use_ssl = @url.scheme == 'https'
       
       # run ruby with -d to see SOAP wiredumps.
-      @server.set_debug_output $stderr #if $DEBUG
+      @server.set_debug_output $stderr if $DEBUG
       
       @session_id = ''
       @batch_size = DEFAULT_BATCH_SIZE      
