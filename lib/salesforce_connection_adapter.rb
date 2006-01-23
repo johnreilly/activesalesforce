@@ -68,6 +68,7 @@ module ActiveRecord
     end
     
     class SalesforceAdapter < AbstractAdapter
+      attr_accessor :batch_size
       
       def initialize(connection, logger, connection_options, config)
         super(connection, logger)
@@ -131,7 +132,10 @@ module ActiveRecord
       def select_all(soql, name = nil) #:nodoc:
         log(soql, name)
         
-        records = @connection.query(:queryString => soql).queryResponse.result.records
+        @connection.batch_size = @batch_size if @batch_size
+        @batch_size = nil
+        
+        records = get_result(@connection.query(:queryString => soql), :query).records
         
         records = [ records ] unless records.is_a?(Array)
         
@@ -150,30 +154,31 @@ module ActiveRecord
       end
       
       def create(sobject, name = nil) #:nodoc:
-        result = @connection.create(sobject).createResponse.result
-        
-        raise SalesforceError, result[:errors].message  unless result[:success] == "true"
-        
-        result[:id]
+        check_result(get_result(@connection.create(sobject), :create))[:id]
       end
       
       def update(sobject, name = nil) #:nodoc:
-        result = @connection.update(sobject).updateResponse.result
-        
-        raise SalesforceError, result[:errors].message  unless result[:success] == "true"
-        
-        # @connection.affected_rows
+        check_result(get_result(@connection.update(sobject), :update))
       end
 
       def delete(ids)
         puts "Delete #{ids}"
-        
-        
-        result = @connection.delete(:ids => ids).deleteResponse.result
-        
-        raise SalesforceError, result[:errors].message  unless result[:success] == "true"
+        check_result(get_result(@connection.delete(:ids => ids), :delete))
       end
-            
+        
+      def get_result(response, method)
+        responseName = (method.to_s + "Response").to_sym
+        finalResponse = response[responseName]
+        raise SalesforceError, response.fault unless finalResponse
+        
+        result = finalResponse[:result]
+      end        
+      
+      def check_result(result)
+        raise SalesforceError, result[:errors].message  unless result[:success] == "true"
+        result
+      end
+                    
       def columns(table_name, name = nil)
         cached_columns = @columns_map[table_name]
         return cached_columns if cached_columns
@@ -182,8 +187,8 @@ module ActiveRecord
         
         cached_columns = []
         @columns_map[table_name] = cached_columns
-        
-        metadata = @connection.describeSObject(:sObjectType => table_name).describeSObjectResponse.result
+
+        metadata = get_result(@connection.describeSObject(:sObjectType => table_name), :describeSObject)
         
         metadata.fields.each do |field| 
           cached_columns << SalesforceColumn.new(field) 

@@ -133,6 +133,7 @@ module ActiveRecord
     end
     
     def self.count_by_sql(soql)
+      connection.batch_size = 1
       connection.select_all(soql, "#{name} Count").length
     end     
           
