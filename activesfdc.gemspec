@@ -24,7 +24,7 @@
 require 'rubygems'
 SPEC = Gem::Specification.new do |s|
   s.name = "activesalesforce"
-  s.version = "0.0.6"
+  s.version = "0.0.7"
   s.author = "Doug Chasman"
   s.email = "dchasman@salesforce.com"
   s.homepage = "http://rubyforge.org/projects/activesfdc/"

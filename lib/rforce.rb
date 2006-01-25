@@ -147,17 +147,20 @@ module RForce
     
     #Connect to the server securely.
     def initialize(url)
+      init_server(url)
+      
+      @session_id = ''
+      @batch_size = DEFAULT_BATCH_SIZE      
+    end
+    
+    def init_server(url)
       @url = URI.parse(url)
       @server = Net::HTTP.new(@url.host, @url.port)
       @server.use_ssl = @url.scheme == 'https'
       
       # run ruby with -d to see SOAP wiredumps.
       @server.set_debug_output $stderr if $DEBUG
-      
-      @session_id = ''
-      @batch_size = DEFAULT_BATCH_SIZE      
     end
-    
     
     #Log in to the server and remember the session ID
     #returned to us by SalesForce.
@@ -165,7 +168,11 @@ module RForce
       response = call_remote(:login, [:username, user, :password, pass])
       
       raise "Incorrect user name / password [#{response.fault}]" unless response.loginResponse
-      @session_id = response.loginResponse.result.sessionId
+      
+      result = response.loginResponse.result
+      @session_id = result.sessionId
+      
+      init_server(result.serverUrl)
       
       response
     end
