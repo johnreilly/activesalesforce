@@ -164,8 +164,11 @@ module RForce
     
     #Log in to the server and remember the session ID
     #returned to us by SalesForce.
-    def login(user, pass)
-      response = call_remote(:login, [:username, user, :password, pass])
+    def login(user, password)
+      @user = user
+      @password = password
+      
+      response = call_remote(:login, [:username, user, :password, password])
       
       raise "Incorrect user name / password [#{response.fault}]" unless response.loginResponse
       
@@ -195,6 +198,17 @@ module RForce
       
       #Send the request to the server and read the response.    
       response = @server.post2(@url.path, request, {'SOAPAction' => method.to_s, 'content-type' => 'text/xml'})
+      
+      # Check to see if INVALID_SESSION_ID was raised and try to relogin in
+      if method != :login and @session_id and response =~ /<faultcode>sf\:INVALID_SESSION_ID<\/faultcode>/
+        puts "\n\nSession timeout error - auto relogin activated"
+        
+        login(@user, @password)
+        
+        #Send the request to the server and read the response.    
+        response = @server.post2(@url.path, request, {'SOAPAction' => method.to_s, 'content-type' => 'text/xml'})
+      end
+
       SoapResponse.new(response.body)
     end
     
