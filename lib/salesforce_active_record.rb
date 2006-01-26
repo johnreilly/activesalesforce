@@ -60,7 +60,7 @@ module ActiveRecord
     def create_sobject()
       fields = @attributes.changed_fields
       
-      sobj = [ 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }', self.class.name ]
+      sobj = [ 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }', self.class.table_name ]
       sobj << 'Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << self.Id if self.Id    
       
       # now add any changed fields
@@ -106,7 +106,9 @@ module ActiveRecord
     end
     
     def self.table_name
-      class_name_of_active_record_descendant(self)
+        # Undo weird camilization that messes with custom object names
+        name = self.name
+        name.last(6) == "Custom" ? name.first(name.length - 6) << "__c" : name
     end
     
     def self.primary_key

@@ -64,7 +64,16 @@ module ActiveRecord
   
   
   module ConnectionAdapters
-    class SalesforceError < StandardError
+    class SalesforceError < RuntimeError
+      attr :fault
+      
+      def initialize(message, fault)
+        super message
+        
+        @fault = fault
+        
+        #puts "\n\nError encountered: #{message}\n\n"
+      end
     end
     
     class SalesforceAdapter < AbstractAdapter
@@ -136,10 +145,12 @@ module ActiveRecord
         @batch_size = nil
         
         records = get_result(@connection.query(:queryString => soql), :query).records
+
+        result = []        
+        return result unless records
         
         records = [ records ] unless records.is_a?(Array)
         
-        result = []        
         records.each do |record|
           attributes = Salesforce::SObjectAttributes.new(columns_map(record[:type]), record)
           result << attributes
@@ -169,21 +180,20 @@ module ActiveRecord
       def get_result(response, method)
         responseName = (method.to_s + "Response").to_sym
         finalResponse = response[responseName]
-        raise SalesforceError, response.fault unless finalResponse
+        
+        raise SalesforceError.new(response[:Fault].faultstring, response.fault) unless finalResponse
         
         result = finalResponse[:result]
       end        
       
       def check_result(result)
-        raise SalesforceError, result[:errors].message  unless result[:success] == "true"
+        raise SalesforceError.new(result[:Errors], result[:Errors].Message) unless result[:success] == "true"
         result
       end
                     
       def columns(table_name, name = nil)
         cached_columns = @columns_map[table_name]
         return cached_columns if cached_columns
-        
-        puts "describeSObject(#{table_name})"
         
         cached_columns = []
         @columns_map[table_name] = cached_columns

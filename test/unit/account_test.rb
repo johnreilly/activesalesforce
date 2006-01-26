@@ -23,6 +23,10 @@ class AccountTest < Test::Unit::TestCase
 
    
   def test_update_account
+    acme = Account.new 
+    acme.Name = "Acme"
+    acme.save
+    
     acme = Account.find_by_Name('Acme')
         
     acme.Website = "http://www.dutchforce.com/#{Time.now}.jpg"
