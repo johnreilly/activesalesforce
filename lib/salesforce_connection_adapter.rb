@@ -210,10 +210,12 @@ module ActiveRecord
           cached_relationships << SalesforceRelationship.new(field) if field[:type] =~ /reference/i
         end
 
-        metadata.childRelationships.each do |relationship|
-          cached_relationships << SalesforceRelationship.new(relationship)
+        if metadata.childRelationships
+          metadata.childRelationships.each do |relationship|
+            cached_relationships << SalesforceRelationship.new(relationship)
+          end
         end
-        
+                
         cached_columns
       end
       

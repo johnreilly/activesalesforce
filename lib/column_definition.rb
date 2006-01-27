@@ -82,7 +82,7 @@ module ActiveRecord
     end
     
     class SalesforceRelationship
-      attr_reader :name, :label, :reference_to, :one_to_many, :cascade_delete
+      attr_reader :name, :foreign_key, :label, :reference_to, :one_to_many, :cascade_delete
       
       def initialize(source)
         if source[:childSObject]
@@ -93,6 +93,7 @@ module ActiveRecord
           @cascade_delete = relationship[:cascadeDelete] == "true"
           @reference_to = relationship[:childSObject]
           @label = @name
+          @foreign_key = relationship[:field]
         else
           field = source
           

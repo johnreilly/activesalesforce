@@ -101,7 +101,7 @@ module ActiveRecord
           puts "Creating one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{sfdcObjectName} to #{relationship.reference_to}"
           
           if one_to_many
-            self.class.has_many referenceName.to_sym, :class_name => relationship.reference_to, :foreign_key => relationship.name, :dependent => false
+            self.class.has_many referenceName.to_sym, :class_name => relationship.reference_to, :foreign_key => relationship.foreign_key, :dependent => false
           else
             self.class.belongs_to referenceName.to_sym, :class_name => relationship.reference_to, :foreign_key => relationship.name, :dependent => false
           end
