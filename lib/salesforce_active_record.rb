@@ -93,13 +93,17 @@ module ActiveRecord
       end
       
       # Create relationships for any reference field
-      connection.columns(sfdcObjectName).each do |column|
-        if column.reference_to
-          referenceName = column.name.chop.chop
+      connection.relationships(sfdcObjectName).each do |relationship|
+        referenceName = relationship.name
+        unless self.respond_to? referenceName.to_sym or relationship.reference_to == "Profile"
+          one_to_many = relationship.one_to_many
           
-          unless self.respond_to? referenceName.to_sym or column.reference_to == "Profile"
-            puts "Creating relationship from #{sfdcObjectName} to #{column.reference_to} for #{referenceName}"
-            self.class.belongs_to referenceName.to_sym, :class_name => column.reference_to, :foreign_key => column.name, :dependent => false
+          puts "Creating one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{sfdcObjectName} to #{relationship.reference_to}"
+          
+          if one_to_many
+            self.class.has_many referenceName.to_sym, :class_name => relationship.reference_to, :foreign_key => relationship.name, :dependent => false
+          else
+            self.class.belongs_to referenceName.to_sym, :class_name => relationship.reference_to, :foreign_key => relationship.name, :dependent => false
           end
         end
       end

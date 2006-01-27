@@ -71,8 +71,6 @@ module ActiveRecord
         super message
         
         @fault = fault
-        
-        #puts "\n\nError encountered: #{message}\n\n"
       end
     end
     
@@ -86,6 +84,8 @@ module ActiveRecord
         
         @columns_map = {}
         @columns_name_map = {}
+
+        @relationships_map = {}
       end
       
       def adapter_name #:nodoc:
@@ -198,13 +198,33 @@ module ActiveRecord
         cached_columns = []
         @columns_map[table_name] = cached_columns
 
+        cached_relationships = []
+        @relationships_map[table_name] = cached_relationships
+
         metadata = get_result(@connection.describeSObject(:sObjectType => table_name), :describeSObject)
         
         metadata.fields.each do |field| 
-          cached_columns << SalesforceColumn.new(field) 
+          column = SalesforceColumn.new(field) 
+          cached_columns << column
+          
+          cached_relationships << SalesforceRelationship.new(field) if field[:type] =~ /reference/i
+        end
+
+        metadata.childRelationships.each do |relationship|
+          cached_relationships << SalesforceRelationship.new(relationship)
         end
         
         cached_columns
+      end
+      
+      def relationships(table_name)
+        cached_relationships = @relationships_map[table_name]
+        return cached_relationships if cached_relationships
+
+        # This will load column and relationship metadata        
+        columns(table_name)
+
+        @relationships_map[table_name]
       end
       
       def columns_map(table_name, name = nil)

@@ -24,13 +24,13 @@
 require 'rubygems'
 require_gem 'rails', ">= 1.0.0"
 
-#require 'active_record/connection_adapters/abstract_adapter'
-#require 'active_record/connection_adapters/abstract/schema_definitions'
+require 'pp'
+
 
 module ActiveRecord  
   module ConnectionAdapters
     class SalesforceColumn < Column
-      attr_reader :label, :readonly, :reference_to
+      attr_reader :label, :readonly
       
       def initialize(field)
         @name = field[:name]
@@ -45,6 +45,8 @@ module ActiveRecord
         
         if field[:type] =~ /reference/i
           @reference_to = field[:referenceTo]
+          @one_to_many = false
+          @cascade_delete = false
         end
       end
       
@@ -78,5 +80,31 @@ module ActiveRecord
       end
 
     end
+    
+    class SalesforceRelationship
+      attr_reader :name, :label, :reference_to, :one_to_many, :cascade_delete
+      
+      def initialize(source)
+        if source[:childSObject]
+          relationship = source
+          
+          @name = relationship[:relationshipName] ? relationship[:relationshipName] : relationship[:field].chop.chop
+          @one_to_many = relationship[:relationshipName] != nil
+          @cascade_delete = relationship[:cascadeDelete] == "true"
+          @reference_to = relationship[:childSObject]
+          @label = @name
+        else
+          field = source
+          
+          @name = field[:name].chop.chop
+          @label = field[:label]
+          @readonly = (field[:updateable] != "true" or field[:createable] != "true")          
+          @reference_to = field[:referenceTo]
+          @one_to_many = false
+          @cascade_delete = false
+        end
+      end
+    end
+    
   end
 end    
