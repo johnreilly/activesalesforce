@@ -1,0 +1,212 @@
+/* -------------- */
+/* skin: Salesforce */
+/* cssSheet: setup */
+/* postfix:  */
+
+/* setup.css */
+
+/* This sheet contains layout specific to the setup page */
+
+.setup .bPageTitle .ptBody .content {
+	padding-left: 10px;
+}
+.setup .bPageTitle .pageTitleIcon {
+    display: none;
+}
+
+.bTask .bPageBlock .pbBody {
+	padding:5px 20px 0px 20px;
+}
+
+.setup .bPageBlock .pbBody {
+	padding:8px 20px 5px 10px;
+}
+
+.bResource .primaryPalette,
+.bResource .secondaryPalette {
+	border-color: #930;
+	background-color: #930;
+}
+.bResource .bPageBlock .pbBody {
+	padding:5px 20px 0px 20px;
+}
+
+.setup .tabNavigation {
+	background-image:url(/global/img/tab/blank_bg.gif);
+}
+
+.bPageBlock .setupOverview td, .bPageBlock .setupOverview th,
+.bPageBlock .setupResource td, .bPageBlock .setupResource th {
+	padding:3px 2px 3px 5px;
+	color:#333;
+	width: 50%;
+}
+.bPageBlock .setupOverview,
+.bPageBlock .setupResource {
+	width:100%;
+}
+
+.bPageBlock .setupOverview a,
+.bPageBlock .setupResource a {
+	text-decoration: none;
+}
+
+.bPageBlock .setupOverview a:hover,
+.bPageBlock .setupResource a:hover {
+	text-decoration: underline;
+}
+
+.setupTreeNodeImages {
+	padding: 5px 2px 5px 2px;
+}
+
+.setupTreeNodeImages .image {
+	width: 33%;
+	float: left;
+}
+
+.customizeDisplay {
+	line-height: 1.6em;
+	margin-top: 15px;
+}
+
+.customizeDisplay input {
+	margin-top: 2px;
+	vertical-align: middle;
+}
+
+.customizeDisplay select {
+	margin-top: 2px;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+.setup .bWizardBlock .pbWizardTitle {
+    background-image: url(/global/img/bgSetupWizard.gif);
+}
+
+/* Related lists in detailelements in wizards in setup.  Yeulch. */
+.setup .bWizardBlock .pbBody .bRelatedList .bPageBlock {
+    background-color: #747E96;
+    border-top: 7px solid #747E96;
+    padding-bottom: 2px;
+}
+.setup .bWizardBlock .pbBody .bRelatedList .bPageBlock .pbHeader {
+    background-color: #FFF;
+    margin-right: 0;
+}
+.setup .bWizardBlock .pbBody .bRelatedList .bPageBlock .pbHeader h3 {
+    color: #333;
+}
+.setup .bWizardBlock .pbBody .bRelatedList .list td,
+.setup .bWizardBlock .pbBody .bRelatedList .list th {
+    border-bottom: 1px solid #E3DEB8;
+}
+.setup .bWizardBlock .pbBody .bRelatedList .list .last td,
+.setup .bWizardBlock .pbBody .bRelatedList .list .last th {
+    border-bottom: none;
+}
+.setup .bWizardBlock .pbBody .bRelatedList .list .headerRow th {
+    border-bottom: 2px solid #CCC;
+}
+
+/* begin update Reminder Edit page */
+.updateReminderEdit .bestPractice {
+	margin: 10px;
+}
+
+.oppReminderMessage td {
+	vertical-align: middle;
+}
+
+.updateReminderEdit .bestPractice strong{
+	margin-left: -8px;
+}
+
+.updateReminderEdit .closeDates {
+	margin-left: 20px;
+}
+
+.updateReminderEdit .oppReminderMessage textarea {
+	width:375px;
+	height: 100px;
+}
+/* END update Reminder Edit page */
+
+.oldForecastQuotaEdit th {
+	padding-left:1em;
+}
+
+/* BEGIN setup edit pages */
+.selfServiceEdit .bPageBlock .detailList .labelCol,
+.solutionSettingsEdit .bPageBlock .detailList .labelCol,
+.supportSettingEdit .bPageBlock .detailList .labelCol {
+    white-space: nowrap;
+}
+/* END setup edit pages */
+
+.emailTemplateList .pbHeader {
+	text-align:center;
+	padding:2px;
+}
+
+/* Field Accessibility */
+
+.flsLayout h2.flsHeader {
+  margin: 0;
+  padding: 0;
+}
+
+.flsLayout ul.entityList {
+  margin: 0 0 0 1em;
+  padding: 0;
+}
+
+/* need to make the checkmarks line up with the checkboxes */
+.flsEdit .displayedCol,
+.flsEdit .readonlyCol,
+.flsDetail .displayedCol,
+.flsDetail .readonlyCol {
+    text-align: center;
+}
+
+/* Custom tab/web tab button fix */
+
+.customTabWizard .bWizardBlock .bPageBlock .pbBody .pbSubheader {
+  background-color: #CCC;
+}
+
+.customTabWizard .bWizardBlock .bPageBlock .pbBody .pbSubheader h3 {
+  color: #333;
+}
+/* begin userrolefilter.jsp */
+.userRoleFilterList .listElementBottomNav {
+	display: block;
+}
+.userRoleFilterList .rolodex {
+	text-align: center;
+	margin: auto;
+	float:none;
+}
+/* end userrolefilter.jsp */
+
+/* begin styleEditorPage */
+.StyleEditorPage .bPageBlock .detailList .labelCol {
+	vertical-align: middle;
+}
+/* end styleEditorPage */
+
+/* begin webToX */
+.webToCaseSetup .labelCol,
+.webToLeadSettingsEdit .labelCol {
+	white-space: nowrap;
+}
+/* end webToX */
+
+
+/* -------------- */
+/* skin: Salesforce */
+/* cssSheet: setup */
+/* postfix: ffox */
+
+/* setup_ffox.css */
