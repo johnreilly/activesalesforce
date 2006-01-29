@@ -30,7 +30,7 @@ require 'pp'
 module ActiveRecord  
   module ConnectionAdapters
     class SalesforceColumn < Column
-      attr_reader :label, :readonly
+      attr_reader :label, :readonly, :reference_to
       
       def initialize(field)
         @name = field[:name]
