@@ -1,5 +1,7 @@
 require 'net/https'
 require 'uri'
+require 'zlib'
+require 'stringio'
 require 'rexml/document'
 require 'rexml/xpath'
 require 'rubygems'
@@ -32,8 +34,8 @@ require_gem 'builder'
 #  Rather than enforcing adherence to the sforce.com schema,
 #  RForce assumes you are familiar with the API.  Ruby method names
 #  become SOAP method names.  Nested Ruby hashes become nested
-#  XML elements.  
-#  
+#  XML elements.
+#
 #  Example:
 #
 #    binding = RForce::Binding.new 'na1-api.salesforce.com'
@@ -54,7 +56,7 @@ require_gem 'builder'
 #    binding.create 'sObject {"xsi:type" => "Opportunity"}' => opportunity
 #
 module RForce
-  
+
   #Allows indexing hashes like method calls: hash.key
   #to supplement the traditional way of indexing: hash[key]
   module FlashHash
@@ -62,50 +64,50 @@ module RForce
       self[method]
     end
   end
-  
+
   #Turns an XML response from the server into a Ruby
   #object whose methods correspond to nested XML elements.
   class SoapResponse
     include FlashHash
-    
+
     #Parses an XML string into structured data.
     def initialize(content)
       document = REXML::Document.new content
       node = REXML::XPath.first document, '//soapenv:Body'
       @parsed = SoapResponse.parse node
     end
-    
+
     #Allows this object to act like a hash (and therefore
     #as a FlashHash via the include above).
     def [](symbol)
       @parsed[symbol]
     end
-    
+
     #Digests an XML DOM node into nested Ruby types.
     def SoapResponse.parse(node)
       #Convert text nodes into simple strings.
       return node.text unless node.has_elements?
-      
+
       #Convert nodes with children into FlashHashes.
       elements = {}
       class << elements
         include FlashHash
       end
-      
+
       #Add all the element's children to the hash.
       node.each_element do |e|
         name = e.name.to_sym
-        
+
         case elements[name]
           #The most common case: unique child element tags.
         when NilClass: elements[name] = parse(e)
-          
+
           #Non-unique child elements become arrays:
-          
+
           #We've already created the array: just
           #add the element.
         when Array: elements[name] << parse(e)
-          
+
           #We haven't created the array yet: do so,
           #then put the existing element in, followed
           #by the new one.
@@ -114,16 +116,16 @@ module RForce
           elements[name] << parse(e)
         end
       end
-      
+
       return elements
     end
   end
-  
+
   #Implements the connection to the SalesForce server.
   class Binding
     DEFAULT_BATCH_SIZE = 10
     attr_accessor :batch_size
-    
+
     #Fill in the guts of this typical SOAP envelope
     #with the session ID and the body of the SOAP request.
     Envelope = <<-HERE
@@ -144,42 +146,42 @@ module RForce
   </env:Body>
 </env:Envelope>
     HERE
-    
+
     #Connect to the server securely.
     def initialize(url)
       init_server(url)
-      
+
       @session_id = ''
-      @batch_size = DEFAULT_BATCH_SIZE      
+      @batch_size = DEFAULT_BATCH_SIZE
     end
-    
+
     def init_server(url)
       @url = URI.parse(url)
       @server = Net::HTTP.new(@url.host, @url.port)
       @server.use_ssl = @url.scheme == 'https'
-      
+
       # run ruby with -d to see SOAP wiredumps.
       @server.set_debug_output $stderr if $DEBUG
     end
-    
+
     #Log in to the server and remember the session ID
     #returned to us by SalesForce.
     def login(user, password)
       @user = user
       @password = password
-      
+
       response = call_remote(:login, [:username, user, :password, password])
-      
+
       raise "Incorrect user name / password [#{response.fault}]" unless response.loginResponse
-      
+
       result = response.loginResponse.result
       @session_id = result.sessionId
-      
+
       init_server(result.serverUrl)
-      
+
       response
     end
-    
+
     #Call a method on the remote server.  Arguments can be
     #a hash or (if order is important) an array of alternating
     #keys and values.
@@ -188,49 +190,100 @@ module RForce
       expanded = ''
       @builder = Builder::XmlMarkup.new(:target => expanded)
       expand({method => args}, 'urn:partner.soap.sforce.com')
-      
+
       #Fill in the blanks of the SOAP envelope with our
       #session ID and the expanded XML of our request.
       request = (Envelope % [@session_id, @batch_size, expanded])
-      
+
       # reset the batch size for the next request
       @batch_size = DEFAULT_BATCH_SIZE
-      
-      #Send the request to the server and read the response.    
-      response = @server.post2(@url.path, request, {'SOAPAction' => method.to_s, 'content-type' => 'text/xml'})
-      
+
+      # gzip request
+      request = encode(request)
+
+      headers = {
+        'Accept-Encoding' => 'gzip',
+        'Connection' => 'Keep-Alive',
+        'Content-Encoding' => 'gzip',
+        'Content-Type' => 'text/xml',
+        'SOAPAction' => '""',
+        'User-Agent' => 'ActiveSalesforce RForce'
+      }
+
+      #Send the request to the server and read the response.
+      response = @server.post2(@url.path, request, headers)
+
+      # decode if we have encoding
+      content = decode(response)
+
       # Check to see if INVALID_SESSION_ID was raised and try to relogin in
       if method != :login and @session_id and response =~ /<faultcode>sf\:INVALID_SESSION_ID<\/faultcode>/
         puts "\n\nSession timeout error - auto relogin activated"
-        
+
         login(@user, @password)
-        
-        #Send the request to the server and read the response.    
-        response = @server.post2(@url.path, request, {'SOAPAction' => method.to_s, 'content-type' => 'text/xml'})
+
+        #Send the request to the server and read the response.
+        response = @server.post2(@url.path, request, headers)
+
+        content = decode(response)
       end
 
-      SoapResponse.new(response.body)
+      SoapResponse.new(content)
     end
-    
+
+    # decode gzip
+    def decode(response)
+      encoding = response.get_fields('Content-Encoding')
+
+      # return body if no encoding
+      if !encoding then return response.body end
+
+      # decode gzip
+      case encoding[0].strip
+      when 'gzip':
+        begin
+          gzr = Zlib::GzipReader.new(StringIO.new(response.body))
+          decoded = gzr.read
+        ensure
+          gzr.close
+        end
+        decoded
+      else
+        response.body
+      end
+    end
+
+    # encode gzip
+    def encode(request)
+      begin
+        ostream = StringIO.new
+        gzw = Zlib::GzipWriter.new(ostream)
+        gzw.write(request)
+        ostream.string
+      ensure
+        gzw.close
+      end
+    end
+
     #Turns method calls on this object into remote SOAP calls.
     def method_missing(method, *args)
       unless args.size == 1 && [Hash, Array].include?(args[0].class)
         raise 'Expected 1 Hash or Array argument'
       end
-      
-      call_remote method, args[0]    
+
+      call_remote method, args[0]
     end
-    
+
     #Expand Ruby data structures into XML.
     def expand(args, xmlns = nil)
       #Nest arrays: [:a, 1, :b, 2] => [[:a, 1], [:b, 2]]
       if (args.class == Array)
         args.each_index{|i| args[i, 2] = [args[i, 2]]}
       end
-      
+
       args.each do |key, value|
         attributes = xmlns ? {:xmlns => xmlns} : {}
-        
+
         #If the XML tag requires attributes,
         #the tag name will contain a space
         #followed by a string representation
@@ -240,16 +293,16 @@ module RForce
         #becomes <sObject xsi:type="Opportunity>...</sObject>
         if key.is_a? String
           key, modifier = key.split(' ', 2)
-          
+
           attributes.merge!(eval(modifier)) if modifier
         end
-        
+
         #Create an XML element and fill it with this
         #value's sub-items.
         case value
         when Hash, Array
           @builder.tag!(key, attributes) do expand value; end
-          
+
         when String
           @builder.tag!(key, attributes) { @builder.text! value }
         end
