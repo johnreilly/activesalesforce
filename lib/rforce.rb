@@ -202,13 +202,16 @@ module RForce
       request = encode(request)
 
       headers = {
-        'Accept-Encoding' => 'gzip',
         'Connection' => 'Keep-Alive',
-        'Content-Encoding' => 'gzip',
         'Content-Type' => 'text/xml',
         'SOAPAction' => '""',
         'User-Agent' => 'ActiveSalesforce RForce'
       }
+      
+      unless $DEBUG
+        headers['Accept-Encoding'] = 'gzip'
+        headers['Content-Encoding'] = 'gzip'
+      end
 
       #Send the request to the server and read the response.
       response = @server.post2(@url.path, request, headers)
@@ -255,6 +258,8 @@ module RForce
 
     # encode gzip
     def encode(request)
+      return request if $DEBUG
+      
       begin
         ostream = StringIO.new
         gzw = Zlib::GzipWriter.new(ostream)

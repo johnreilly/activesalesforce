@@ -28,12 +28,22 @@ require 'pp'
 
 
 module ActiveRecord  
+  module StringHelper
+    def column_nameize(s)
+      #s ? s.first.downcase + s[1 .. s.length] : nil
+      s.underscore
+    end
+  end
+  
   module ConnectionAdapters
     class SalesforceColumn < Column
-      attr_reader :label, :readonly, :reference_to
+      include StringHelper
+      
+      attr_reader :api_name, :label, :readonly, :reference_to
       
       def initialize(field)
-        @name = field[:name]
+        @api_name = field[:name]
+        @name = column_nameize(@api_name)
         @type = get_type(field[:type])
         @limit = field[:length]
         @label = field[:label]
@@ -82,28 +92,34 @@ module ActiveRecord
     end
     
     class SalesforceRelationship
-      attr_reader :name, :foreign_key, :label, :reference_to, :one_to_many, :cascade_delete
+      include StringHelper
+    
+      attr_reader :name, :api_name, :foreign_key, :label, :reference_to, :one_to_many, :cascade_delete
       
       def initialize(source)
         if source[:childSObject]
           relationship = source
           
-          @name = relationship[:relationshipName] ? relationship[:relationshipName] : relationship[:field].chop.chop
+          @api_name = relationship[:relationshipName] ? relationship[:relationshipName] : relationship[:field].chop.chop
           @one_to_many = relationship[:relationshipName] != nil
           @cascade_delete = relationship[:cascadeDelete] == "true"
           @reference_to = relationship[:childSObject]
           @label = @name
-          @foreign_key = relationship[:field]
+          @foreign_key = column_nameize(relationship[:field])
         else
           field = source
           
-          @name = field[:name].chop.chop
+          @api_name = field[:name].chop.chop
           @label = field[:label]
           @readonly = (field[:updateable] != "true" or field[:createable] != "true")          
           @reference_to = field[:referenceTo]
           @one_to_many = false
           @cascade_delete = false
+          @foreign_key = column_nameize(field[:name])
         end
+
+        @name = column_nameize(@api_name)
+
       end
     end
     

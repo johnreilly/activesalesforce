@@ -27,13 +27,7 @@ require_gem 'rails', ">= 1.0.0"
 require 'thread'
 
 require File.dirname(__FILE__) + '/salesforce_login'
-require File.dirname(__FILE__) + '/sobject_attributes'
-require File.dirname(__FILE__) + '/salesforce_active_record'
 require File.dirname(__FILE__) + '/column_definition'
-
-ActiveRecord::Base.class_eval do
-  include ActiveRecord::SalesforceRecord
-end
 
 
 module ActiveRecord    
@@ -75,6 +69,8 @@ module ActiveRecord
     end
     
     class SalesforceAdapter < AbstractAdapter
+      include StringHelper
+      
       attr_accessor :batch_size
       
       def initialize(connection, logger, connection_options, config)
@@ -84,7 +80,7 @@ module ActiveRecord
         
         @columns_map = {}
         @columns_name_map = {}
-
+        
         @relationships_map = {}
       end
       
@@ -109,7 +105,8 @@ module ActiveRecord
       end
       
       def quote_column_name(name) #:nodoc:
-        "`#{name}`"
+        # Mark the column name to make it easier to find later
+        "@@#{name}"
       end
       
       def quote_string(string) #:nodoc:
@@ -138,45 +135,124 @@ module ActiveRecord
       
       # DATABASE STATEMENTS ======================================
       
-      def select_all(soql, name = nil) #:nodoc:
+      def select_all(sql, name = nil) #:nodoc:
+        table_name = table_name_from_sql(sql)
+        entity_name = entity_name_from_table(table_name)
+        column_names = api_column_names(table_name)
+        
+        soql = sql.sub(/SELECT \* FROM/, "SELECT #{column_names.join(', ')} FROM")
+        
+        # Look for a LIMIT clause
+        soql.sub!(/LIMIT 1/, "")
+        
+        # Fixup column references to use api names
+        columns = columns_map(table_name)
+        while soql =~ /@@(\w+)/
+          column = columns[$~[1]]
+          soql = $~.pre_match + column.api_name + $~.post_match
+        end
+        
         log(soql, name)
         
         @connection.batch_size = @batch_size if @batch_size
         @batch_size = nil
         
         records = get_result(@connection.query(:queryString => soql), :query).records
-
+        
         result = []        
         return result unless records
         
         records = [ records ] unless records.is_a?(Array)
         
         records.each do |record|
-          attributes = Salesforce::SObjectAttributes.new(columns_map(record[:type]), record)
-          result << attributes
+          row = {}
+          
+          record.each do |name, value| 
+            name = column_nameize(name.to_s)
+            
+            # Replace nil element with nil
+            value = nil if value.respond_to?(:xmlattr_nil) and value.xmlattr_nil
+            
+            # Ids are returned in an array with 2 duplicate entries...
+            value = value[0] if name == "id"
+            
+            row[name] = value
+          end  
+          
+          result << row        
         end
         
         result
       end
       
       def select_one(sql, name = nil) #:nodoc:
+        @connection.batch_size = 1
         result = select_all(sql, name)
         result.nil? ? nil : result.first
       end
       
-      def create(sobject, name = nil) #:nodoc:
-        check_result(get_result(@connection.create(sobject), :create))[:id]
+      def insert(sql, name = nil, pk = nil, id_value = nil, sequence_name = nil)
+        tokens = sql.scan(/[0-9A-Za-z._]+/)
+        
+        # Convert sql to sobject
+        table_name = tokens[2]
+        entity_name = entity_name_from_table(table_name)
+        columns = columns_map(table_name)
+        
+        # Extract array of [column_name, value] pairs
+        names = tokens[3 .. tokens.length / 2]
+        values = tokens[(tokens.length / 2) + 2 ..  tokens.length]
+        
+        fields = {}
+        names.length.times do | n | 
+          name = names[n]
+          value = values[n]
+          column = columns[name]
+          
+          fields[column.api_name] = value if not column.readonly and value != "NULL"
+        end
+        
+        sobject = create_sobject(entity_name, nil, fields)
+        
+        check_result(get_result(@connection.create(:sObjects => sobject), :create))[0][:id]
+      end      
+      
+      def update(sql, name = nil) #:nodoc:
+        # Convert sql to sobject
+        table_name = sql.match(/UPDATE (\w+) /)[1]
+        entity_name = entity_name_from_table(table_name)
+        columns = columns_map(table_name)
+        
+        # Extract array of [column_name, value] pairs
+        raw_fields = sql.scan(/(\w+) = '([^']*)'/)
+        
+        fields = {}
+        raw_fields.each do | name, value | 
+          column = columns[name]
+          fields[column.api_name] = value if not column.readonly or name == "id"
+        end
+        
+        id = fields["Id"].match(/[a-zA-Z0-9]+/)[0]
+        fields.delete("Id")
+        
+        sobject = create_sobject(entity_name, id, fields)
+        
+        check_result(get_result(@connection.update(:sObjects => sobject), :update))
       end
       
-      def update(sobject, name = nil) #:nodoc:
-        check_result(get_result(@connection.update(sobject), :update))
-      end
+      def delete(sql, name = nil) 
+        # Extract the ids from the IN () clause
+        match = sql.match(/IN \(([^\)]*)\)/)
 
-      def delete(ids)
-        puts "Delete #{ids}"
-        check_result(get_result(@connection.delete(:ids => ids), :delete))
-      end
+        # If the IN clause was not found fall back to WHERE id = 'blah'
+        ids = match ? match[1].scan(/\w+/) : [ sql.match(/WHERE id = '([^\']*)'/)[1] ]
+
+        ids_element = []        
+        ids.each { |id| ids_element << :ids << id }
         
+        check_result(get_result(@connection.delete(ids_element), :delete))
+      end
+      
       def get_result(response, method)
         responseName = (method.to_s + "Response").to_sym
         finalResponse = response[responseName]
@@ -187,21 +263,28 @@ module ActiveRecord
       end        
       
       def check_result(result)
-        raise SalesforceError.new(result[:Errors], result[:Errors].Message) unless result[:success] == "true"
+        result = [ result ] unless result.is_a?(Array)
+        
+        result.each do |r|
+          raise SalesforceError.new(r[:errors], r[:errors].Message) unless r[:success] == "true"
+        end
+        
         result
       end
-                    
+      
       def columns(table_name, name = nil)
-        cached_columns = @columns_map[table_name]
+        entity_name = entity_name_from_table(table_name)
+        
+        cached_columns = @columns_map[entity_name]
         return cached_columns if cached_columns
         
         cached_columns = []
-        @columns_map[table_name] = cached_columns
-
+        @columns_map[entity_name] = cached_columns
+        
         cached_relationships = []
-        @relationships_map[table_name] = cached_relationships
-
-        metadata = get_result(@connection.describeSObject(:sObjectType => table_name), :describeSObject)
+        @relationships_map[entity_name] = cached_relationships
+        
+        metadata = get_result(@connection.describeSObject(:sObjectType => entity_name), :describeSObject)
         
         metadata.fields.each do |field| 
           column = SalesforceColumn.new(field) 
@@ -209,54 +292,109 @@ module ActiveRecord
           
           cached_relationships << SalesforceRelationship.new(field) if field[:type] =~ /reference/i
         end
-
+        
         if metadata.childRelationships
           metadata.childRelationships.each do |relationship|
-            cached_relationships << SalesforceRelationship.new(relationship)
+          
+            if relationship[:childSObject].casecmp(entity_name) == 0
+              r = SalesforceRelationship.new(relationship)
+              cached_relationships << r
+            end
           end
         end
-                
+        
+        configure_active_record entity_name
+        
         cached_columns
       end
       
+      def configure_active_record(entity_name)
+        klass = entity_name.constantize
+        
+        klass.table_name = entity_name
+        klass.pluralize_table_names = false
+        klass.set_inheritance_column nil
+        klass.lock_optimistically = false
+        klass.record_timestamps = false
+        klass.default_timezone = :utc
+        
+        # Create relationships for any reference field
+        @relationships_map[entity_name].each do |relationship|
+          referenceName = relationship.name
+          unless self.respond_to? referenceName.to_sym or relationship.reference_to == "Profile"
+            one_to_many = relationship.one_to_many
+            foreign_key = relationship.foreign_key
+            
+            if one_to_many
+              klass.has_many referenceName.to_sym, :class_name => relationship.reference_to, :foreign_key => foreign_key, :dependent => false
+            else
+              klass.belongs_to referenceName.to_sym, :class_name => relationship.reference_to, :foreign_key => foreign_key, :dependent => false
+            end
+            
+            puts "Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}"
+            
+          end
+        end
+        
+      end
+      
       def relationships(table_name)
-        cached_relationships = @relationships_map[table_name]
-        return cached_relationships if cached_relationships
-
-        # This will load column and relationship metadata        
-        columns(table_name)
-
-        @relationships_map[table_name]
+        entity_name = entity_name_from_table(table_name)
+        
+        cached_relationships = @relationships_map[entity_name]
+        
+        unless cached_relationships
+          # This will load column and relationship metadata        
+          columns(table_name)
+        end
+        
+        @relationships_map[entity_name]
       end
       
       def columns_map(table_name, name = nil)
-        columns_map = @columns_name_map[table_name]
-        return columns_map if columns_map
+        entity_name = entity_name_from_table(table_name)
         
-        columns_map = {}
-        @columns_name_map[table_name] = columns_map
-        
-        columns(table_name).each { |column| columns_map[column.name] = column }
+        columns_map = @columns_name_map[entity_name]
+        unless columns_map 
+          columns_map = {}
+          @columns_name_map[entity_name] = columns_map
+          
+          columns(entity_name).each { |column| columns_map[column.name] = column }
+        end
         
         columns_map
       end
       
-      private
+      def entity_name_from_table(table_name)
+        return table_name.singularize.camelize
+      end
       
-      def select(sql, name = nil)
-        puts "select(#{sql}, (#{name}))"
-        @connection.query_with_result = true
-        result = execute(sql, name)
-        rows = []
-        if @null_values_in_each_hash
-          result.each_hash { |row| rows << row }
-        else
-          all_fields = result.fetch_fields.inject({}) { |fields, f| fields[f.name] = nil; fields }
-          result.each_hash { |row| rows << all_fields.dup.update(row) }
+      
+      def create_sobject(entity_name, id, fields)
+        sobj = [ 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }', entity_name ]
+        sobj << 'Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << id if id    
+        
+        # now add any changed fields
+        fieldValues = {}
+        fields.each do | name, value |
+          sobj << name.to_sym << value if value
         end
-        result.free
-        rows
+        
+        sobj
+      end
+      
+      def table_name_from_sql(sql)
+        sql.match(/FROM (\w+) /)[1]
+      end
+      
+      def column_names(table_name)
+        columns(table_name).map { |column| column.name }
+      end
+      
+      def api_column_names(table_name)
+        columns(table_name).map { |column| column.api_name }
       end
     end
+    
   end
 end
