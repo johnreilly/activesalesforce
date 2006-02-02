@@ -155,13 +155,17 @@ module RForce
       @batch_size = DEFAULT_BATCH_SIZE
     end
 
+    def show_debug
+      $DEBUG or ENV['SHOWSOAP']
+    end
+    
     def init_server(url)
       @url = URI.parse(url)
       @server = Net::HTTP.new(@url.host, @url.port)
       @server.use_ssl = @url.scheme == 'https'
 
       # run ruby with -d to see SOAP wiredumps.
-      @server.set_debug_output $stderr if $DEBUG
+      @server.set_debug_output $stderr if show_debug
     end
 
     #Log in to the server and remember the session ID
@@ -208,7 +212,7 @@ module RForce
         'User-Agent' => 'ActiveSalesforce RForce'
       }
       
-      unless $DEBUG
+      unless show_debug
         headers['Accept-Encoding'] = 'gzip'
         headers['Content-Encoding'] = 'gzip'
       end
@@ -258,7 +262,7 @@ module RForce
 
     # encode gzip
     def encode(request)
-      return request if $DEBUG
+      return request if show_debug
       
       begin
         ostream = StringIO.new

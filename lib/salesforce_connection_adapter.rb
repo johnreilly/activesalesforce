@@ -29,6 +29,13 @@ require 'thread'
 require File.dirname(__FILE__) + '/salesforce_login'
 require File.dirname(__FILE__) + '/column_definition'
 
+class ResultArray < Array
+  attr_reader :actual_size
+  
+  def initialize(actual_size)
+    @actual_size = actual_size
+  end
+end
 
 module ActiveRecord    
   class Base   
@@ -140,7 +147,7 @@ module ActiveRecord
         entity_name = entity_name_from_table(table_name)
         column_names = api_column_names(table_name)
         
-        soql = sql.sub(/SELECT \* FROM/, "SELECT #{column_names.join(', ')} FROM")
+        soql = sql.sub(/SELECT \* FROM \w+ /, "SELECT #{column_names.join(', ')} FROM #{table_name} ")
         
         # Look for a LIMIT clause
         soql.sub!(/LIMIT 1/, "")
@@ -157,9 +164,10 @@ module ActiveRecord
         @connection.batch_size = @batch_size if @batch_size
         @batch_size = nil
         
-        records = get_result(@connection.query(:queryString => soql), :query).records
+        queryResult = get_result(@connection.query(:queryString => soql), :query)
+        records = queryResult.records
         
-        result = []        
+        result = ResultArray.new(queryResult[:size].to_i)
         return result unless records
         
         records = [ records ] unless records.is_a?(Array)
@@ -186,16 +194,28 @@ module ActiveRecord
       end
       
       def select_one(sql, name = nil) #:nodoc:
-        @connection.batch_size = 1
+        self.batch_size = 1
+        
+        # Check for SELECT COUNT(*) FROM query
+        matchCount = sql.match(/SELECT COUNT\(\*\) FROM (\w+)/)       
+        if matchCount
+          sql = "SELECT id FROM #{matchCount[1].singularize} #{matchCount.post_match}"
+        end
+        
         result = select_all(sql, name)
-        result.nil? ? nil : result.first
+        
+        if matchCount
+          { :count => result.actual_size }
+        else
+          result.nil? ? nil : result.first
+        end
       end
       
       def insert(sql, name = nil, pk = nil, id_value = nil, sequence_name = nil)
         tokens = sql.scan(/[0-9A-Za-z._]+/)
         
         # Convert sql to sobject
-        table_name = tokens[2]
+        table_name = tokens[2].singularize
         entity_name = entity_name_from_table(table_name)
         columns = columns_map(table_name)
         
@@ -219,7 +239,7 @@ module ActiveRecord
       
       def update(sql, name = nil) #:nodoc:
         # Convert sql to sobject
-        table_name = sql.match(/UPDATE (\w+) /)[1]
+        table_name = sql.match(/UPDATE (\w+) /)[1].singularize
         entity_name = entity_name_from_table(table_name)
         columns = columns_map(table_name)
         
@@ -393,7 +413,7 @@ module ActiveRecord
       end
       
       def table_name_from_sql(sql)
-        sql.match(/FROM (\w+) /)[1]
+        sql.match(/FROM (\w+) /)[1].singularize
       end
       
       def column_names(table_name)
