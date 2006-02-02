@@ -152,6 +152,9 @@ module ActiveRecord
         # Look for a LIMIT clause
         soql.sub!(/LIMIT 1/, "")
         
+        # Look for an OFFSET clause
+        soql.sub!(/\d+ OFFSET \d+/, "")
+        
         # Fixup column references to use api names
         columns = columns_map(table_name)
         while soql =~ /@@(\w+)/
