@@ -243,10 +243,10 @@ module ActiveRecord
       def delete(sql, name = nil) 
         # Extract the ids from the IN () clause
         match = sql.match(/IN \(([^\)]*)\)/)
-
+        
         # If the IN clause was not found fall back to WHERE id = 'blah'
         ids = match ? match[1].scan(/\w+/) : [ sql.match(/WHERE id = '([^\']*)'/)[1] ]
-
+        
         ids_element = []        
         ids.each { |id| ids_element << :ids << id }
         
@@ -295,7 +295,7 @@ module ActiveRecord
         
         if metadata.childRelationships
           metadata.childRelationships.each do |relationship|
-          
+            
             if relationship[:childSObject].casecmp(entity_name) == 0
               r = SalesforceRelationship.new(relationship)
               cached_relationships << r
@@ -310,25 +310,34 @@ module ActiveRecord
       
       def configure_active_record(entity_name)
         klass = entity_name.constantize
-        
         klass.table_name = entity_name
         klass.pluralize_table_names = false
         klass.set_inheritance_column nil
         klass.lock_optimistically = false
         klass.record_timestamps = false
-        klass.default_timezone = :utc
+        klass.default_timezone = :utc 
         
         # Create relationships for any reference field
         @relationships_map[entity_name].each do |relationship|
           referenceName = relationship.name
           unless self.respond_to? referenceName.to_sym or relationship.reference_to == "Profile"
+            reference_to = relationship.reference_to
+            
+            begin
+              reference_to.constantize
+            rescue NameError => e
+              # Automatically create a least a stub for the referenced entity
+              referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
+              puts "Created ActiveRecord stub for the referenced entity '#{reference_to}'"
+            end
+            
             one_to_many = relationship.one_to_many
             foreign_key = relationship.foreign_key
             
             if one_to_many
-              klass.has_many referenceName.to_sym, :class_name => relationship.reference_to, :foreign_key => foreign_key, :dependent => false
+              klass.has_many referenceName.to_sym, :class_name => reference_to, :foreign_key => foreign_key, :dependent => false
             else
-              klass.belongs_to referenceName.to_sym, :class_name => relationship.reference_to, :foreign_key => foreign_key, :dependent => false
+              klass.belongs_to referenceName.to_sym, :class_name => reference_to, :foreign_key => foreign_key, :dependent => false
             end
             
             puts "Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}"
