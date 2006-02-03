@@ -24,7 +24,7 @@
 require 'rubygems'
 SPEC = Gem::Specification.new do |s|
   s.name = "activesalesforce"
-  s.version = "0.1.4"
+  s.version = "0.1.5"
   s.author = "Doug Chasman"
   s.email = "dchasman@salesforce.com"
   s.homepage = "http://rubyforge.org/projects/activesfdc/"
@@ -37,7 +37,7 @@ SPEC = Gem::Specification.new do |s|
   end 
    
   s.require_path = "lib"
-  s.autorequire = "active_salesforce"
+  s.autorequire = "activesalesforce"
   s.has_rdoc = false
   s.extra_rdoc_files = ["README"]
   s.add_dependency("rails", ">= 1.0.0")
