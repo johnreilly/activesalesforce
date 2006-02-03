@@ -8,7 +8,6 @@ class AccountTest < Test::Unit::TestCase
     ActiveRecord::Base.allow_concurrency = true
   end
 
-if false  
   def test_create_account
     dutchCo = Account.new 
     dutchCo.name = "DutchCo"
@@ -43,9 +42,9 @@ if false
   
   
   def test_one_to_many_relationship
-    contact = Contact.find_by_id('0033000000B1LKrAAN')
+    cases = Case.find_by_contact_id('0033000000B1LKrAAN')
     
-    cases = contact.cases
+    cases = [ cases ] unless cases.is_a?(Array)
     
     cases.each do |c| 
       puts "Case('#{c.id}', '#{c.subject}')"
@@ -81,7 +80,7 @@ if false
     
     acme.save
   end
-end  
+  
   
   def test_destroy_account
     Account.new
@@ -95,7 +94,6 @@ end
     
     pp account.parent
     
-    puts "Getting CreatedBy"
     createdBy = account.created_by
     createdBy = User.find_by_id(account.created_by_id);
     puts createdBy.email

@@ -232,9 +232,6 @@ module ActiveRecord
         # Extract arrays of values
         values = extract_values(sql)
 
-        pp names
-        pp values
-                
         fields = {}
         names.each_with_index do | name, n | 
           value = values[n]
@@ -336,6 +333,9 @@ module ActiveRecord
             if relationship[:childSObject].casecmp(entity_name) == 0
               r = SalesforceRelationship.new(relationship)
               cached_relationships << r
+            else 
+              puts "   Skipping relationship"
+              pp relationship
             end
           end
         end
