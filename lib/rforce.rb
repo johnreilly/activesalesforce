@@ -240,13 +240,13 @@ module RForce
 
     # decode gzip
     def decode(response)
-      encoding = response.get_fields('Content-Encoding')
+      encoding = response['Content-Encoding']
 
       # return body if no encoding
       if !encoding then return response.body end
 
       # decode gzip
-      case encoding[0].strip
+      case encoding.strip
       when 'gzip':
         begin
           gzr = Zlib::GzipReader.new(StringIO.new(response.body))
