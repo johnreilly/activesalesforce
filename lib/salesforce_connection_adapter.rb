@@ -72,6 +72,8 @@ module ActiveRecord
         super message
         
         @fault = fault
+        
+        puts "\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n"
       end
     end
     
