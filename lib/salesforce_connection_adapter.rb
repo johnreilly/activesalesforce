@@ -256,15 +256,15 @@ module ActiveRecord
         
         names = extract_columns(sql)
         values = extract_values(sql)
-        
+
         fields = {}
         names.each_with_index do | name, n | 
           column = columns[name]
-          fields[column.api_name] = value[n] if not column.readonly or name == "id"
+          value = values[n]
+          fields[column.api_name] = value if not column.readonly and value != "NULL"
         end
-        
-        id = fields["Id"].match(/[a-zA-Z0-9]+/)[0]
-        fields.delete("Id")
+
+        id = sql.match(/WHERE id = @V_'(\w+)'/)[1]
         
         sobject = create_sobject(entity_name, id, fields)
         
@@ -289,7 +289,7 @@ module ActiveRecord
         responseName = (method.to_s + "Response").to_sym
         finalResponse = response[responseName]
         
-        raise SalesforceError.new(response[:Fault].faultstring, response.fault) unless finalResponse
+        raise SalesforceError.new(response[:fault][:faultstring], response.fault) unless finalResponse
         
         result = finalResponse[:result]
       end       
@@ -299,7 +299,7 @@ module ActiveRecord
         result = [ result ] unless result.is_a?(Array)
         
         result.each do |r|
-          raise SalesforceError.new(r[:errors], r[:errors].Message) unless r[:success] == "true"
+            raise SalesforceError.new(r[:errors], r[:errors][:message]) unless r[:success] == "true"
         end
         
         result
