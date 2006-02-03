@@ -76,6 +76,9 @@ module ActiveRecord
     end
     
     class SalesforceAdapter < AbstractAdapter
+      COLUMN_NAME_REGEX = /@C_(\w+)/
+      COLUMN_VALUE_REGEX = /@V_'(([^']|\\')*)'/
+      
       include StringHelper
       
       attr_accessor :batch_size
@@ -91,9 +94,11 @@ module ActiveRecord
         @relationships_map = {}
       end
       
+      
       def adapter_name #:nodoc:
         'Salesforce'
       end
+      
       
       def supports_migrations? #:nodoc:
         false
@@ -103,37 +108,28 @@ module ActiveRecord
       # QUOTING ==================================================
       
       def quote(value, column = nil)
-        if value.kind_of?(String) && column && column.type == :binary
-          s = column.class.string_to_binary(value).unpack("H*")[0]
-          "x'#{s}'"
-        else
-          super
-        end
+        case value
+          when NilClass              then quoted_value = "'NULL'"
+          when TrueClass             then quoted_value = "'TRUE'"
+          when FalseClass            then quoted_value = "'FALSE'"
+          else                       quoted_value = super(value, column)
+        end      
+        
+        "@V_#{quoted_value}"
       end
+      
       
       def quote_column_name(name) #:nodoc:
         # Mark the column name to make it easier to find later
-        "@@#{name}"
+        "@C_#{name}"
       end
-      
-      def quote_string(string) #:nodoc:
-        string
-      end
-      
-      def quoted_true
-        "TRUE"
-      end
-      
-      def quoted_false
-        "FALSE"
-      end
-      
       
       # CONNECTION MANAGEMENT ====================================
       
       def active?
         true
       end
+      
       
       def reconnect!
         connect
@@ -157,10 +153,13 @@ module ActiveRecord
         
         # Fixup column references to use api names
         columns = columns_map(table_name)
-        while soql =~ /@@(\w+)/
+        while soql =~ COLUMN_NAME_REGEX
           column = columns[$~[1]]
           soql = $~.pre_match + column.api_name + $~.post_match
         end
+        
+        # Remove column value prefix
+        soql.gsub!(/@V_/, "")
         
         log(soql, name)
         
@@ -196,6 +195,7 @@ module ActiveRecord
         result
       end
       
+      
       def select_one(sql, name = nil) #:nodoc:
         self.batch_size = 1
         
@@ -214,21 +214,26 @@ module ActiveRecord
         end
       end
       
+      
       def insert(sql, name = nil, pk = nil, id_value = nil, sequence_name = nil)
-        tokens = sql.scan(/[0-9A-Za-z._]+/)
+        log(sql, name)
         
         # Convert sql to sobject
-        table_name = tokens[2].singularize
+        table_name = sql.match(/INSERT INTO (\w+) /)[1].singularize
         entity_name = entity_name_from_table(table_name)
         columns = columns_map(table_name)
         
-        # Extract array of [column_name, value] pairs
-        names = tokens[3 .. tokens.length / 2]
-        values = tokens[(tokens.length / 2) + 2 ..  tokens.length]
+        # Extract array of column names
+        names = extract_columns(sql)
         
+        # Extract arrays of values
+        values = extract_values(sql)
+
+        pp names
+        pp values
+                
         fields = {}
-        names.length.times do | n | 
-          name = names[n]
+        names.each_with_index do | name, n | 
           value = values[n]
           column = columns[name]
           
@@ -240,19 +245,22 @@ module ActiveRecord
         check_result(get_result(@connection.create(:sObjects => sobject), :create))[0][:id]
       end      
       
+      
       def update(sql, name = nil) #:nodoc:
+        log(sql, name)
+        
         # Convert sql to sobject
         table_name = sql.match(/UPDATE (\w+) /)[1].singularize
         entity_name = entity_name_from_table(table_name)
         columns = columns_map(table_name)
         
-        # Extract array of [column_name, value] pairs
-        raw_fields = sql.scan(/(\w+) = '([^']*)'/)
+        names = extract_columns(sql)
+        values = extract_values(sql)
         
         fields = {}
-        raw_fields.each do | name, value | 
+        names.each_with_index do | name, n | 
           column = columns[name]
-          fields[column.api_name] = value if not column.readonly or name == "id"
+          fields[column.api_name] = value[n] if not column.readonly or name == "id"
         end
         
         id = fields["Id"].match(/[a-zA-Z0-9]+/)[0]
@@ -263,18 +271,19 @@ module ActiveRecord
         check_result(get_result(@connection.update(:sObjects => sobject), :update))
       end
       
+      
       def delete(sql, name = nil) 
-        # Extract the ids from the IN () clause
-        match = sql.match(/IN \(([^\)]*)\)/)
+        log(sql, name)
         
-        # If the IN clause was not found fall back to WHERE id = 'blah'
-        ids = match ? match[1].scan(/\w+/) : [ sql.match(/WHERE id = '([^\']*)'/)[1] ]
+        # Extract the ids
+        ids = extract_values(sql)
         
         ids_element = []        
         ids.each { |id| ids_element << :ids << id }
         
         check_result(get_result(@connection.delete(ids_element), :delete))
       end
+      
       
       def get_result(response, method)
         responseName = (method.to_s + "Response").to_sym
@@ -283,7 +292,8 @@ module ActiveRecord
         raise SalesforceError.new(response[:Fault].faultstring, response.fault) unless finalResponse
         
         result = finalResponse[:result]
-      end        
+      end       
+      
       
       def check_result(result)
         result = [ result ] unless result.is_a?(Array)
@@ -294,6 +304,7 @@ module ActiveRecord
         
         result
       end
+      
       
       def columns(table_name, name = nil)
         entity_name = entity_name_from_table(table_name)
@@ -330,6 +341,7 @@ module ActiveRecord
         
         cached_columns
       end
+      
       
       def configure_active_record(entity_name)
         klass = entity_name.constantize
@@ -370,6 +382,7 @@ module ActiveRecord
         
       end
       
+      
       def relationships(table_name)
         entity_name = entity_name_from_table(table_name)
         
@@ -382,6 +395,7 @@ module ActiveRecord
         
         @relationships_map[entity_name]
       end
+      
       
       def columns_map(table_name, name = nil)
         entity_name = entity_name_from_table(table_name)
@@ -396,6 +410,7 @@ module ActiveRecord
         
         columns_map
       end
+      
       
       def entity_name_from_table(table_name)
         return table_name.singularize.camelize
@@ -415,17 +430,31 @@ module ActiveRecord
         sobj
       end
       
+      
       def table_name_from_sql(sql)
         sql.match(/FROM (\w+) /)[1].singularize
       end
+      
       
       def column_names(table_name)
         columns(table_name).map { |column| column.name }
       end
       
+      
       def api_column_names(table_name)
         columns(table_name).map { |column| column.api_name }
       end
+      
+      
+      def extract_columns(sql)
+        sql.scan(COLUMN_NAME_REGEX).flatten
+      end
+      
+      
+      def extract_values(sql)
+        sql.scan(COLUMN_VALUE_REGEX).map { |v| v[0] }
+      end
+      
     end
     
   end
