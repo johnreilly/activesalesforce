@@ -68,12 +68,13 @@ module ActiveRecord
     class SalesforceError < RuntimeError
       attr :fault
       
-      def initialize(message, fault)
+      def initialize(logger, message, fault)
         super message
         
         @fault = fault
         
         puts "\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n"
+        logger.debug("\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n")
       end
     end
     
@@ -291,7 +292,7 @@ module ActiveRecord
         responseName = (method.to_s + "Response").to_sym
         finalResponse = response[responseName]
         
-        raise SalesforceError.new(response[:fault][:faultstring], response.fault) unless finalResponse
+        raise SalesforceError.new(@logger, response[:fault][:faultstring], response.fault) unless finalResponse
         
         result = finalResponse[:result]
       end       
@@ -301,7 +302,7 @@ module ActiveRecord
         result = [ result ] unless result.is_a?(Array)
         
         result.each do |r|
-            raise SalesforceError.new(r[:errors], r[:errors][:message]) unless r[:success] == "true"
+            raise SalesforceError.new(@logger, r[:errors], r[:errors][:message]) unless r[:success] == "true"
         end
         
         result
