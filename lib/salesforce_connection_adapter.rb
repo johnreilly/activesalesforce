@@ -330,12 +330,13 @@ module ActiveRecord
         if metadata.childRelationships
           metadata.childRelationships.each do |relationship|
             
-            if relationship[:childSObject].casecmp(entity_name) == 0
+            # DCHASMAN TO Figure out the weird and wacky world of relationship metadata
+            if (relationship[:childSObject].casecmp(entity_name) == 0) # or (relationship[:cascadeDelete] == "true")
               r = SalesforceRelationship.new(relationship)
               cached_relationships << r
             else 
-              puts "   Skipping relationship"
-              pp relationship
+              #puts "   Skipping relationship"
+              #pp relationship
             end
           end
         end
