@@ -73,7 +73,7 @@ module ActiveRecord
         
         @fault = fault
         
-        puts "\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n"
+        #puts "\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n"
         logger.debug("\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n")
       end
     end
@@ -289,7 +289,7 @@ module ActiveRecord
         responseName = (method.to_s + "Response").to_sym
         finalResponse = response[responseName]
         
-        raise SalesforceError.new(@logger, response[:fault][:faultstring], response.fault) unless finalResponse
+        raise SalesforceError.new(@logger, response[:Fault][:faultstring], response.fault) unless finalResponse
         
         result = finalResponse[:result]
       end       
@@ -318,7 +318,14 @@ module ActiveRecord
         cached_relationships = []
         @relationships_map[entity_name] = cached_relationships
         
-        metadata = get_result(@connection.describeSObject(:sObjectType => entity_name), :describeSObject)
+        begin
+          metadata = get_result(@connection.describeSObject(:sObjectType => entity_name), :describeSObject)
+          custom = false
+        rescue SalesforceError => e
+          # Fallback and see if we can find a custom object with this name
+          metadata = get_result(@connection.describeSObject(:sObjectType => entity_name + "__c"), :describeSObject)
+          custom = true
+        end
         
         metadata.fields.each do |field| 
           column = SalesforceColumn.new(field) 
@@ -341,15 +348,15 @@ module ActiveRecord
           end
         end
         
-        configure_active_record entity_name
+        configure_active_record entity_name, custom
         
         cached_columns
       end
       
       
-      def configure_active_record(entity_name)
+      def configure_active_record(entity_name, custom)
         klass = entity_name.constantize
-        klass.table_name = entity_name
+        klass.table_name = custom ? entity_name + "__c" : entity_name;
         klass.pluralize_table_names = false
         klass.set_inheritance_column nil
         klass.lock_optimistically = false
