@@ -164,13 +164,18 @@ module ActiveRecord
       # DATABASE STATEMENTS ======================================
       
       def select_all(sql, name = nil) #:nodoc:
-        table_name = table_name_from_sql(sql)
+        log(sql, name)
+        
+        raw_table_name = sql.match(/FROM (\w+) /)[1]
+        table_name = raw_table_name.singularize
         entity_name = entity_name_from_table(table_name)
         entity_def = get_entity_def(entity_name)
 
         column_names = api_column_names(table_name)
         
-        soql = sql.sub(/SELECT \* FROM \w+ /, "SELECT #{column_names.join(', ')} FROM #{entity_def.api_name} ")
+        soql = sql.sub(/SELECT \* FROM /, "SELECT #{column_names.join(', ')} FROM ")
+        
+        soql.sub!(/ FROM \w+ /, " FROM #{entity_def.api_name} ")
         
         # Look for a LIMIT clause
         soql.sub!(/LIMIT 1/, "")
@@ -184,6 +189,9 @@ module ActiveRecord
           column = columns[$~[1]]
           soql = $~.pre_match + column.api_name + $~.post_match
         end
+        
+        # Update table name references
+        soql.sub!(/#{raw_table_name}\./, "#{entity_def.api_name}.")
         
         # Remove column value prefix
         soql.gsub!(/@V_/, "")
@@ -206,14 +214,15 @@ module ActiveRecord
           
           record.each do |name, value| 
             name = column_nameize(name.to_s)
-            
-            # Replace nil element with nil
-            value = nil if value.respond_to?(:xmlattr_nil) and value.xmlattr_nil
-            
-            # Ids are returned in an array with 2 duplicate entries...
-            value = value[0] if name == "id"
-            
-            row[name] = value
+            if name != "type"
+              # Replace nil element with nil
+              value = nil if value.respond_to?(:xmlattr_nil) and value.xmlattr_nil
+              
+              # Ids are returned in an array with 2 duplicate entries...
+              value = value[0] if name == "id"
+              
+              row[name] = value
+            end
           end  
           
           result << row        
@@ -227,12 +236,12 @@ module ActiveRecord
         self.batch_size = 1
         
         # Check for SELECT COUNT(*) FROM query
-        matchCount = sql.match(/SELECT COUNT\(\*\) FROM (\w+)/)       
+        matchCount = sql.match(/SELECT COUNT\(\*\) FROM /)       
         if matchCount
-          entity_name = entity_name_from_table(matchCount[1].singularize)
-          entity_def = get_entity_def(entity_name)
-          sql = "SELECT id FROM #{entity_def.api_name} #{matchCount.post_match}"
+          sql = "SELECT id FROM #{matchCount.post_match}"
         end
+        
+        log(sql, name)
         
         result = select_all(sql, name)
         
@@ -436,7 +445,9 @@ module ActiveRecord
       
       
       def create_sobject(entity_name, id, fields)
-        sobj = [ 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }', entity_name ]
+        entity_def = get_entity_def(entity_name)
+        
+        sobj = [ 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }', entity_def.api_name ]
         sobj << 'Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << id if id    
         
         # now add any changed fields
@@ -446,11 +457,6 @@ module ActiveRecord
         end
         
         sobj
-      end
-      
-      
-      def table_name_from_sql(sql)
-        sql.match(/FROM (\w+) /)[1].singularize
       end
       
       

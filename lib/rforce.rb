@@ -163,6 +163,7 @@ module RForce
       @url = URI.parse(url)
       @server = Net::HTTP.new(@url.host, @url.port)
       @server.use_ssl = @url.scheme == 'https'
+      @server.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
       # run ruby with -d to see SOAP wiredumps.
       @server.set_debug_output $stderr if show_debug
