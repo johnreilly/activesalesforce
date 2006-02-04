@@ -78,23 +78,45 @@ module ActiveRecord
       end
     end
     
+
     class SalesforceAdapter < AbstractAdapter
+    
+      class EntityDefinition
+        attr_reader :name, :columns, :column_name_to_column, :relationships
+        
+        def custom?
+          @custom
+        end
+        
+        def api_name
+          @custom ? name + "__c" : name
+        end
+        
+        def initialize(name, columns, relationships, custom)
+          @name = name
+          @columns = columns
+          @relationships = relationships
+          @custom = custom
+          
+          @column_name_to_column = {}          
+          @columns.each { |column| @column_name_to_column[column.name] = column }
+        end
+      end
+      
       COLUMN_NAME_REGEX = /@C_(\w+)/
       COLUMN_VALUE_REGEX = /@V_'(([^']|\\')*)'/
       
       include StringHelper
       
       attr_accessor :batch_size
+      attr_reader :entity_def_map
       
       def initialize(connection, logger, connection_options, config)
         super(connection, logger)
         
         @connection_options, @config = connection_options, config
         
-        @columns_map = {}
-        @columns_name_map = {}
-        
-        @relationships_map = {}
+        @entity_def_map = {}
       end
       
       
@@ -144,9 +166,11 @@ module ActiveRecord
       def select_all(sql, name = nil) #:nodoc:
         table_name = table_name_from_sql(sql)
         entity_name = entity_name_from_table(table_name)
+        entity_def = get_entity_def(entity_name)
+
         column_names = api_column_names(table_name)
         
-        soql = sql.sub(/SELECT \* FROM \w+ /, "SELECT #{column_names.join(', ')} FROM #{table_name} ")
+        soql = sql.sub(/SELECT \* FROM \w+ /, "SELECT #{column_names.join(', ')} FROM #{entity_def.api_name} ")
         
         # Look for a LIMIT clause
         soql.sub!(/LIMIT 1/, "")
@@ -205,7 +229,9 @@ module ActiveRecord
         # Check for SELECT COUNT(*) FROM query
         matchCount = sql.match(/SELECT COUNT\(\*\) FROM (\w+)/)       
         if matchCount
-          sql = "SELECT id FROM #{matchCount[1].singularize} #{matchCount.post_match}"
+          entity_name = entity_name_from_table(matchCount[1].singularize)
+          entity_def = get_entity_def(entity_name)
+          sql = "SELECT id FROM #{entity_def.api_name} #{matchCount.post_match}"
         end
         
         result = select_all(sql, name)
@@ -306,17 +332,12 @@ module ActiveRecord
       end
       
       
-      def columns(table_name, name = nil)
-        entity_name = entity_name_from_table(table_name)
-        
-        cached_columns = @columns_map[entity_name]
-        return cached_columns if cached_columns
+      def get_entity_def(entity_name)
+        cached_entity_def = @entity_def_map[entity_name]
+        return cached_entity_def if cached_entity_def
         
         cached_columns = []
-        @columns_map[entity_name] = cached_columns
-        
         cached_relationships = []
-        @relationships_map[entity_name] = cached_relationships
         
         begin
           metadata = get_result(@connection.describeSObject(:sObjectType => entity_name), :describeSObject)
@@ -326,7 +347,7 @@ module ActiveRecord
           metadata = get_result(@connection.describeSObject(:sObjectType => entity_name + "__c"), :describeSObject)
           custom = true
         end
-        
+
         metadata.fields.each do |field| 
           column = SalesforceColumn.new(field) 
           cached_columns << column
@@ -347,24 +368,22 @@ module ActiveRecord
             end
           end
         end
+
+        entity_def = EntityDefinition.new(entity_name, cached_columns, cached_relationships, custom)
+        @entity_def_map[entity_name] = entity_def
         
-        configure_active_record entity_name, custom
-        
-        cached_columns
+        configure_active_record entity_def
+                
+        entity_def
       end
       
       
-      def configure_active_record(entity_name, custom)
+      def configure_active_record(entity_def)
+        entity_name = entity_def.name
         klass = entity_name.constantize
-        klass.table_name = custom ? entity_name + "__c" : entity_name;
-        klass.pluralize_table_names = false
-        klass.set_inheritance_column nil
-        klass.lock_optimistically = false
-        klass.record_timestamps = false
-        klass.default_timezone = :utc 
         
         # Create relationships for any reference field
-        @relationships_map[entity_name].each do |relationship|
+        entity_def.relationships.each do |relationship|
           referenceName = relationship.name
           unless self.respond_to? referenceName.to_sym or relationship.reference_to == "Profile"
             reference_to = relationship.reference_to
@@ -394,32 +413,15 @@ module ActiveRecord
       end
       
       
-      def relationships(table_name)
+      def columns(table_name, name = nil)
         entity_name = entity_name_from_table(table_name)
-        
-        cached_relationships = @relationships_map[entity_name]
-        
-        unless cached_relationships
-          # This will load column and relationship metadata        
-          columns(table_name)
-        end
-        
-        @relationships_map[entity_name]
+        get_entity_def(entity_name).columns
       end
-      
+            
       
       def columns_map(table_name, name = nil)
         entity_name = entity_name_from_table(table_name)
-        
-        columns_map = @columns_name_map[entity_name]
-        unless columns_map 
-          columns_map = {}
-          @columns_name_map[entity_name] = columns_map
-          
-          columns(entity_name).each { |column| columns_map[column.name] = column }
-        end
-        
-        columns_map
+        get_entity_def(entity_name).column_name_to_column
       end
       
       
