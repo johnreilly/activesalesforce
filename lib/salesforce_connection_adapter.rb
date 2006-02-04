@@ -382,6 +382,11 @@ module ActiveRecord
         entity_name = entity_def.name
         klass = entity_name.constantize
         
+        klass.set_inheritance_column nil
+        klass.lock_optimistically = false
+        klass.record_timestamps = false
+        klass.default_timezone = :utc 
+        
         # Create relationships for any reference field
         entity_def.relationships.each do |relationship|
           referenceName = relationship.name
