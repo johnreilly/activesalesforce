@@ -18,8 +18,8 @@
 
 4. edit database.yml
 
-		adapter: salesforce
-  		url: <salesforce api server url goes here>
+		adapter: activesalesforce
+  		url: https://www.salesforce.com/services/Soap/u/7.0
   		username: <salesforce user name goes here>
   		password: <salesforce password goes here>
   		

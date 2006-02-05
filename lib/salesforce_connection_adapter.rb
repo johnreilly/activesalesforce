@@ -42,7 +42,7 @@ module ActiveRecord
     @@cache = {}
     
     # Establishes a connection to the database that's used by all Active Record objects.
-    def self.salesforce_connection(config) # :nodoc:
+    def self.activesalesforce_connection(config) # :nodoc:
       puts "Using ActiveSalesforce connection!"
       
       url = config[:url]
