@@ -43,7 +43,7 @@ module ActiveRecord
     
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.salesforce_connection(config) # :nodoc:
-      puts "Using Salesforce connection!"
+      puts "Using ActiveSalesforce connection!"
       
       url = config[:url]
       username = config[:username]
@@ -121,7 +121,7 @@ module ActiveRecord
       
       
       def adapter_name #:nodoc:
-        'Salesforce'
+        'ActiveSalesforce'
       end
       
       
