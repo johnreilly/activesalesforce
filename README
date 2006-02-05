@@ -25,7 +25,6 @@
   		
 5. proceed using standard Rails development techniques!  	
 
-NOTE: To use a custom object append the word Custom to the name of the object instead of __c, e.g. FlipflapOnTheDuckmill would be FlipflapOnTheDuckmillCustom 	
 
 == Description of contents
 
