@@ -45,18 +45,18 @@ module ActiveRecord
     def self.salesforce_connection(config) # :nodoc:
       puts "Using Salesforce connection!"
       
-      config = config.symbolize_keys
-      
-      url = config[:url].to_s
-      username = config[:username].to_s
-      password = config[:password].to_s
+      url = config[:url]
+      username = config[:username]
+      password = config[:password]
       
       connection = @@cache["#{url}.#{username}.#{password}"]
-      
-      if not connection
+      unless connection
+        puts "Establishing new connection for ['#{url}', '#{username}']"
+
         connection = SalesforceLogin.new(url, username, password).proxy 
         @@cache["#{url}.#{username}.#{password}"] = connection
-        puts "Created new connection for [#{url}, #{username}]"
+        
+        puts "Created new connection for ['#{url}', '#{username}']"
       end
       
       ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, username, password], config)
@@ -215,9 +215,6 @@ module ActiveRecord
           record.each do |name, value| 
             name = column_nameize(name.to_s)
             if name != "type"
-              # Replace nil element with nil
-              value = nil if value.respond_to?(:xmlattr_nil) and value.xmlattr_nil
-              
               # Ids are returned in an array with 2 duplicate entries...
               value = value[0] if name == "id"
               
