@@ -167,21 +167,21 @@ module ActiveRecord
         log(sql, name)
         
         # Check for SELECT COUNT(*) FROM query
-        matchCount = sql.match(/SELECT COUNT\(\*\) FROM /i)       
+        matchCount = sql.match(/SELECT COUNT\(\*\) FROM/i)       
         if matchCount
-          sql = "SELECT id FROM #{matchCount.post_match}"
+          sql = "SELECT id FROM#{matchCount.post_match}"
         end
         
-        raw_table_name = sql.match(/FROM (\w+) /i)[1]
+        raw_table_name = sql.match(/FROM (\w+)/i)[1]
         table_name = raw_table_name.singularize
         entity_name = entity_name_from_table(table_name)
         entity_def = get_entity_def(entity_name)
 
         column_names = api_column_names(table_name)
         
-        soql = sql.sub(/SELECT \* FROM /i, "SELECT #{column_names.join(', ')} FROM ")
+        soql = sql.sub(/SELECT \* FROM/i, "SELECT #{column_names.join(', ')} FROM")
         
-        soql.sub!(/ FROM \w+ /i, " FROM #{entity_def.api_name} ")
+        soql.sub!(/ FROM \w+/i, " FROM #{entity_def.api_name}")
         
         # Look for a LIMIT clause
         soql.sub!(/LIMIT 1/i, "")
