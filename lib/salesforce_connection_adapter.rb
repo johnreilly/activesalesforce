@@ -231,7 +231,11 @@ module ActiveRecord
           result << row        
         end
         
-        result
+        if matchCount
+          [{ :count => result.actual_size }]
+        else
+          result
+        end
       end
       
       
@@ -242,11 +246,7 @@ module ActiveRecord
         
         result = select_all(sql, name)
         
-        if matchCount
-          { :count => result.actual_size }
-        else
-          result.nil? ? nil : result.first
-        end
+        result.nil? ? nil : result.first
       end
       
       
