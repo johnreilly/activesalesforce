@@ -202,6 +202,10 @@ module ActiveRecord
         # Remove column value prefix
         soql.gsub!(/@V_/, "")
         
+        # Finally, guarantee that the Id column is always selected
+        selected_columns = soql.match(/SELECT (.+) FROM/i)[1].scan(/\w+/)
+        soql.sub!(/SELECT /i, "SELECT Id, ") unless selected_columns.find { |v| v.casecmp("id") == 0 }
+        
         log(soql, name)
         
         @connection.batch_size = @batch_size if @batch_size
