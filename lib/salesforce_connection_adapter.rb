@@ -167,9 +167,9 @@ module ActiveRecord
         log(sql, name)
         
         # Check for SELECT COUNT(*) FROM query
-        matchCount = sql.match(/SELECT COUNT\(\*\) FROM/i)       
-        if matchCount
-          sql = "SELECT id FROM#{matchCount.post_match}"
+        selectCountMatch = sql.match(/SELECT COUNT\(\*\) FROM/i)       
+        if selectCountMatch
+          soql = "SELECT id FROM#{selectCountMatch.post_match}"
         end
         
         raw_table_name = sql.match(/FROM (\w+)/i)[1]
@@ -179,7 +179,8 @@ module ActiveRecord
 
         column_names = api_column_names(table_name)
         
-        soql = sql.sub(/SELECT \* FROM/i, "SELECT #{column_names.join(', ')} FROM")
+        # Always (unless COUNT*)'ing) select all columns (required for the AR attributes mechanism to work correctly
+        soql = sql.sub(/SELECT .+ FROM/i, "SELECT #{column_names.join(', ')} FROM") unless selectCountMatch
         
         soql.sub!(/ FROM \w+/i, " FROM #{entity_def.api_name}")
         
@@ -201,10 +202,6 @@ module ActiveRecord
         
         # Remove column value prefix
         soql.gsub!(/@V_/, "")
-        
-        # Finally, guarantee that the Id column is always selected
-        selected_columns = soql.match(/SELECT (.+) FROM/i)[1].scan(/\w+/)
-        soql.sub!(/SELECT /i, "SELECT Id, ") unless selected_columns.find { |v| v.casecmp("id") == 0 }
         
         log(soql, name)
         
@@ -235,7 +232,7 @@ module ActiveRecord
           result << row        
         end
         
-        if matchCount
+        if selectCountMatch
           [{ :count => result.actual_size }]
         else
           result
