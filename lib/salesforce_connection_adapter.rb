@@ -222,14 +222,14 @@ module ActiveRecord
           record.each do |name, value| 
             name = column_nameize(name.to_s)
             if name != "type"
-              # Ids are returned in an array with 2 duplicate entries...
-              value = value[0] if name == "id"
+              # Ids may be returned in an array with 2 duplicate entries...
+              value = value[0] if name == "id" && value.is_a?(Array)
               
               row[name] = value
             end
           end  
           
-          result << row        
+          result << row   
         end
         
         if selectCountMatch
