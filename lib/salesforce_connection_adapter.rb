@@ -209,7 +209,7 @@ module ActiveRecord
         @batch_size = nil
         
         queryResult = get_result(@connection.query(:queryString => soql), :query)
-        records = queryResult.records
+        records = queryResult[:records]
         
         result = ResultArray.new(queryResult[:size].to_i)
         return result unless records
