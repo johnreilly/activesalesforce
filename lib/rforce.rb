@@ -120,6 +120,7 @@ module RForce
       return elements
     end
   end
+  
 
   #Implements the connection to the SalesForce server.
   class Binding
@@ -147,17 +148,20 @@ module RForce
 </env:Envelope>
     HERE
 
+
     #Connect to the server securely.
-    def initialize(url)
+    def initialize(url, sid = nil)
       init_server(url)
 
-      @session_id = ''
+      @session_id = sid
       @batch_size = DEFAULT_BATCH_SIZE
     end
+
 
     def show_debug
       $DEBUG or ENV['SHOWSOAP']
     end
+
     
     def init_server(url)
       @url = URI.parse(url)
@@ -168,6 +172,7 @@ module RForce
       # run ruby with -d to see SOAP wiredumps.
       @server.set_debug_output $stderr if show_debug
     end
+
 
     #Log in to the server and remember the session ID
     #returned to us by SalesForce.
@@ -186,6 +191,7 @@ module RForce
 
       response
     end
+    
 
     #Call a method on the remote server.  Arguments can be
     #a hash or (if order is important) an array of alternating
@@ -238,6 +244,7 @@ module RForce
 
       SoapResponse.new(content)
     end
+    
 
     # decode gzip
     def decode(response)
@@ -260,6 +267,7 @@ module RForce
         response.body
       end
     end
+    
 
     # encode gzip
     def encode(request)
@@ -275,6 +283,7 @@ module RForce
       end
     end
 
+
     #Turns method calls on this object into remote SOAP calls.
     def method_missing(method, *args)
       unless args.size == 1 && [Hash, Array].include?(args[0].class)
@@ -283,6 +292,7 @@ module RForce
 
       call_remote method, args[0]
     end
+    
 
     #Expand Ruby data structures into XML.
     def expand(args, xmlns = nil)

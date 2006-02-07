@@ -26,7 +26,7 @@ require_gem 'rails', ">= 1.0.0"
 
 require 'thread'
 
-require File.dirname(__FILE__) + '/salesforce_login'
+require File.dirname(__FILE__) + '/rforce'
 require File.dirname(__FILE__) + '/column_definition'
 
 class ResultArray < Array
@@ -46,20 +46,38 @@ module ActiveRecord
       puts "Using ActiveSalesforce connection!"
       
       url = config[:url]
-      username = config[:username]
-      password = config[:password]
+      sid = config[:sid]
       
-      connection = @@cache["#{url}.#{username}.#{password}"]
-      unless connection
-        puts "Establishing new connection for ['#{url}', '#{username}']"
-
-        connection = SalesforceLogin.new(url, username, password).proxy 
-        @@cache["#{url}.#{username}.#{password}"] = connection
+      if sid
+        connection = @@cache["sid=#{sid}"]
+        unless connection
+          puts "Establishing new connection for [sid='#{sid}']"
+          
+          connection = RForce::Binding.new(url, sid)
+          @@cache["sid=#{sid}"] = connection
+          
+          puts "Created new connection for [sid='#{sid}']"
+        end
         
-        puts "Created new connection for ['#{url}', '#{username}']"
+        ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, sid], config)
+      else
+        username = config[:username]
+        password = config[:password]
+        
+        connection = @@cache["#{url}.#{username}.#{password}"]
+        unless connection
+          puts "Establishing new connection for ['#{url}', '#{username}']"
+          
+          connection = RForce::Binding.new(url)
+          connection.login(username, password).result
+          
+          @@cache["#{url}.#{username}.#{password}"] = connection
+          
+          puts "Created new connection for ['#{url}', '#{username}']"
+        end
+        
+        ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, username, password], config)
       end
-      
-      ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, username, password], config)
     end
   end
   
@@ -72,15 +90,14 @@ module ActiveRecord
         super message
         
         @fault = fault
-        
-        #puts "\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n"
+
         logger.debug("\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n")
       end
     end
     
-
-    class SalesforceAdapter < AbstractAdapter
     
+    class SalesforceAdapter < AbstractAdapter
+      
       class EntityDefinition
         attr_reader :name, :columns, :column_name_to_column, :relationships
         
@@ -134,10 +151,10 @@ module ActiveRecord
       
       def quote(value, column = nil)
         case value
-          when NilClass              then quoted_value = "'NULL'"
-          when TrueClass             then quoted_value = "'TRUE'"
-          when FalseClass            then quoted_value = "'FALSE'"
-          else                       quoted_value = super(value, column)
+        when NilClass              then quoted_value = "'NULL'"
+        when TrueClass             then quoted_value = "'TRUE'"
+        when FalseClass            then quoted_value = "'FALSE'"
+        else                       quoted_value = super(value, column)
         end      
         
         "@V_#{quoted_value}"
@@ -176,7 +193,7 @@ module ActiveRecord
         table_name = raw_table_name.singularize
         entity_name = entity_name_from_table(table_name)
         entity_def = get_entity_def(entity_name)
-
+        
         column_names = api_column_names(table_name)
         
         # Always (unless COUNT*)'ing) select all columns (required for the AR attributes mechanism to work correctly
@@ -264,7 +281,7 @@ module ActiveRecord
         
         # Extract arrays of values
         values = extract_values(sql)
-
+        
         fields = {}
         names.each_with_index do | name, n | 
           value = values[n]
@@ -289,14 +306,14 @@ module ActiveRecord
         
         names = extract_columns(sql)
         values = extract_values(sql)
-
+        
         fields = {}
         names.each_with_index do | name, n | 
           column = columns[name]
           value = values[n]
           fields[column.api_name] = value if not column.readonly and value != "NULL"
         end
-
+        
         id = sql.match(/WHERE id = @V_'(\w+)'/i)[1]
         
         sobject = create_sobject(entity_name, id, fields)
@@ -332,7 +349,7 @@ module ActiveRecord
         result = [ result ] unless result.is_a?(Array)
         
         result.each do |r|
-            raise SalesforceError.new(@logger, r[:errors], r[:errors][:message]) unless r[:success] == "true"
+          raise SalesforceError.new(@logger, r[:errors], r[:errors][:message]) unless r[:success] == "true"
         end
         
         result
@@ -354,7 +371,7 @@ module ActiveRecord
           metadata = get_result(@connection.describeSObject(:sObjectType => entity_name + "__c"), :describeSObject)
           custom = true
         end
-
+        
         metadata.fields.each do |field| 
           column = SalesforceColumn.new(field) 
           cached_columns << column
@@ -375,12 +392,12 @@ module ActiveRecord
             end
           end
         end
-
+        
         entity_def = EntityDefinition.new(entity_name, cached_columns, cached_relationships, custom)
         @entity_def_map[entity_name] = entity_def
         
         configure_active_record entity_def
-                
+        
         entity_def
       end
       
@@ -429,7 +446,7 @@ module ActiveRecord
         entity_name = entity_name_from_table(table_name)
         get_entity_def(entity_name).columns
       end
-            
+      
       
       def columns_map(table_name, name = nil)
         entity_name = entity_name_from_table(table_name)
