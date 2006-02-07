@@ -30,7 +30,6 @@ require 'pp'
 module ActiveRecord  
   module StringHelper
     def column_nameize(s)
-      #s ? s.first.downcase + s[1 .. s.length] : nil
       s.underscore
     end
   end
