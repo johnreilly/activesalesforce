@@ -35,59 +35,37 @@ module ActiveRecord
   end
   
   module ConnectionAdapters
-    class SalesforceColumn < Column
+ 
+     class SalesforceRelationship
       include StringHelper
+    
+      attr_reader :name, :api_name, :foreign_key, :label, :reference_to, :one_to_many, :cascade_delete
       
-      attr_reader :api_name, :label, :readonly, :reference_to
-      
-      def initialize(field)
-        @api_name = field[:name]
-        @name = column_nameize(@api_name)
-        @type = get_type(field[:type])
-        @limit = field[:length]
-        @label = field[:label]
-        
-        @text = [:string, :text].include? @type
-        @number = [:float, :integer].include? @type
-        
-        @readonly = (field[:updateable] != "true" or field[:createable] != "true")
-        
-        if field[:type] =~ /reference/i
+      def initialize(source)
+        if source[:childSObject]
+          relationship = source
+          
+          @api_name = relationship[:relationshipName] ? relationship[:relationshipName] : relationship[:field].chop.chop
+          @one_to_many = relationship[:relationshipName] != nil
+          @cascade_delete = relationship[:cascadeDelete] == "true"
+          @reference_to = relationship[:childSObject]
+          @label = @name
+          @foreign_key = column_nameize(relationship[:field])
+        else
+          field = source
+          
+          @api_name = field[:name].chop.chop
+          @label = field[:label]
+          @readonly = (field[:updateable] != "true" or field[:createable] != "true")          
           @reference_to = field[:referenceTo]
           @one_to_many = false
           @cascade_delete = false
+          @foreign_key = column_nameize(field[:name])
         end
-      end
-      
-      def get_type(field_type)
-          case field_type
-            when /int/i
-              :integer
-            when /currency|percent/i
-              :float
-            when /datetime/i
-              :datetime
-            when /date/i
-              :date
-            when /id|string|textarea/i
-              :text
-            when /phone|fax|email|url/i
-              :string
-            when /blob|binary/i
-              :binary
-            when /boolean/i
-              :boolean
-            when /picklist/i
-              :text
-            when /reference/i
-              :text
-          end
-      end
-      
-      def human_name
-        @label
-      end
 
+        @name = column_nameize(@api_name)
+
+      end
     end
     
   end
