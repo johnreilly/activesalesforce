@@ -28,6 +28,7 @@ require 'thread'
 
 require File.dirname(__FILE__) + '/rforce'
 require File.dirname(__FILE__) + '/column_definition'
+require File.dirname(__FILE__) + '/relationship_definition'
 
 class ResultArray < Array
   attr_reader :actual_size
