@@ -121,7 +121,7 @@ module ActiveRecord
         end
       end
       
-      COLUMN_VALUE_REGEX = /@V_'(([^']|\\')*)'/
+      COLUMN_VALUE_REGEX = /@V_'(([^']|\\')*)'/m
       
       include StringHelper
       
@@ -151,13 +151,13 @@ module ActiveRecord
       
       def quote(value, column = nil)
         case value
-        when NilClass              then quoted_value = "'NULL'"
-        when TrueClass             then quoted_value = "'TRUE'"
-        when FalseClass            then quoted_value = "'FALSE'"
+        when NilClass              then quoted_value = "NULL"
+        when TrueClass             then quoted_value = "TRUE"
+        when FalseClass            then quoted_value = "FALSE"
         else                       quoted_value = super(value, column)
         end      
         
-        "@V_#{quoted_value}"
+        quoted_value
       end
       
       
@@ -299,11 +299,11 @@ module ActiveRecord
         entity_name = entity_name_from_table(table_name)
         columns = columns_map(table_name)
         
-        match = sql.match(/SET\s+(.+)\s+WHERE/mi)
-        assignment_columns = match[1]
-        names = assignment_columns.scan(/(\w+)\s+=/).flatten
+        match = sql.match(/SET\s+(.+)\s+WHERE/mi)[1]
+        names = match.scan(/(\w+)\s+=/).flatten
         
-        values = extract_values(sql)
+        values = match.scan(/=\s+(((NULL))|'(([^']|\\')*)'),*/mi)
+        values.map! { |v| v[3] }
         
         fields = {}
         names.each_with_index do | name, n | 
@@ -312,7 +312,7 @@ module ActiveRecord
           fields[column.api_name] = value if not column.readonly and value != "NULL"
         end
         
-        id = sql.match(/WHERE id = @V_'(\w+)'/i)[1]
+        id = sql.match(/WHERE id = '(\w+)'/i)[1]
         
         sobject = create_sobject(entity_name, id, fields)
         
