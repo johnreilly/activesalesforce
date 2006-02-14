@@ -21,7 +21,7 @@
   SOFTWARE.
 =end
 
-require 'salesforce_connection_adapter'
+require 'asf_adapter'
 
 module ActionView
   module Helpers

@@ -38,10 +38,11 @@ module ActiveRecord
     class SalesforceColumn < Column
       include StringHelper
       
-      attr_reader :api_name, :label, :readonly, :reference_to
+      attr_reader :api_name, :custom, :label, :readonly, :reference_to
       
       def initialize(field)
         @api_name = field[:name]
+        @custom = field[:custom] == "true"
         @name = column_nameize(@api_name)
         @type = get_type(field[:type])
         @limit = field[:length]
@@ -56,6 +57,8 @@ module ActiveRecord
           @reference_to = field[:referenceTo]
           @one_to_many = false
           @cascade_delete = false
+          
+          @name.chop!.chop! << "id__c" if @custom
         end
       end
       

@@ -121,7 +121,6 @@ module ActiveRecord
         end
       end
       
-      COLUMN_NAME_REGEX = /@C_(\w+)/
       COLUMN_VALUE_REGEX = /@V_'(([^']|\\')*)'/
       
       include StringHelper
@@ -161,11 +160,6 @@ module ActiveRecord
         "@V_#{quoted_value}"
       end
       
-      
-      def quote_column_name(name) #:nodoc:
-        # Mark the column name to make it easier to find later
-        "@C_#{name}"
-      end
       
       # CONNECTION MANAGEMENT ====================================
       
@@ -210,7 +204,7 @@ module ActiveRecord
         
         # Fixup column references to use api names
         columns = columns_map(table_name)
-        while soql =~ COLUMN_NAME_REGEX
+        while soql =~ /w+\.(\w+)/
           column = columns[$~[1]]
           soql = $~.pre_match + column.api_name + $~.post_match
         end
@@ -278,7 +272,7 @@ module ActiveRecord
         columns = columns_map(table_name)
         
         # Extract array of column names
-        names = extract_columns(sql)
+        names = sql.match(/\((.+)\) VALUES/i)[1].scan(/\w+/i)
         
         # Extract arrays of values
         values = extract_values(sql)
@@ -305,7 +299,8 @@ module ActiveRecord
         entity_name = entity_name_from_table(table_name)
         columns = columns_map(table_name)
         
-        names = extract_columns(sql)
+        assignment_columns = sql.match(/SET (.+) WHERE/i)[1]
+        names = assignment_columns.scan(/(\w+) =/).flatten
         values = extract_values(sql)
         
         fields = {}
@@ -381,15 +376,10 @@ module ActiveRecord
         end
         
         if metadata.childRelationships
-          metadata.childRelationships.each do |relationship|
-            
-            # DCHASMAN TO Figure out the weird and wacky world of relationship metadata
-            if (relationship[:childSObject].casecmp(entity_name) == 0) # or (relationship[:cascadeDelete] == "true")
+          metadata.childRelationships.each do |relationship|  
+            if relationship[:cascadeDelete] == "true"
               r = SalesforceRelationship.new(relationship)
               cached_relationships << r
-            else 
-              #puts "   Skipping relationship"
-              #pp relationship
             end
           end
         end
@@ -415,7 +405,7 @@ module ActiveRecord
         # Create relationships for any reference field
         entity_def.relationships.each do |relationship|
           referenceName = relationship.name
-          unless self.respond_to? referenceName.to_sym or relationship.reference_to == "Profile"
+          unless self.respond_to? referenceName.to_sym or relationship.reference_to == "Profile" 
             reference_to = relationship.reference_to
             
             begin
@@ -423,6 +413,9 @@ module ActiveRecord
             rescue NameError => e
               # Automatically create a least a stub for the referenced entity
               referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
+              referenced_klass.connection = klass.connection
+              #configure_active_record(get_entity_def(reference_to))
+              
               puts "Created ActiveRecord stub for the referenced entity '#{reference_to}'"
             end
             
@@ -483,11 +476,6 @@ module ActiveRecord
       
       def api_column_names(table_name)
         columns(table_name).map { |column| column.api_name }
-      end
-      
-      
-      def extract_columns(sql)
-        sql.scan(COLUMN_NAME_REGEX).flatten
       end
       
       

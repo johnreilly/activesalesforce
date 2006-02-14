@@ -39,7 +39,7 @@ module ActiveRecord
      class SalesforceRelationship
       include StringHelper
     
-      attr_reader :name, :api_name, :foreign_key, :label, :reference_to, :one_to_many, :cascade_delete
+      attr_reader :name, :api_name, :custom, :foreign_key, :label, :reference_to, :one_to_many
       
       def initialize(source)
         if source[:childSObject]
@@ -47,20 +47,24 @@ module ActiveRecord
           
           @api_name = relationship[:relationshipName] ? relationship[:relationshipName] : relationship[:field].chop.chop
           @one_to_many = relationship[:relationshipName] != nil
-          @cascade_delete = relationship[:cascadeDelete] == "true"
           @reference_to = relationship[:childSObject]
           @label = @name
           @foreign_key = column_nameize(relationship[:field])
+          @custom = false
         else
           field = source
           
-          @api_name = field[:name].chop.chop
+          @api_name = field[:name]
+          @custom = field[:custom] == "true"
+          
+          @api_name = @api_name.chop.chop unless @custom
+          
           @label = field[:label]
           @readonly = (field[:updateable] != "true" or field[:createable] != "true")          
           @reference_to = field[:referenceTo]
           @one_to_many = false
-          @cascade_delete = false
-          @foreign_key = column_nameize(field[:name])
+          #@foreign_key = column_nameize(field[:name])
+          @foreign_key = field[:name]
         end
 
         @name = column_nameize(@api_name)
