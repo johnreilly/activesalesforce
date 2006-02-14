@@ -193,7 +193,7 @@ module ActiveRecord
         
         # Always (unless COUNT*)'ing) select all columns (required for the AR attributes mechanism to work correctly
         soql = sql.sub(/SELECT .+ FROM/i, "SELECT #{column_names.join(', ')} FROM") unless selectCountMatch
-        
+
         soql.sub!(/ FROM \w+/i, " FROM #{entity_def.api_name}")
         
         # Look for a LIMIT clause
@@ -204,8 +204,10 @@ module ActiveRecord
         
         # Fixup column references to use api names
         columns = columns_map(table_name)
-        while soql =~ /w+\.(\w+)/
-          column = columns[$~[1]]
+        while soql =~ /\w+\.(\w+)/i
+          column_name = $~[1]
+          
+          column = columns[column_name]
           soql = $~.pre_match + column.api_name + $~.post_match
         end
         
@@ -288,7 +290,6 @@ module ActiveRecord
         end
         
         sobject = create_sobject(entity_name, nil, fields)
-        pp sobject
           
         check_result(get_result(@connection.create(:sObjects => sobject), :create))[0][:id]
       end      
