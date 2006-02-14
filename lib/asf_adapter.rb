@@ -299,8 +299,10 @@ module ActiveRecord
         entity_name = entity_name_from_table(table_name)
         columns = columns_map(table_name)
         
-        assignment_columns = sql.match(/SET (.+) WHERE/i)[1]
-        names = assignment_columns.scan(/(\w+) =/).flatten
+        match = sql.match(/SET\s+(.+)\s+WHERE/mi)
+        assignment_columns = match[1]
+        names = assignment_columns.scan(/(\w+)\s+=/).flatten
+        
         values = extract_values(sql)
         
         fields = {}
