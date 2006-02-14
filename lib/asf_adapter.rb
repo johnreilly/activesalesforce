@@ -275,7 +275,9 @@ module ActiveRecord
         names = sql.match(/\((.+)\) VALUES/i)[1].scan(/\w+/i)
         
         # Extract arrays of values
-        values = extract_values(sql)
+        values = sql.match(/VALUES\s*\((.+)\)/i)[1]
+        values = values.scan(/(((NULL))|'(([^']|\\')*)'),*/mi)
+        values.map! { |v| v[3] }
         
         fields = {}
         names.each_with_index do | name, n | 
@@ -286,7 +288,8 @@ module ActiveRecord
         end
         
         sobject = create_sobject(entity_name, nil, fields)
-        
+        pp sobject
+          
         check_result(get_result(@connection.create(:sObjects => sobject), :create))[0][:id]
       end      
       
