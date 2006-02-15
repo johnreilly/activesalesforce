@@ -327,11 +327,21 @@ module ActiveRecord
       def delete(sql, name = nil) 
         log(sql, name)
         
-        # Extract the ids
-        ids = extract_values(sql)
+        # Extract the id
+        match = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/mi)
+        
+        if match 
+          ids = [ match[1] ]
+        else
+          # Check for the form id IN ('x', 'y')
+          match = sql.match(/WHERE\s+id\s+IN\s*\((.+)\)/mi)[1]
+          ids = match.scan(/\w+/)
+        end
         
         ids_element = []        
         ids.each { |id| ids_element << :ids << id }
+        
+        pp ids_element
         
         check_result(get_result(@connection.delete(ids_element), :delete))
       end
@@ -482,11 +492,6 @@ module ActiveRecord
       
       def api_column_names(table_name)
         columns(table_name).map { |column| column.api_name }
-      end
-      
-      
-      def extract_values(sql)
-        sql.scan(COLUMN_VALUE_REGEX).map { |v| v[0] }
       end
       
     end
