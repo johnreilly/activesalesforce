@@ -29,7 +29,7 @@ SPEC = Gem::Specification.new do |s|
   s.email = "dchasman@salesforce.com"
   s.homepage = "http://rubyforge.org/projects/activesfdc/"
   s.platform = Gem::Platform::RUBY
-  s.summary = "ActiveSalesforce is an extension to the Rails Framework that allows for the dynamic creation and management of ActiveRecord objects through the use of Salesforce meta-data and uses a Salesforce.com organization as the backing store."
+  s.summary = "ActiveSalesforce (ASF) is a Rails connection adapter that provides direct access to Salesforce.com hosted data and metadata via the ActiveRecord model layer. Objects, fields, and relationships are all auto surfaced as active record attributes and rels."
   candidates = Dir.glob("{bin,docs,lib,test}/**/*")
   
   s.files = candidates.delete_if do |item|
