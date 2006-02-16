@@ -100,7 +100,7 @@ module ActiveRecord
     class SalesforceAdapter < AbstractAdapter
       
       class EntityDefinition
-        attr_reader :name, :columns, :column_name_to_column, :relationships
+        attr_reader :name, :columns, :column_name_to_column, :api_name_to_column, :relationships
         
         def custom?
           @custom
@@ -118,10 +118,11 @@ module ActiveRecord
           
           @column_name_to_column = {}          
           @columns.each { |column| @column_name_to_column[column.name] = column }
+          
+          @api_name_to_column = {}
+          @columns.each { |column| @api_name_to_column[column.api_name] = column }
         end
       end
-      
-      COLUMN_VALUE_REGEX = /@V_'(([^']|\\')*)'/m
       
       include StringHelper
       
@@ -234,12 +235,12 @@ module ActiveRecord
           row = {}
           
           record.each do |name, value| 
-            name = column_nameize(name.to_s)
-            if name != "type"
+            if name != :type
               # Ids may be returned in an array with 2 duplicate entries...
-              value = value[0] if name == "id" && value.is_a?(Array)
-              
-              row[name] = value
+              value = value[0] if name == :Id && value.is_a?(Array)
+
+              attribute_name = entity_def.api_name_to_column[name.to_s].name
+              row[attribute_name] = value
             end
           end  
           
@@ -388,7 +389,7 @@ module ActiveRecord
           column = SalesforceColumn.new(field) 
           cached_columns << column
           
-          cached_relationships << SalesforceRelationship.new(field) if field[:type] =~ /reference/i
+          cached_relationships << SalesforceRelationship.new(field, column) if field[:type] =~ /reference/i
         end
         
         if metadata.childRelationships

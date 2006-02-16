@@ -41,7 +41,7 @@ module ActiveRecord
     
       attr_reader :name, :api_name, :custom, :foreign_key, :label, :reference_to, :one_to_many
       
-      def initialize(source)
+      def initialize(source, column = nil)
         if source[:childSObject]
           relationship = source
           
@@ -63,8 +63,8 @@ module ActiveRecord
           @readonly = (field[:updateable] != "true" or field[:createable] != "true")          
           @reference_to = field[:referenceTo]
           @one_to_many = false
-          #@foreign_key = column_nameize(field[:name])
-          @foreign_key = field[:name]
+          
+          @foreign_key = column.name
         end
 
         @name = column_nameize(@api_name)
