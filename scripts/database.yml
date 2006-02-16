@@ -1,6 +1,0 @@
-development:
-  adapter: salesforce
-  url: http://dchasman-ws1:8001/services/Soap/u/8.0
-  username: dchasman@chasman.com
-  password: 123456
-  
