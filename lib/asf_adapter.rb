@@ -87,7 +87,7 @@ module ActiveRecord
     class SalesforceError < RuntimeError
       attr :fault
       
-      def initialize(logger, message, fault)
+      def initialize(logger, message, fault = nil)
         super message
         
         @fault = fault
@@ -279,15 +279,20 @@ module ActiveRecord
         
         # Extract arrays of values
         values = sql.match(/VALUES\s*\((.+)\)/i)[1]
-        values = values.scan(/(((NULL))|'(([^']|\\')*)'),*/mi)
+        values = values.scan(/(((NULL))|((TRUE))|((FALSE))|'(([^']|\\')*)'),*/mi)
         values.map! { |v| v[3] }
         
         fields = {}
         names.each_with_index do | name, n | 
           value = values[n]
-          column = columns[name]
           
-          fields[column.api_name] = value if not column.readonly and value != "NULL"
+          if value
+            column = columns[name]
+          
+            raise SalesforceError.new(@logger, "Column not found for #{name}!") unless column
+          
+            fields[column.api_name] = value unless column.readonly or value.empty?
+          end
         end
         
         sobject = create_sobject(entity_name, nil, fields)
@@ -305,21 +310,29 @@ module ActiveRecord
         columns = columns_map(table_name)
         
         match = sql.match(/SET\s+(.+)\s+WHERE/mi)[1]
-        names = match.scan(/(\w+)\s+=/).flatten
+        names = match.scan(/(\w+)\s*=\s*('|NULL|TRUE|FALSE)/).flatten
         
-        values = match.scan(/=\s+(((NULL))|'(([^']|\\')*)'),*/mi)
+        values = match.scan(/=\s*(((NULL))|((TRUE))|((FALSE))|'(([^']|\\')*)'),*/mi)
         values.map! { |v| v[3] }
         
         fields = {}
         names.each_with_index do | name, n | 
-          column = columns[name]
           value = values[n]
-          fields[column.api_name] = value if not column.readonly and value != "NULL"
+          
+          if value
+            column = columns[name]    
+            
+            raise SalesforceError.new(@logger, "Column not found for #{name}!") unless column
+                  
+            fields[column.api_name] = value unless column.readonly or value.empty?
+          end
         end
         
-        id = sql.match(/WHERE id = '(\w+)'/i)[1]
+        id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/i)[1]
         
         sobject = create_sobject(entity_name, id, fields)
+        
+        pp sobject
         
         check_result(get_result(@connection.update(:sObjects => sobject), :update))
       end
