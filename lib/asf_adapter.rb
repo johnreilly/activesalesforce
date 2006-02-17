@@ -360,6 +360,7 @@ module ActiveRecord
         fields      
       end
       
+      
       def get_result(response, method)
         responseName = (method.to_s + "Response").to_sym
         finalResponse = response[responseName]
