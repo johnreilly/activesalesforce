@@ -161,7 +161,6 @@ module ActiveRecord
         quoted_value
       end
       
-      
       # CONNECTION MANAGEMENT ====================================
       
       def active?
@@ -286,18 +285,7 @@ module ActiveRecord
 
         values.map! { |v| v[7] }
 
-        fields = {}
-        names.each_with_index do | name, n | 
-          value = values[n]
-          
-          if value
-            column = columns[name]
-          
-            raise SalesforceError.new(@logger, "Column not found for #{name}!") unless column
-          
-            fields[column.api_name] = value unless column.readonly or value.empty?
-          end
-        end
+        fields = get_fields(columns, names, values)
         
         sobject = create_sobject(entity_name, nil, fields)
           
@@ -317,29 +305,14 @@ module ActiveRecord
         names = match.scan(/(\w+)\s*=\s*('|NULL|TRUE|FALSE)/i)
         names.map! { |v| v[0] }
         
-        pp names
-        
         values = match.scan(/=\s*(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
-        values.map! { |v| v[3] }
-        
-        fields = {}
-        names.each_with_index do | name, n | 
-          value = values[n]
-          
-          if value
-            column = columns[name]    
-            
-            raise SalesforceError.new(@logger, "Column not found for #{name}!") unless column
-                  
-            fields[column.api_name] = value unless column.readonly or value.empty?
-          end
-        end
+        values.map! { |v| v[7] }
+
+        fields = get_fields(columns, names, values)
         
         id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/i)[1]
         
         sobject = create_sobject(entity_name, id, fields)
-        
-        pp sobject
         
         check_result(get_result(@connection.update(:sObjects => sobject), :update))
       end
@@ -367,6 +340,25 @@ module ActiveRecord
         check_result(get_result(@connection.delete(ids_element), :delete))
       end
       
+      
+      def get_fields(columns, names, values) 
+        fields = {}
+        names.each_with_index do | name, n | 
+          value = values[n]
+          
+          if value
+            column = columns[name]
+          
+            raise SalesforceError.new(@logger, "Column not found for #{name}!") unless column
+            
+            value.gsub!(/''/, "'") if value.is_a? String
+          
+            fields[column.api_name] = value unless column.readonly or value.empty?
+          end
+        end
+
+        fields      
+      end
       
       def get_result(response, method)
         responseName = (method.to_s + "Response").to_sym
