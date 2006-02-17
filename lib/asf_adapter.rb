@@ -282,7 +282,7 @@ module ActiveRecord
         
         # Extract arrays of values
         values = sql.match(/VALUES\s*\((.+)\)/i)[1]
-        values = values.scan(/(((NULL))|((TRUE))|((FALSE))|'(([^']|\\')*)'),*/mi)
+        values = values.scan(/(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
 
         values.map! { |v| v[7] }
 
@@ -319,7 +319,7 @@ module ActiveRecord
         
         pp names
         
-        values = match.scan(/=\s*(((NULL))|((TRUE))|((FALSE))|'(([^']|\\')*)'),*/mi)
+        values = match.scan(/=\s*(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
         values.map! { |v| v[3] }
         
         fields = {}
