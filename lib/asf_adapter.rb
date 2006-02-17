@@ -215,9 +215,6 @@ module ActiveRecord
         # Update table name references
         soql.sub!(/#{raw_table_name}\./i, "#{entity_def.api_name}.")
         
-        # Remove column value prefix
-        soql.gsub!(/@V_/, "")
-        
         log(soql, name)
         
         @connection.batch_size = @batch_size if @batch_size
@@ -282,9 +279,7 @@ module ActiveRecord
         values = values.scan(/(((NULL))|((TRUE))|((FALSE))|'(([^']|\\')*)'),*/mi)
 
         values.map! { |v| v[7] }
-        
-        pp values
-        
+
         fields = {}
         names.each_with_index do | name, n | 
           value = values[n]
@@ -313,7 +308,10 @@ module ActiveRecord
         columns = columns_map(table_name)
         
         match = sql.match(/SET\s+(.+)\s+WHERE/mi)[1]
-        names = match.scan(/(\w+)\s*=\s*('|NULL|TRUE|FALSE)/).flatten
+        names = match.scan(/(\w+)\s*=\s*('|NULL|TRUE|FALSE)/)
+        names.map! { |v| v[0] }
+        
+        pp names
         
         values = match.scan(/=\s*(((NULL))|((TRUE))|((FALSE))|'(([^']|\\')*)'),*/mi)
         values.map! { |v| v[3] }
