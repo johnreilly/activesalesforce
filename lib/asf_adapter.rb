@@ -236,8 +236,14 @@ module ActiveRecord
               # Ids may be returned in an array with 2 duplicate entries...
               value = value[0] if name == :Id && value.is_a?(Array)
 
-              attribute_name = entity_def.api_name_to_column[name.to_s].name
-              row[attribute_name] = value
+              column = entity_def.api_name_to_column[name.to_s]
+              attribute_name = column.name
+              
+              if column.type == :boolean
+                row[attribute_name] = (value.casecmp("true") == 0)
+              else
+                row[attribute_name] = value
+              end
             end
           end  
           
@@ -308,7 +314,7 @@ module ActiveRecord
         columns = columns_map(table_name)
         
         match = sql.match(/SET\s+(.+)\s+WHERE/mi)[1]
-        names = match.scan(/(\w+)\s*=\s*('|NULL|TRUE|FALSE)/)
+        names = match.scan(/(\w+)\s*=\s*('|NULL|TRUE|FALSE)/i)
         names.map! { |v| v[0] }
         
         pp names
