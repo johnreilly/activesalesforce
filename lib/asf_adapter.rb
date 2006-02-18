@@ -62,6 +62,12 @@ module ActiveRecord
         
         ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, sid], config)
       else
+        # Default to production system using 7.0 API
+        url = "https://www.salesforce.com/services/Soap/u/7.0" unless url
+        
+        # Check to insure that the second to last path component is a 'u' for Partner API
+        raise ConnectionAdapters::SalesforceError.new(logger, "Invalid salesforce server url '#{url}', must be a valid Parter API URL") unless url.match(/\/u\//i)
+        
         username = config[:username]
         password = config[:password]
         
