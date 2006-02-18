@@ -21,16 +21,18 @@
   SOFTWARE.
 =end
 
-require File.dirname(__FILE__) + '/../../lib/rforce'
+require File.dirname(__FILE__) + '/rforce'
 
 
 class MockBindingFactory
-  def initialize(recording)
-    @recording = recording
+  cattr_accessor :recording
+  @@recording = false
+  
+  def initialize
   end
   
   def create(url, sid)
-    MockBinding.new(url, sid, @recording)
+    MockBinding.new(url, sid, recording)
   end
 end
 
