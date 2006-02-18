@@ -1,3 +1,5 @@
+require 'test/unit'
+require 'mock_binding'
 =begin
   ActiveSalesforce
   Copyright (c) 2006 Doug Chasman
@@ -21,47 +23,52 @@
   SOFTWARE.
 =end
 
-require File.dirname(__FILE__) + '/../../lib/rforce'
+
+require 'pp'
 
 
-class MockBinding < RForce::Binding
+class RecordingMockTest < Test::Unit::TestCase
+  attr_reader :connection
+  
+  
+  def recording?
+    @recording
+  end
+  
+  
+  def setup
+    url = 'https://www.salesforce.com/services/Soap/u/7.0'
 
-  #Connect to the server securely.
-  def initialize(url, sid, recording)
-    @recording = recording
-    @recorded_responses = {}
+    @recording = (not File.exists?(recording_file_name))
     
-    super(url, sid) if @recording
-  end
-  
+    @connection = MockBinding.new(url, nil, recording?)
 
-  def dump(f)
-    Marshal.dump(@recorded_responses, f)
-  end
-  
-  
-  def load(f)
-    @recorded_responses = Marshal.load(f)
-  end
-  
-  
-  #Call a method on the remote server.  Arguments can be
-  #a hash or (if order is important) an array of alternating
-  #keys and values.
-  def call_remote(method, args)
-    # Star-out any passwords
-    safe_args = args.inject([]) {|memo, v| memo << (memo.last == :password ? "*" * v.length : v) }
-    key = "#{method}(#{safe_args.join(':')})"
-    
-    if @recording
-      response = super(method, args)
-      @recorded_responses[key] = response
-    else
-      response = @recorded_responses[key]
-      raise "Unable to find matching response for recorded request '#{key}'" unless response
+    unless recording?
+      File.open(recording_file_name) do |f|
+        connection.load(f)
+      end
     end
     
-    response
+    response = connection.login('doug_chasman@yahoo.com', 'Maceymo@11')  
+  end
+  
+  
+  def teardown
+    if recording?
+      File.open(recording_file_name, "w+") do |f|
+        connection.save(f)
+      end
+    end 
+  end
+
+  
+  def test_describe_sobject
+    
+  end 
+  
+  
+  def recording_file_name
+    "#{self.class.name}.#{method_name}.recording"
   end
   
 end

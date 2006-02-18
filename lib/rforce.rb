@@ -150,7 +150,7 @@ module RForce
 
 
     #Connect to the server securely.
-    def initialize(url, sid = nil)
+    def initialize(url, sid)
       init_server(url)
 
       @session_id = sid

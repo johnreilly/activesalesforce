@@ -1,5 +1,3 @@
-require 'test/unit'
-require 'recording_mock'
 =begin
   ActiveSalesforce
   Copyright (c) 2006 Doug Chasman
@@ -23,51 +21,58 @@ require 'recording_mock'
   SOFTWARE.
 =end
 
+require File.dirname(__FILE__) + '/../../lib/rforce'
 
-require 'pp'
 
-
-class RecordingMockTest < Test::Unit::TestCase
-  attr_reader :connection
+class MockBindingFactory
+  def initialize(recording)
+    @recording = recording
+  end
   
+  def create(url, sid)
+    MockBinding.new(url, sid, @recording)
+  end
+end
+
+
+class MockBinding < RForce::Binding
   
-  def recording?
-    @recording
+  #Connect to the server securely.
+  def initialize(url, sid, recording)
+    @recording = recording
+    @recorded_responses = {}
+    
+    super(url, sid) if @recording
   end
   
   
-  def setup
-    url = 'https://www.salesforce.com/services/Soap/u/7.0'
-
-    @recording = (not File.exists?(recording_file_name))
+  def save(f)
+    Marshal.dump(@recorded_responses, f)
+  end
+  
+  
+  def load(f)
+    @recorded_responses = Marshal.load(f)
+  end
+  
+  
+  #Call a method on the remote server.  Arguments can be
+  #a hash or (if order is important) an array of alternating
+  #keys and values.
+  def call_remote(method, args)
+    # Star-out any passwords
+    safe_args = args.inject([]) {|memo, v| memo << (memo.last == :password ? "*" * v.length : v) }
+    key = "#{method}(#{safe_args.join(':')})"
     
-    @connection = MockBinding.new(url, nil, recording?)
-
-    unless recording?
-      File.open(recording_file_name) do |f|
-        connection.load(f)
-      end
+    if @recording
+      response = super(method, args)
+      @recorded_responses[key] = response
+    else
+      response = @recorded_responses[key]
+      raise "Unable to find matching response for recorded request '#{key}'" unless response
     end
     
-    response = connection.login('doug_chasman@yahoo.com', 'Maceymo@11')  
-  end
-  
-  
-  def teardown
-    if recording?
-      File.open(recording_file_name, "w+") do |f|
-        connection.dump(f)
-      end
-    end 
-  end
-
-  
-  def test_login
-  end 
-  
-  
-  def recording_file_name
-    "#{self.class.name}.#{method_name}.recording"
+    response
   end
   
 end
