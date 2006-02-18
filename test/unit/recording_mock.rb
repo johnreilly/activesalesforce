@@ -49,14 +49,16 @@ class MockBinding < RForce::Binding
   #a hash or (if order is important) an array of alternating
   #keys and values.
   def call_remote(method, args)
-    key = "#{method}:#{args}"
+    # Star-out any passwords
+    safe_args = args.inject([]) {|memo, v| memo << (memo.last == :password ? "*" * v.length : v) }
+    key = "#{method}(#{safe_args.join(':')})"
     
     if @recording
       response = super(method, args)
       @recorded_responses[key] = response
     else
       response = @recorded_responses[key]
-      raise "Unable to find matching response for recorded request" unless response
+      raise "Unable to find matching response for recorded request '#{key}'" unless response
     end
     
     response
