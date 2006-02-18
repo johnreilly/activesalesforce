@@ -50,8 +50,6 @@ module ActiveRecord
     
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.activesalesforce_connection(config) # :nodoc:
-      puts "Using ActiveSalesforce connection!"
-      
       url = config[:url]
       sid = config[:sid]
 
@@ -60,6 +58,8 @@ module ActiveRecord
       else 
         binding_factory = DefaultBindingFacory.new
       end
+      
+      puts "\nUsing ActiveSalesforce connection via #{binding_factory.class.name} binding factory\n"
       
       if sid
         connection = @@cache["sid=#{sid}"]
