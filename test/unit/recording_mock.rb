@@ -21,18 +21,20 @@
   SOFTWARE.
 =end
 
-class Binding < RForce::Binding
-  attrib_accessor :recording?
-  
+require File.dirname(__FILE__) + '/../../lib/rforce'
+
+
+class MockBinding < RForce::Binding
+
   #Connect to the server securely.
   def initialize(url, sid, recording)
     @recording = recording
     @recorded_responses = {}
     
-    initialize(url, sid) if recording?
+    super(url, sid) if @recording
   end
   
-  
+
   def dump(f)
     Marshal.dump(@recorded_responses, f)
   end
@@ -47,15 +49,17 @@ class Binding < RForce::Binding
   #a hash or (if order is important) an array of alternating
   #keys and values.
   def call_remote(method, args)
-    key = method.to_s + args.to_s
+    key = "#{method}:#{args}"
     
-    if recording?
+    if @recording
       response = super(method, args)
       @recorded_responses[key] = response
-      response
     else
-      @recorded_responses[key]
+      response = @recorded_responses[key]
+      raise "Unable to find matching response for recorded request" unless response
     end
+    
+    response
   end
   
 end
