@@ -38,7 +38,7 @@ module ActiveRecord
     class SalesforceColumn < Column
       include StringHelper
       
-      attr_reader :api_name, :custom, :label, :readonly, :reference_to
+      attr_reader :api_name, :custom, :label, :createable, :updateable, :reference_to
       
       def initialize(field)
         @api_name = field[:name]
@@ -51,7 +51,8 @@ module ActiveRecord
         @text = [:string, :text].include? @type
         @number = [:float, :integer].include? @type
         
-        @readonly = (field[:updateable] != "true" or field[:createable] != "true")
+        @createable = field[:createable] == "true"
+        @updateable = field[:updateable] == "true"
         
         if field[:type] =~ /reference/i
           @reference_to = field[:referenceTo]

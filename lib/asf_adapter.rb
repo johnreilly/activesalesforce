@@ -100,7 +100,7 @@ module ActiveRecord
         
         @fault = fault
 
-        logger.debug("\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n")
+        logger.debug("\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n") if logger
       end
     end
     
@@ -292,8 +292,8 @@ module ActiveRecord
         values = values.scan(/(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
 
         values.map! { |v| v[7] }
-
-        fields = get_fields(columns, names, values)
+        
+        fields = get_fields(columns, names, values, :createable)
         
         sobject = create_sobject(entity_name, nil, fields)
           
@@ -316,7 +316,7 @@ module ActiveRecord
         values = match.scan(/=\s*(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
         values.map! { |v| v[7] }
 
-        fields = get_fields(columns, names, values)
+        fields = get_fields(columns, names, values, :updateable)
         
         id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/i)[1]
         
@@ -343,13 +343,11 @@ module ActiveRecord
         ids_element = []        
         ids.each { |id| ids_element << :ids << id }
         
-        pp ids_element
-        
         check_result(get_result(@connection.delete(ids_element), :delete))
       end
       
       
-      def get_fields(columns, names, values) 
+      def get_fields(columns, names, values, access_check) 
         fields = {}
         names.each_with_index do | name, n | 
           value = values[n]
@@ -361,7 +359,8 @@ module ActiveRecord
             
             value.gsub!(/''/, "'") if value.is_a? String
           
-            fields[column.api_name] = value unless column.readonly or value.empty?
+            include_field = ((not value.empty?) and column.send(access_check))            
+            fields[column.api_name] = value if include_field
           end
         end
 

@@ -30,6 +30,8 @@ module Asf
         contact.last_name = 'DutchTestLastName'
         contact.home_phone = '555-555-1212'
         contact.save   
+        
+        contact.reload
       end
       
       def teardown
@@ -37,7 +39,6 @@ module Asf
         
         super
       end
-      
       
       def test_count_contacts
         assert_equal 27, Contact.count
@@ -70,6 +71,22 @@ module Asf
         Contact.content_columns.each { |column| contact.send(column.name) }
       end
             
+      def test_get_created_by_from_contact
+        user = contact.created_by
+        assert_equal contact.created_by_id, user.id
+      end
+     
+      def test_add_notes_to_contact
+        n1 = Note.new(:title => "My Title", :body => "My Body")
+        n2 = Note.new(:title => "My Title 2", :body => "My Body 2")
+        
+        contact.notes << n1
+        contact.notes << n2
+        
+        n1.save
+        n2.save
+      end
+                  
     end
 
   end

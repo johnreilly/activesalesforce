@@ -60,7 +60,6 @@ module ActiveRecord
           @api_name = @api_name.chop.chop unless @custom
           
           @label = field[:label]
-          @readonly = (field[:updateable] != "true" or field[:createable] != "true")          
           @reference_to = field[:referenceTo]
           @one_to_many = false
           

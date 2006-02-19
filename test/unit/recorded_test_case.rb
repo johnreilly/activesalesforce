@@ -25,7 +25,7 @@ require 'mock_binding'
   SOFTWARE.
 =end
 
-
+require 'set'
 require 'pp'
 
 module Asf
@@ -47,10 +47,27 @@ module Asf
       end
       
       
+      def initialize(test_method_name)
+        super(test_method_name)
+        
+        @force_recording = Set.new
+      end
+      
+      
+      def force_recording(method)
+        @force_recording.add(method)
+      end
+
+
+      def unforce_recording(method)
+        @force_recording.delete(method)
+      end
+      
+      
       def setup
         url = 'https://www.salesforce.com/services/Soap/u/7.0'
     
-        @recording = ((not File.exists?(recording_file_name)) or config[:recording])
+        @recording = ((not File.exists?(recording_file_name)) or config[:recording]) or @force_recording.include?(method_name)
         
         @connection = MockBinding.new(url, nil, recording?)
             
