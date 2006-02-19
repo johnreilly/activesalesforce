@@ -26,8 +26,8 @@ module Asf
           :password => config[:password], :binding => connection)
           
         @contact = Contact.new
-        contact.first_name = 'DutchTest'
-        contact.last_name = 'Test'
+        contact.first_name = 'DutchTestFirstName'
+        contact.last_name = 'DutchTestLastName'
         contact.home_phone = '555-555-1212'
         contact.save   
       end
@@ -62,7 +62,7 @@ module Asf
       end
 
       def test_find_a_contact_by_first_name
-        c = Contact.find_by_first_name('DutchTest')
+        c = Contact.find_by_first_name('DutchTestFirstName')
         assert_equal contact.id, c.id
       end
       

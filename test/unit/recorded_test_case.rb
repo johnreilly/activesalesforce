@@ -50,9 +50,7 @@ module Asf
       def setup
         url = 'https://www.salesforce.com/services/Soap/u/7.0'
     
-        @recording = (not File.exists?(recording_file_name))
-        
-        pp recording_file_name
+        @recording = ((not File.exists?(recording_file_name)) or config[:recording])
         
         @connection = MockBinding.new(url, nil, recording?)
             
