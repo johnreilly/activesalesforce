@@ -83,7 +83,7 @@ module Asf
       
       def teardown
         if recording?
-          File.open(recording_file_name, "w+") do |f|
+          File.open(recording_file_name, "w") do |f|
             connection.save(f)
           end
         end 
