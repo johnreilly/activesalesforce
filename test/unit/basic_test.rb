@@ -26,7 +26,7 @@ module Asf
           :password => config[:password], :binding => connection)
           
         @contact = Contact.new
-        contact.first_name = 'Dutch'
+        contact.first_name = 'DutchTest'
         contact.last_name = 'Test'
         contact.home_phone = '555-555-1212'
         contact.save   
@@ -38,7 +38,11 @@ module Asf
         super
       end
       
-    
+      
+      def test_count_contacts
+        assert_equal 27, Contact.count
+      end
+      
       def test_create_a_contact
         contact.id
       end
@@ -49,7 +53,17 @@ module Asf
 
       def test_find_a_contact
         c = Contact.find(contact.id)
-        assert_equal(contact.id, c.id)
+        assert_equal contact.id, c.id
+      end
+
+      def test_find_a_contact_by_id
+        c = Contact.find_by_id(contact.id)
+        assert_equal contact.id, c.id
+      end
+
+      def test_find_a_contact_by_first_name
+        c = Contact.find_by_first_name('DutchTest')
+        assert_equal contact.id, c.id
       end
       
       def test_read_all_content_columns
