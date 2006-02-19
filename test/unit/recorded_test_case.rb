@@ -1,5 +1,7 @@
 require 'test/unit'
 require 'mock_binding'
+
+ 
 =begin
   ActiveSalesforce
   Copyright (c) 2006 Doug Chasman
@@ -30,11 +32,18 @@ module Asf
   module UnitTests
 
     module RecordedTestCase
+      @@config = YAML.load_file(File.dirname(__FILE__) + '/config.yml').symbolize_keys
+    
       attr_reader :connection
       
       
       def recording?
         @recording
+      end
+      
+      
+      def config
+        @@config
       end
       
       
@@ -53,7 +62,7 @@ module Asf
           end
         end
         
-        response = connection.login('doug_chasman@yahoo.com', 'Maceymo@11')  
+        response = connection.login(config[:username], config[:password])  
       end
       
       

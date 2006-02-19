@@ -22,8 +22,8 @@ module Asf
       def setup
         super
 
-        Contact.establish_connection(:adapter => 'activesalesforce', :username => 'doug_chasman@yahoo.com', 
-          :password => 'Maceymo@11', :binding => connection)
+        Contact.establish_connection(:adapter => 'activesalesforce', :username => config[:username], 
+          :password => config[:password], :binding => connection)
           
         @contact = Contact.new
         contact.first_name = 'Dutch'
@@ -33,10 +33,11 @@ module Asf
       end
       
       def teardown
-        contact.destroy
+        contact.destroy if contact
         
         super
       end
+      
     
       def test_create_a_contact
         contact.id
@@ -46,14 +47,15 @@ module Asf
         contact.id
       end
 
+      def test_find_a_contact
+        c = Contact.find(contact.id)
+        assert_equal(contact.id, c.id)
+      end
+      
       def test_read_all_content_columns
         Contact.content_columns.each { |column| contact.send(column.name) }
       end
             
-      def test_read_nonexistent_attribute
-        contact.first_name
-      end
-    
     end
 
   end
