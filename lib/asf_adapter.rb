@@ -445,6 +445,9 @@ module ActiveRecord
           unless self.respond_to? referenceName.to_sym or relationship.reference_to == "Profile" 
             reference_to = relationship.reference_to
             
+            # DCHASMAN TODO Figure out how to handle polymorphic refs (e.g. Note.parent can refer to 
+            # Account, Contact, Opportunity, Contract, Asset, Product2, <CustomObject1> ... <CustomObject(n)>
+            
             begin
               reference_to.constantize
             rescue NameError => e
