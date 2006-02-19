@@ -21,6 +21,7 @@
   SOFTWARE.
 =end
 
+require 'yaml'
 require File.dirname(__FILE__) + '/rforce'
 
 
@@ -36,12 +37,12 @@ class MockBinding < RForce::Binding
   
   
   def save(f)
-    Marshal.dump(@recorded_responses, f)
+    YAML.dump(@recorded_responses, f)
   end
   
   
   def load(f)
-    @recorded_responses = Marshal.load(f)
+    @recorded_responses = YAML.load(f)
   end
   
   
@@ -58,6 +59,8 @@ class MockBinding < RForce::Binding
       @recorded_responses[key] = response
     else
       response = @recorded_responses[key]
+      
+      pp response
       raise "Unable to find matching response for recorded request '#{key}'" unless response
     end
     

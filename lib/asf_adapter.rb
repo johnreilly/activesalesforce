@@ -405,15 +405,15 @@ module ActiveRecord
           custom = true
         end
         
-        metadata.fields.each do |field| 
+        metadata[:fields].each do |field| 
           column = SalesforceColumn.new(field) 
           cached_columns << column
           
           cached_relationships << SalesforceRelationship.new(field, column) if field[:type] =~ /reference/i
         end
         
-        if metadata.childRelationships
-          metadata.childRelationships.each do |relationship|  
+        if metadata[:childRelationships]
+          metadata[:childRelationships].each do |relationship|  
             if relationship[:cascadeDelete] == "true"
               r = SalesforceRelationship.new(relationship)
               cached_relationships << r
@@ -454,6 +454,7 @@ module ActiveRecord
               # Automatically create a least a stub for the referenced entity
               referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
               referenced_klass.connection = klass.connection
+              
               #configure_active_record(get_entity_def(reference_to))
               
               puts "Created ActiveRecord stub for the referenced entity '#{reference_to}'"

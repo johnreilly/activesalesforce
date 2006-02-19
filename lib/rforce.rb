@@ -184,10 +184,10 @@ module RForce
 
       raise "Incorrect user name / password [#{response.fault}]" unless response.loginResponse
 
-      result = response.loginResponse.result
-      @session_id = result.sessionId
+      result = response[:loginResponse][:result]
+      @session_id = result[:sessionId]
 
-      init_server(result.serverUrl)
+      init_server(result[:serverUrl])
 
       response
     end
