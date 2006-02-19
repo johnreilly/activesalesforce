@@ -42,31 +42,21 @@ module ActiveRecord
   class Base   
     @@cache = {}
     
-    class DefaultBindingFacory
-      def create(url, sid)
-        RForce::Binding.new(url, sid)
-      end
-    end
-    
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.activesalesforce_connection(config) # :nodoc:
       url = config[:url]
       sid = config[:sid]
 
-      if config[:binding_factory]
-        binding_factory = config[:binding_factory].constantize.new
-      else 
-        binding_factory = DefaultBindingFacory.new
-      end
-      
-      puts "\nUsing ActiveSalesforce connection via #{binding_factory.class.name} binding factory\n"
+      connection = config[:binding] if config[:binding]
+        
+      puts "\nUsing ActiveSalesforce connection\n"
       
       if sid
-        connection = @@cache["sid=#{sid}"]
+        connection = @@cache["sid=#{sid}"] unless connection
         unless connection
           puts "Establishing new connection for [sid='#{sid}']"
           
-          connection = binding_factory.create(url, sid)
+          connection = RForce::Binding.new(url, sid)
           @@cache["sid=#{sid}"] = connection
           
           puts "Created new connection for [sid='#{sid}']"
@@ -83,11 +73,11 @@ module ActiveRecord
         username = config[:username]
         password = config[:password]
         
-        connection = @@cache["#{url}.#{username}.#{password}"]
+        connection = @@cache["#{url}.#{username}.#{password}"] unless connection
         unless connection
           puts "Establishing new connection for ['#{url}', '#{username}']"
           
-          connection = binding_factory.create(url, nil)
+          connection = RForce::Binding.new(url, sid)
           connection.login(username, password).result
           
           @@cache["#{url}.#{username}.#{password}"] = connection

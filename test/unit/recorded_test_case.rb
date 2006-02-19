@@ -26,49 +26,51 @@ require 'mock_binding'
 
 require 'pp'
 
+module Asf
+  module UnitTests
 
-class RecordingMockTest < Test::Unit::TestCase
-  attr_reader :connection
-  
-  
-  def recording?
-    @recording
-  end
-  
-  
-  def setup
-    url = 'https://www.salesforce.com/services/Soap/u/7.0'
-
-    @recording = (not File.exists?(recording_file_name))
-    
-    @connection = MockBinding.new(url, nil, recording?)
-
-    unless recording?
-      File.open(recording_file_name) do |f|
-        connection.load(f)
+    module RecordedTestCase
+      attr_reader :connection
+      
+      
+      def recording?
+        @recording
       end
+      
+      
+      def setup
+        url = 'https://www.salesforce.com/services/Soap/u/7.0'
+    
+        @recording = (not File.exists?(recording_file_name))
+        
+        pp recording_file_name
+        
+        @connection = MockBinding.new(url, nil, recording?)
+            
+        unless recording?
+          File.open(recording_file_name) do |f|
+            connection.load(f)
+          end
+        end
+        
+        response = connection.login('doug_chasman@yahoo.com', 'Maceymo@11')  
+      end
+      
+      
+      def teardown
+        if recording?
+          File.open(recording_file_name, "w+") do |f|
+            connection.save(f)
+          end
+        end 
+      end
+    
+      
+      def recording_file_name
+        File.dirname(__FILE__) + "/recorded_results/#{self.class.name.gsub('::', '')}.#{method_name}.recording"
+      end
+      
     end
     
-    response = connection.login('doug_chasman@yahoo.com', 'Maceymo@11')  
   end
-  
-  
-  def teardown
-    if recording?
-      File.open(recording_file_name, "w+") do |f|
-        connection.save(f)
-      end
-    end 
-  end
-
-  
-  def test_describe_sobject
-    
-  end 
-  
-  
-  def recording_file_name
-    "#{self.class.name}.#{method_name}.recording"
-  end
-  
 end

@@ -24,19 +24,6 @@
 require File.dirname(__FILE__) + '/rforce'
 
 
-class MockBindingFactory
-  cattr_accessor :recording
-  @@recording = false
-  
-  def initialize
-  end
-  
-  def create(url, sid)
-    MockBinding.new(url, sid, recording)
-  end
-end
-
-
 class MockBinding < RForce::Binding
   
   #Connect to the server securely.
