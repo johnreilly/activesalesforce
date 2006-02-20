@@ -45,12 +45,28 @@ module ActiveRecord
         if source[:childSObject]
           relationship = source
           
-          @api_name = relationship[:relationshipName] ? relationship[:relationshipName] : relationship[:field].chop.chop
-          @one_to_many = relationship[:relationshipName] != nil
+          if relationship[:relationshipName]
+            @api_name = relationship[:relationshipName]
+            @one_to_many = true
+            @label = @api_name
+            @name = column_nameize(@api_name)
+            @custom = false
+          else 
+            @api_name = relationship[:field]
+            @one_to_many = relationship[:cascadeDelete] == "true"
+            @label = relationship[:childSObject].pluralize
+            @custom = relationship[:childSObject].match(/__c$/)
+
+            name = relationship[:childSObject]
+            name.chop!.chop!.chop! if custom
+            
+            @name = column_nameize(name.pluralize)
+          end
+          
           @reference_to = relationship[:childSObject]
-          @label = @name
+          
           @foreign_key = column_nameize(relationship[:field])
-          @custom = false
+          @foreign_key.chop!.chop! << "id__c" if @foreign_key.match(/__c$/)
         else
           field = source
           
@@ -64,10 +80,8 @@ module ActiveRecord
           @one_to_many = false
           
           @foreign_key = column.name
+          @name = column_nameize(@api_name)
         end
-
-        @name = column_nameize(@api_name)
-
       end
     end
     
