@@ -399,8 +399,6 @@ module ActiveRecord
         cached_entity_def = @entity_def_map[entity_name]
         return cached_entity_def if cached_entity_def
         
-        puts "get_entity_def('#{entity_name}') using #{@connection}"
-                
         cached_columns = []
         cached_relationships = []
         
@@ -420,8 +418,11 @@ module ActiveRecord
           cached_relationships << SalesforceRelationship.new(field, column) if field[:type] =~ /reference/i
         end
         
-        if metadata[:childRelationships]
-          metadata[:childRelationships].each do |relationship|  
+        relationships = metadata[:childRelationships]
+        if relationships
+          relationships = [ relationships ] unless relationships.is_a? Array
+          
+          relationships.each do |relationship|  
             if relationship[:cascadeDelete] == "true"
               r = SalesforceRelationship.new(relationship)
               cached_relationships << r
@@ -452,31 +453,40 @@ module ActiveRecord
           referenceName = relationship.name
           unless self.respond_to? referenceName.to_sym or relationship.reference_to == "Profile" 
             reference_to = relationship.reference_to
+            one_to_many = relationship.one_to_many
+            foreign_key = relationship.foreign_key
             
             # DCHASMAN TODO Figure out how to handle polymorphic refs (e.g. Note.parent can refer to 
             # Account, Contact, Opportunity, Contract, Asset, Product2, <CustomObject1> ... <CustomObject(n)>
+            if reference_to.is_a? Array
+              puts "   Skipping unsupported polymophic one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to [#{relationship.reference_to.join(', ')}] using #{foreign_key}"
+              next 
+            end
+
+            # Handle references to custom objects
+            if reference_to.match(/__c$/)
+              reference_to.chop!.chop!.chop!
+              reference_to.capitalize!
+            end
             
             begin
               referenced_klass = reference_to.constantize
             rescue NameError => e
               # Automatically create a least a stub for the referenced entity
+              puts "   Creating ActiveRecord stub for the referenced entity '#{reference_to}'"
+                          
               referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
               
               # configure_active_record(get_entity_def(reference_to))
-              
-              # puts "Created ActiveRecord stub for the referenced entity '#{reference_to}'"
             end
 
-            one_to_many = relationship.one_to_many
-            foreign_key = relationship.foreign_key
-            
             if one_to_many
               klass.has_many referenceName.to_sym, :class_name => reference_to, :foreign_key => foreign_key, :dependent => false
             else
               klass.belongs_to referenceName.to_sym, :class_name => reference_to, :foreign_key => foreign_key, :dependent => false
             end
             
-            #puts "Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}"
+            puts "   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}"
             
           end
         end

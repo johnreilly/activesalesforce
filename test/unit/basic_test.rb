@@ -78,8 +78,6 @@ module Asf
       end
             
       def test_get_created_by_from_contact
-        #pp contact.connection
-        
         user = contact.created_by
         assert_equal contact.created_by_id, user.id
       end
