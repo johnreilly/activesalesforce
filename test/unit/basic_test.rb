@@ -10,6 +10,8 @@ require 'pp'
 class Contact < ActiveRecord::Base
 end
 
+class Department < ActiveRecord::Base
+end
 
 
 module Asf
@@ -23,7 +25,7 @@ module Asf
       def initialize(test_method_name)
         super(test_method_name)
         
-        #force_recording :test_get_created_by_from_contact
+        #force_recording :test_master_detail
       end
       
       def setup
@@ -47,7 +49,7 @@ module Asf
       end
       
       def test_count_contacts
-        assert_equal 27, Contact.count
+        assert Contact.count > 0
       end
       
       def test_create_a_contact
@@ -91,6 +93,18 @@ module Asf
         
         n1.save
         n2.save
+      end
+      
+      def test_master_detail
+        department = Department.new(:department_description__c => 'DutchTestDepartment description')
+        department.save
+        department.reload
+        
+        job = Job.new(:name => "DutchJob")
+        
+        department.jobs__c << job
+        
+        department.destroy
       end
                   
     end

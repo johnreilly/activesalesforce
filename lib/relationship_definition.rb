@@ -58,15 +58,16 @@ module ActiveRecord
             @custom = relationship[:childSObject].match(/__c$/)
 
             name = relationship[:childSObject]
-            name.chop!.chop!.chop! if custom
+            name = name.chop.chop.chop if custom
             
             @name = column_nameize(name.pluralize)
+            @name = @name + "__c" if custom
           end
           
           @reference_to = relationship[:childSObject]
           
           @foreign_key = column_nameize(relationship[:field])
-          @foreign_key.chop!.chop! << "id__c" if @foreign_key.match(/__c$/)
+          @foreign_key = @foreign_key.chop.chop << "id__c" if @foreign_key.match(/__c$/)
         else
           field = source
           

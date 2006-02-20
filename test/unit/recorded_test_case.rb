@@ -82,10 +82,6 @@ module Asf
           File.open(recording_file_name) do |f|
             puts "Opening recorded binding #{recording_file_name}"
             connection.load(f)
-            
-            connection.recorded_responses.each do |request, reponse|
-              pp request
-            end
           end
         end
         
@@ -99,10 +95,6 @@ module Asf
 
           File.open(recording_file_name, "w") do |f|
             connection.save(f)
-          end
-
-          connection.recorded_responses.each do |request, reponse|
-            pp request
           end
         end 
       end

@@ -52,7 +52,7 @@ class MockBinding < RForce::Binding
   #keys and values.
   def call_remote(method, args)
     # Star-out any passwords
-    safe_args = args.inject([]) {|memo, v| memo << (memo.last == :password ? "*" * v.length : v) }
+    safe_args = args.inject([]) {|memo, v| memo << ((memo.last == :username or memo.last == :password) ? "*" * v.length : v) }
     key = "#{method}(#{safe_args.join(':')})"
     
     if @recording

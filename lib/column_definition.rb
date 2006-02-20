@@ -59,7 +59,7 @@ module ActiveRecord
           @one_to_many = false
           @cascade_delete = false
           
-          @name.chop!.chop! << "id__c" if @custom
+          @name = @name.chop.chop << "id__c" if @custom
         end
       end
       

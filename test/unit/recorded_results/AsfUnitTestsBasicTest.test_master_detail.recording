@@ -1,26 +1,51 @@
 --- 
-delete(ids:0033000000GNq1xAAD): !ruby/object:RForce::SoapResponse 
+delete(ids:0033000000GNq8XAAT): !ruby/object:RForce::SoapResponse 
   parsed: 
     :deleteResponse: 
       :result: 
         :errors: 
         :success: "true"
-        :id: 0033000000GNq1xAAD
-describeSObject(sObjectType:Note): !ruby/object:RForce::SoapResponse 
+        :id: 0033000000GNq8XAAT
+delete(ids:a0l300000008rvzAAA): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :deleteResponse: 
+      :result: 
+        :errors: 
+        :success: "true"
+        :id: a0l300000008rvzAAA
+describeSObject(sObjectType:Department): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :Fault: 
+      :detail: 
+        :fault: 
+          :column: "-1"
+          :exceptionCode: INVALID_TYPE
+          :exceptionMessage: sObject type 'Department' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names.
+          :row: "-1"
+      :faultstring: "INVALID_TYPE: sObject type 'Department' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names."
+      :faultcode: sf:INVALID_TYPE
+query(queryString:SELECT Id, Name, CurrencyIsoCode, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, Department__c, Job_Description__c, Position__c FROM Job__c WHERE (Department__c = 'a0l300000008rvzAAA') ): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :queryResponse: 
+      :result: 
+        :size: "0"
+        :done: "true"
+        :queryLocator: 
+describeSObject(sObjectType:Job__c): !ruby/object:RForce::SoapResponse 
   parsed: 
     :describeSObjectResponse: 
       :result: 
-        :keyPrefix: "002"
+        :keyPrefix: a0n
         :searchable: "true"
-        :label: Note
-        :labelPlural: Notes
+        :label: Job
+        :labelPlural: Jobs
         :undeletable: "false"
-        :layoutable: "false"
+        :layoutable: "true"
         :fields: 
         - :scale: "0"
           :byteLength: "18"
           :restrictedPicklist: "false"
-          :label: Note Id
+          :label: Record ID
           :calculated: "false"
           :soapType: tns:ID
           :length: "18"
@@ -37,87 +62,15 @@ describeSObject(sObjectType:Note): !ruby/object:RForce::SoapResponse
           :autoNumber: "false"
           :nameField: "false"
         - :scale: "0"
-          :byteLength: "18"
-          :restrictedPicklist: "false"
-          :label: Parent ID
-          :calculated: "false"
-          :soapType: tns:ID
-          :length: "18"
-          :type: reference
-          :referenceTo: 
-          - Account
-          - Contact
-          - Opportunity
-          - Contract
-          - Asset
-          - Product2
-          - Application__c
-          - Bug__c
-          - Bug2Case__c
-          - Bug2User__c
-          - Campaigner_Results__c
-          - Candidate__c
-          - Channel_Account_Plan__c
-          - Collateral_Request_Object__c
-          - Distribution_Lot__c
-          - ExtendedProducts__c
-          - Inventory__c
-          - MDF__c
-          - MDF_Claim__c
-          - Metrics__c
-          - Objective__c
-          - Position__c
-          - Release__c
-          - Serial_Number__c
-          - DFDT_Discussion__c
-          - DFDT_Linker__c
-          - DFDT_Project__c
-          - Company_Evaluation__c
-          - Project__c
-          - Resources__c
-          - Company__c
-          - DFDT_Resource__c
-          - SFDC_Expense_Header__c
-          - SFDC_Expense_Line_Item__c
-          - PSEvent__c
-          - PSEventPart__c
-          - DFDT_Task__c
-          - MWA1_Survey__c
-          - MWA1_Entry__c
-          - DFDT_Timesheet__c
-          - MWA1_Submission__c
-          - SFDC_Script_Campaign_Association__c
-          - SFDC_Script_Lead_Association__c
-          - SFDC_Script__c
-          - SFDC_Questions__c
-          - SFDC_Answer__c
-          - SFDC_Script_Result__c
-          - SFDC_Script_Result_Detail__c
-          - SFDC_FollowOnQuestion__c
-          - testror__c
-          - Department__c
-          - Job__c
-          :defaultedOnCreate: "false"
-          :name: ParentId
-          :digits: "0"
-          :updateable: "false"
-          :nillable: "false"
-          :filterable: "true"
-          :createable: "true"
-          :precision: "0"
-          :custom: "false"
-          :autoNumber: "false"
-          :nameField: "false"
-        - :scale: "0"
           :byteLength: "240"
           :restrictedPicklist: "false"
-          :label: Title
+          :label: Job Name
           :calculated: "false"
           :soapType: xsd:string
           :length: "80"
           :type: string
-          :defaultedOnCreate: "false"
-          :name: Title
+          :defaultedOnCreate: "true"
+          :name: Name
           :digits: "0"
           :updateable: "true"
           :nillable: "true"
@@ -126,59 +79,37 @@ describeSObject(sObjectType:Note): !ruby/object:RForce::SoapResponse
           :precision: "0"
           :custom: "false"
           :autoNumber: "false"
-          :nameField: "false"
+          :nameField: "true"
         - :scale: "0"
-          :byteLength: "0"
-          :restrictedPicklist: "false"
-          :label: Private
-          :calculated: "false"
-          :soapType: xsd:boolean
-          :length: "0"
-          :type: boolean
-          :defaultedOnCreate: "true"
-          :name: IsPrivate
-          :digits: "0"
-          :updateable: "true"
-          :nillable: "false"
-          :filterable: "true"
-          :createable: "true"
-          :precision: "0"
-          :custom: "false"
-          :autoNumber: "false"
-          :nameField: "false"
-        - :scale: "0"
-          :byteLength: "32000"
-          :restrictedPicklist: "false"
-          :label: Body
+          :byteLength: "9"
+          :restrictedPicklist: "true"
+          :label: Currency ISO Code
           :calculated: "false"
           :soapType: xsd:string
-          :length: "32000"
-          :type: textarea
-          :defaultedOnCreate: "false"
-          :name: Body
+          :length: "3"
+          :type: picklist
+          :defaultedOnCreate: "true"
+          :picklistValues: 
+          - :label: British Pound
+            :value: GBP
+            :active: "true"
+            :defaultValue: "false"
+          - :label: Euro
+            :value: EUR
+            :active: "true"
+            :defaultValue: "false"
+          - :label: Japanese Yen
+            :value: JPY
+            :active: "true"
+            :defaultValue: "false"
+          - :label: U.S. Dollar
+            :value: USD
+            :active: "true"
+            :defaultValue: "true"
+          :name: CurrencyIsoCode
           :digits: "0"
           :updateable: "true"
           :nillable: "true"
-          :filterable: "false"
-          :createable: "true"
-          :precision: "0"
-          :custom: "false"
-          :autoNumber: "false"
-          :nameField: "false"
-        - :scale: "0"
-          :byteLength: "18"
-          :restrictedPicklist: "false"
-          :label: Owner ID
-          :calculated: "false"
-          :soapType: tns:ID
-          :length: "18"
-          :type: reference
-          :referenceTo: User
-          :defaultedOnCreate: "true"
-          :name: OwnerId
-          :digits: "0"
-          :updateable: "true"
-          :nillable: "false"
           :filterable: "true"
           :createable: "true"
           :precision: "0"
@@ -282,17 +213,84 @@ describeSObject(sObjectType:Note): !ruby/object:RForce::SoapResponse
           :custom: "false"
           :autoNumber: "false"
           :nameField: "false"
-        :urlDetail: 
+        - :scale: "0"
+          :byteLength: "18"
+          :restrictedPicklist: "false"
+          :label: Department
+          :calculated: "false"
+          :soapType: tns:ID
+          :length: "18"
+          :type: reference
+          :referenceTo: Department__c
+          :defaultedOnCreate: "false"
+          :name: Department__c
+          :digits: "0"
+          :updateable: "false"
+          :nillable: "false"
+          :filterable: "true"
+          :createable: "true"
+          :precision: "0"
+          :custom: "true"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "735"
+          :restrictedPicklist: "false"
+          :label: Job Description
+          :calculated: "false"
+          :soapType: xsd:string
+          :length: "245"
+          :type: string
+          :defaultedOnCreate: "false"
+          :name: Job_Description__c
+          :digits: "0"
+          :updateable: "true"
+          :nillable: "true"
+          :filterable: "true"
+          :createable: "true"
+          :precision: "0"
+          :custom: "true"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "735"
+          :restrictedPicklist: "false"
+          :label: Position
+          :calculated: "false"
+          :soapType: xsd:string
+          :length: "245"
+          :type: string
+          :defaultedOnCreate: "false"
+          :name: Position__c
+          :digits: "0"
+          :updateable: "true"
+          :nillable: "true"
+          :filterable: "true"
+          :createable: "true"
+          :precision: "0"
+          :custom: "true"
+          :autoNumber: "false"
+          :nameField: "false"
+        :urlDetail: https://na1.salesforce.com/{ID}
+        :childRelationships: 
+        - :childSObject: Attachment
+          :relationshipName: Attachments
+          :cascadeDelete: "false"
+          :field: ParentId
+        - :childSObject: Note
+          :relationshipName: Notes
+          :cascadeDelete: "true"
+          :field: ParentId
         :activateable: "false"
         :queryable: "true"
-        :name: Note
-        :urlEdit: 
+        :name: Job__c
+        :urlEdit: https://na1.salesforce.com/{ID}/e
         :updateable: "true"
         :deletable: "true"
         :replicateable: "true"
         :createable: "true"
-        :urlNew: 
-        :custom: "false"
+        :urlNew: https://na1.salesforce.com/a0n/e
+        :custom: "true"
         :retrieveable: "true"
 login(username:***************************:password:********): !ruby/object:RForce::SoapResponse 
   parsed: 
@@ -315,36 +313,26 @@ login(username:***************************:password:********): !ruby/object:RFor
           :userDefaultCurrencyIsoCode: USD
           :userUiSkin: Theme2
           :accessibilityMode: "false"
-        :sessionId: yIH1ACXEb1r9P_meZ.AEodeoxnF8YLwMEVhWC301cZfl1yY9zr1daUf43d.x9Ldo8N4r1s61_hLutnJXPR_l3mpYnKO9AsNCSeX5jsUoLXQ=
+        :sessionId: M3CvCj8NLSGJ6DEAFvUAEpCwIPK0U4LiOU9q7FuuW9VZWgWgxCdxrZVrH5SFjovMI0UUO_NENT1z7N.U2GmG4WpYnKO9AsNCSeX5jsUoLXQ=
 create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Contact:HomePhone:555-555-1212:LastName:DutchTestLastName:FirstName:DutchTestFirstName): !ruby/object:RForce::SoapResponse 
   parsed: 
     :createResponse: 
       :result: 
         :errors: 
         :success: "true"
-        :id: 0033000000GNq1xAAD
-create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Note:Body:My Body 2:Title:My Title 2:ParentId:0033000000GNq1xAAD): !ruby/object:RForce::SoapResponse 
+        :id: 0033000000GNq8XAAT
+describeSObject(sObjectType:Job): !ruby/object:RForce::SoapResponse 
   parsed: 
-    :createResponse: 
-      :result: 
-        :errors: 
-        :success: "true"
-        :id: 00230000008WDdmAAG
-create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Note:Body:My Body:Title:My Title:ParentId:0033000000GNq1xAAD): !ruby/object:RForce::SoapResponse 
-  parsed: 
-    :createResponse: 
-      :result: 
-        :errors: 
-        :success: "true"
-        :id: 00230000008WDdhAAG
-query(queryString:SELECT Id, ParentId, Title, IsPrivate, Body, OwnerId, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp FROM Note WHERE (ParentId = '0033000000GNq1xAAD') ): !ruby/object:RForce::SoapResponse 
-  parsed: 
-    :queryResponse: 
-      :result: 
-        :size: "0"
-        :done: "true"
-        :queryLocator: 
-query(queryString:SELECT Id, AccountId, LastName, FirstName, Salutation, OtherStreet, OtherCity, OtherState, OtherPostalCode, OtherCountry, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, Phone, Fax, MobilePhone, HomePhone, OtherPhone, AssistantPhone, ReportsToId, Email, Title, Department, AssistantName, LeadSource, Birthdate, Description, CurrencyIsoCode, OwnerId, HasOptedOutOfEmail, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastCURequestDate, LastCUUpdateDate, DoNotCall, Training_Completed__c, Languages__c, Level__c, Call_contact_using_Skype__c, Call_today__c FROM Contact WHERE (Id = '0033000000GNq1xAAD')  ): !ruby/object:RForce::SoapResponse 
+    :Fault: 
+      :detail: 
+        :fault: 
+          :column: "-1"
+          :exceptionCode: INVALID_TYPE
+          :exceptionMessage: sObject type 'Job' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names.
+          :row: "-1"
+      :faultstring: "INVALID_TYPE: sObject type 'Job' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names."
+      :faultcode: sf:INVALID_TYPE
+query(queryString:SELECT Id, AccountId, LastName, FirstName, Salutation, OtherStreet, OtherCity, OtherState, OtherPostalCode, OtherCountry, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, Phone, Fax, MobilePhone, HomePhone, OtherPhone, AssistantPhone, ReportsToId, Email, Title, Department, AssistantName, LeadSource, Birthdate, Description, CurrencyIsoCode, OwnerId, HasOptedOutOfEmail, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastCURequestDate, LastCUUpdateDate, DoNotCall, Training_Completed__c, Languages__c, Level__c, Call_contact_using_Skype__c, Call_today__c FROM Contact WHERE (Id = '0033000000GNq8XAAT')  ): !ruby/object:RForce::SoapResponse 
   parsed: 
     :queryResponse: 
       :result: 
@@ -353,8 +341,8 @@ query(queryString:SELECT Id, AccountId, LastName, FirstName, Salutation, OtherSt
           :LastCURequestDate: 
           :LeadSource: 
           :MailingPostalCode: 
-          :Call_contact_using_Skype__c: <a href="/servlet/servlet.Integration?lid=01N300000000CnR&amp;eid=0033000000GNq1x" target="_blank"> </a>
-          :CreatedDate: "2006-02-20T18:38:02.000Z"
+          :Call_contact_using_Skype__c: <a href="/servlet/servlet.Integration?lid=01N300000000CnR&amp;eid=0033000000GNq8X" target="_blank"> </a>
+          :CreatedDate: "2006-02-20T18:38:41.000Z"
           :AssistantPhone: 
           :OtherPostalCode: 
           :FirstName: DutchTestFirstName
@@ -363,8 +351,8 @@ query(queryString:SELECT Id, AccountId, LastName, FirstName, Salutation, OtherSt
           :MailingCountry: 
           :AccountId: 
           :Id: 
-          - 0033000000GNq1xAAD
-          - 0033000000GNq1xAAD
+          - 0033000000GNq8XAAT
+          - 0033000000GNq8XAAT
           :Call_today__c: "false"
           :CreatedById: 00530000000jM0DAAU
           :Department: 
@@ -375,7 +363,7 @@ query(queryString:SELECT Id, AccountId, LastName, FirstName, Salutation, OtherSt
           :Phone: 
           :Salutation: 
           :type: Contact
-          :LastModifiedDate: "2006-02-20T18:38:02.000Z"
+          :LastModifiedDate: "2006-02-20T18:38:41.000Z"
           :Email: 
           :MailingStreet: 
           :Training_Completed__c: 
@@ -390,7 +378,7 @@ query(queryString:SELECT Id, AccountId, LastName, FirstName, Salutation, OtherSt
           :HomePhone: 555-555-1212
           :MobilePhone: 
           :OtherCity: 
-          :SystemModstamp: "2006-02-20T18:38:02.000Z"
+          :SystemModstamp: "2006-02-20T18:38:41.000Z"
           :AssistantName: 
           :MailingState: 
           :Level__c: 
@@ -398,6 +386,28 @@ query(queryString:SELECT Id, AccountId, LastName, FirstName, Salutation, OtherSt
           :OtherPhone: 
           :OtherState: 
           :LastName: DutchTestLastName
+        :done: "true"
+        :queryLocator: 
+query(queryString:SELECT Id, OwnerId, Name, CurrencyIsoCode, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, Location__c, DepartmentDescription__c FROM Department__c WHERE (Id = 'a0l300000008rvzAAA')  ): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :queryResponse: 
+      :result: 
+        :size: "1"
+        :records: 
+          :Location__c: London
+          :CreatedDate: "2006-02-20T18:38:43.000Z"
+          :Id: 
+          - a0l300000008rvzAAA
+          - a0l300000008rvzAAA
+          :CreatedById: 00530000000jM0DAAU
+          :Name: "1014"
+          :type: Department__c
+          :LastModifiedDate: "2006-02-20T18:38:43.000Z"
+          :CurrencyIsoCode: USD
+          :LastModifiedById: 00530000000jM0DAAU
+          :OwnerId: 00530000000jM0DAAU
+          :DepartmentDescription__c: DutchTestDepartment description
+          :SystemModstamp: "2006-02-20T18:38:43.000Z"
         :done: "true"
         :queryLocator: 
 describeSObject(sObjectType:Contact): !ruby/object:RForce::SoapResponse 
@@ -1441,17 +1451,306 @@ describeSObject(sObjectType:Contact): !ruby/object:RForce::SoapResponse
         :urlNew: https://na1.salesforce.com/003/e
         :custom: "false"
         :retrieveable: "true"
-update(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Note:Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }:00230000008WDdmAAG:Body:My Body 2:Title:My Title 2): !ruby/object:RForce::SoapResponse 
+describeSObject(sObjectType:Department__c): !ruby/object:RForce::SoapResponse 
   parsed: 
-    :updateResponse: 
+    :describeSObjectResponse: 
+      :result: 
+        :keyPrefix: a0l
+        :searchable: "true"
+        :label: Department
+        :labelPlural: Departments
+        :undeletable: "false"
+        :layoutable: "true"
+        :fields: 
+        - :scale: "0"
+          :byteLength: "18"
+          :restrictedPicklist: "false"
+          :label: Record ID
+          :calculated: "false"
+          :soapType: tns:ID
+          :length: "18"
+          :type: id
+          :defaultedOnCreate: "true"
+          :name: Id
+          :digits: "0"
+          :updateable: "false"
+          :nillable: "false"
+          :filterable: "true"
+          :createable: "false"
+          :precision: "0"
+          :custom: "false"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "18"
+          :restrictedPicklist: "false"
+          :label: Owner ID
+          :calculated: "false"
+          :soapType: tns:ID
+          :length: "18"
+          :type: reference
+          :referenceTo: User
+          :defaultedOnCreate: "true"
+          :name: OwnerId
+          :digits: "0"
+          :updateable: "true"
+          :nillable: "false"
+          :filterable: "true"
+          :createable: "true"
+          :precision: "0"
+          :custom: "false"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "240"
+          :restrictedPicklist: "false"
+          :label: DeptNo
+          :calculated: "false"
+          :soapType: xsd:string
+          :length: "80"
+          :type: string
+          :defaultedOnCreate: "true"
+          :name: Name
+          :digits: "0"
+          :updateable: "false"
+          :nillable: "false"
+          :filterable: "true"
+          :createable: "false"
+          :precision: "0"
+          :custom: "false"
+          :autoNumber: "true"
+          :nameField: "true"
+        - :scale: "0"
+          :byteLength: "9"
+          :restrictedPicklist: "true"
+          :label: Currency ISO Code
+          :calculated: "false"
+          :soapType: xsd:string
+          :length: "3"
+          :type: picklist
+          :defaultedOnCreate: "true"
+          :picklistValues: 
+          - :label: British Pound
+            :value: GBP
+            :active: "true"
+            :defaultValue: "false"
+          - :label: Euro
+            :value: EUR
+            :active: "true"
+            :defaultValue: "false"
+          - :label: Japanese Yen
+            :value: JPY
+            :active: "true"
+            :defaultValue: "false"
+          - :label: U.S. Dollar
+            :value: USD
+            :active: "true"
+            :defaultValue: "true"
+          :name: CurrencyIsoCode
+          :digits: "0"
+          :updateable: "true"
+          :nillable: "true"
+          :filterable: "true"
+          :createable: "true"
+          :precision: "0"
+          :custom: "false"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "0"
+          :restrictedPicklist: "false"
+          :label: Created Date
+          :calculated: "false"
+          :soapType: xsd:dateTime
+          :length: "0"
+          :type: datetime
+          :defaultedOnCreate: "true"
+          :name: CreatedDate
+          :digits: "0"
+          :updateable: "false"
+          :nillable: "false"
+          :filterable: "true"
+          :createable: "false"
+          :precision: "0"
+          :custom: "false"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "18"
+          :restrictedPicklist: "false"
+          :label: Created By ID
+          :calculated: "false"
+          :soapType: tns:ID
+          :length: "18"
+          :type: reference
+          :referenceTo: User
+          :defaultedOnCreate: "true"
+          :name: CreatedById
+          :digits: "0"
+          :updateable: "false"
+          :nillable: "false"
+          :filterable: "true"
+          :createable: "false"
+          :precision: "0"
+          :custom: "false"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "0"
+          :restrictedPicklist: "false"
+          :label: Last Modified Date
+          :calculated: "false"
+          :soapType: xsd:dateTime
+          :length: "0"
+          :type: datetime
+          :defaultedOnCreate: "true"
+          :name: LastModifiedDate
+          :digits: "0"
+          :updateable: "false"
+          :nillable: "false"
+          :filterable: "true"
+          :createable: "false"
+          :precision: "0"
+          :custom: "false"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "18"
+          :restrictedPicklist: "false"
+          :label: Last Modified By ID
+          :calculated: "false"
+          :soapType: tns:ID
+          :length: "18"
+          :type: reference
+          :referenceTo: User
+          :defaultedOnCreate: "true"
+          :name: LastModifiedById
+          :digits: "0"
+          :updateable: "false"
+          :nillable: "false"
+          :filterable: "true"
+          :createable: "false"
+          :precision: "0"
+          :custom: "false"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "0"
+          :restrictedPicklist: "false"
+          :label: System Modstamp
+          :calculated: "false"
+          :soapType: xsd:dateTime
+          :length: "0"
+          :type: datetime
+          :defaultedOnCreate: "true"
+          :name: SystemModstamp
+          :digits: "0"
+          :updateable: "false"
+          :nillable: "false"
+          :filterable: "true"
+          :createable: "false"
+          :precision: "0"
+          :custom: "false"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "765"
+          :restrictedPicklist: "false"
+          :label: Location
+          :calculated: "false"
+          :soapType: xsd:string
+          :length: "255"
+          :type: picklist
+          :defaultedOnCreate: "false"
+          :picklistValues: 
+          - :label: London
+            :value: London
+            :active: "true"
+            :defaultValue: "true"
+          - :label: Paris
+            :value: Paris
+            :active: "true"
+            :defaultValue: "false"
+          - :label: San Francisco
+            :value: San Francisco
+            :active: "true"
+            :defaultValue: "false"
+          - :label: Sydney
+            :value: Sydney
+            :active: "true"
+            :defaultValue: "false"
+          :name: Location__c
+          :digits: "0"
+          :updateable: "true"
+          :nillable: "true"
+          :filterable: "true"
+          :createable: "true"
+          :precision: "0"
+          :custom: "true"
+          :autoNumber: "false"
+          :nameField: "false"
+        - :scale: "0"
+          :byteLength: "765"
+          :restrictedPicklist: "false"
+          :label: Department Description
+          :calculated: "false"
+          :soapType: xsd:string
+          :length: "255"
+          :type: string
+          :defaultedOnCreate: "false"
+          :name: DepartmentDescription__c
+          :digits: "0"
+          :updateable: "true"
+          :nillable: "true"
+          :filterable: "true"
+          :createable: "true"
+          :precision: "0"
+          :custom: "true"
+          :autoNumber: "false"
+          :nameField: "false"
+        :urlDetail: https://na1.salesforce.com/{ID}
+        :childRelationships: 
+        - :childSObject: Attachment
+          :relationshipName: Attachments
+          :cascadeDelete: "false"
+          :field: ParentId
+        - :childSObject: Event
+          :relationshipName: Events
+          :cascadeDelete: "true"
+          :field: WhatId
+        - :childSObject: Job__c
+          :cascadeDelete: "true"
+          :field: Department__c
+        - :childSObject: Note
+          :relationshipName: Notes
+          :cascadeDelete: "true"
+          :field: ParentId
+        - :childSObject: Task
+          :relationshipName: Tasks
+          :cascadeDelete: "true"
+          :field: WhatId
+        :activateable: "false"
+        :queryable: "true"
+        :name: Department__c
+        :urlEdit: https://na1.salesforce.com/{ID}/e
+        :updateable: "true"
+        :deletable: "true"
+        :replicateable: "true"
+        :createable: "true"
+        :urlNew: https://na1.salesforce.com/a0l/e
+        :custom: "true"
+        :retrieveable: "true"
+create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Job__c:Name:DutchJob:Department__c:a0l300000008rvzAAA): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :createResponse: 
       :result: 
         :errors: 
         :success: "true"
-        :id: 00230000008WDdmAAG
-update(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Note:Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }:00230000008WDdhAAG:Body:My Body:Title:My Title): !ruby/object:RForce::SoapResponse 
+        :id: a0n30000000CagoAAC
+create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Department__c:DepartmentDescription__c:DutchTestDepartment description): !ruby/object:RForce::SoapResponse 
   parsed: 
-    :updateResponse: 
+    :createResponse: 
       :result: 
         :errors: 
         :success: "true"
-        :id: 00230000008WDdhAAG
+        :id: a0l300000008rvzAAA

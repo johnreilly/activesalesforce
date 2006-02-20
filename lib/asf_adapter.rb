@@ -464,10 +464,7 @@ module ActiveRecord
             end
 
             # Handle references to custom objects
-            if reference_to.match(/__c$/)
-              reference_to.chop!.chop!.chop!
-              reference_to.capitalize!
-            end
+            reference_to = reference_to.chop.chop.chop.capitalize if reference_to.match(/__c$/)
             
             begin
               referenced_klass = reference_to.constantize
