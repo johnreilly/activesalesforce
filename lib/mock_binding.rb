@@ -26,6 +26,7 @@ require File.dirname(__FILE__) + '/rforce'
 
 
 class MockBinding < RForce::Binding
+  attr_reader :recorded_responses
   
   #Connect to the server securely.
   def initialize(url, sid, recording)
@@ -60,8 +61,13 @@ class MockBinding < RForce::Binding
     else
       response = @recorded_responses[key]
       
-      pp response
-      raise "Unable to find matching response for recorded request '#{key}'" unless response
+      unless response
+        @recorded_responses.each do |request, reponse|
+          #pp request
+        end
+        
+        raise "Unable to find matching response for recorded request '#{key}'" 
+      end
     end
     
     response

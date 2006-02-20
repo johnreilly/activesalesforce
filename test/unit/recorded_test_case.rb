@@ -69,13 +69,23 @@ module Asf
       def setup
         url = 'https://www.salesforce.com/services/Soap/u/7.0'
     
-        @recording = ((not File.exists?(recording_file_name)) or config[:recording]) or @force_recording.include?(method_name)
+        @recording = (((not File.exists?(recording_file_name)) or config[:recording]) or @force_recording.include?(method_name.to_sym))
         
         @connection = MockBinding.new(url, nil, recording?)
+
+        ActiveRecord::Base.clear_connection_cache!
+        ActiveRecord::Base.reset_column_information_and_inheritable_attributes_for_all_subclasses
+        ActiveRecord::Base.establish_connection(:adapter => 'activesalesforce', :username => config[:username], 
+          :password => config[:password], :binding => connection)
             
         unless recording?
           File.open(recording_file_name) do |f|
+            puts "Opening recorded binding #{recording_file_name}"
             connection.load(f)
+            
+            connection.recorded_responses.each do |request, reponse|
+              pp request
+            end
           end
         end
         
@@ -85,8 +95,14 @@ module Asf
       
       def teardown
         if recording?
+          puts "Saving recorded binding #{recording_file_name}"
+
           File.open(recording_file_name, "w") do |f|
             connection.save(f)
+          end
+
+          connection.recorded_responses.each do |request, reponse|
+            pp request
           end
         end 
       end

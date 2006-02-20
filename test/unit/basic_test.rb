@@ -11,6 +11,7 @@ class Contact < ActiveRecord::Base
 end
 
 
+
 module Asf
   module UnitTests
     
@@ -19,11 +20,16 @@ module Asf
       
       attr_reader :contact
       
+      def initialize(test_method_name)
+        super(test_method_name)
+        
+        #force_recording :test_get_created_by_from_contact
+      end
+      
       def setup
-        super
+        puts "\nStarting test '#{self.class.name.gsub('::', '')}.#{method_name}'"
 
-        Contact.establish_connection(:adapter => 'activesalesforce', :username => config[:username], 
-          :password => config[:password], :binding => connection)
+        super
           
         @contact = Contact.new
         contact.first_name = 'DutchTestFirstName'
@@ -36,7 +42,7 @@ module Asf
       
       def teardown
         contact.destroy if contact
-        
+
         super
       end
       
@@ -72,10 +78,12 @@ module Asf
       end
             
       def test_get_created_by_from_contact
+        #pp contact.connection
+        
         user = contact.created_by
         assert_equal contact.created_by_id, user.id
       end
-     
+ 
       def test_add_notes_to_contact
         n1 = Note.new(:title => "My Title", :body => "My Body")
         n2 = Note.new(:title => "My Title 2", :body => "My Body 2")

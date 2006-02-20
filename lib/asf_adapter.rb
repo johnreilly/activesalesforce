@@ -44,20 +44,25 @@ module ActiveRecord
     
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.activesalesforce_connection(config) # :nodoc:
-      url = config[:url]
-      sid = config[:sid]
-
-      connection = config[:binding] if config[:binding]
-        
       puts "\nUsing ActiveSalesforce connection\n"
       
+      url = config[:url]
+      sid = config[:sid]
+      binding = config[:binding] if config[:binding]
+      
+      if binding
+        puts "   via provided binding #{binding}\n" 
+        #pp binding
+      end
+        
       if sid
-        connection = @@cache["sid=#{sid}"] unless connection
-        unless connection
+        binding = @@cache["sid=#{sid}"] unless binding
+        
+        unless binding
           puts "Establishing new connection for [sid='#{sid}']"
           
-          connection = RForce::Binding.new(url, sid)
-          @@cache["sid=#{sid}"] = connection
+          binding = RForce::Binding.new(url, sid)
+          @@cache["sid=#{sid}"] = binding
           
           puts "Created new connection for [sid='#{sid}']"
         end
@@ -73,19 +78,20 @@ module ActiveRecord
         username = config[:username]
         password = config[:password]
         
-        connection = @@cache["#{url}.#{username}.#{password}"] unless connection
-        unless connection
+        binding = @@cache["#{url}.#{username}.#{password}"] unless binding
+        
+        unless binding
           puts "Establishing new connection for ['#{url}', '#{username}']"
           
-          connection = RForce::Binding.new(url, sid)
-          connection.login(username, password).result
+          binding = RForce::Binding.new(url, sid)
+          binding.login(username, password).result
           
-          @@cache["#{url}.#{username}.#{password}"] = connection
+          @@cache["#{url}.#{username}.#{password}"] = binding
           
           puts "Created new connection for ['#{url}', '#{username}']"
         end
         
-        ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, username, password], config)
+        ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, username, password, sid], config)
       end
     end
   end
@@ -393,6 +399,8 @@ module ActiveRecord
         cached_entity_def = @entity_def_map[entity_name]
         return cached_entity_def if cached_entity_def
         
+        puts "get_entity_def('#{entity_name}') using #{@connection}"
+                
         cached_columns = []
         cached_relationships = []
         
@@ -449,17 +457,16 @@ module ActiveRecord
             # Account, Contact, Opportunity, Contract, Asset, Product2, <CustomObject1> ... <CustomObject(n)>
             
             begin
-              reference_to.constantize
+              referenced_klass = reference_to.constantize
             rescue NameError => e
               # Automatically create a least a stub for the referenced entity
               referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
-              referenced_klass.connection = klass.connection
               
-              #configure_active_record(get_entity_def(reference_to))
+              # configure_active_record(get_entity_def(reference_to))
               
-              puts "Created ActiveRecord stub for the referenced entity '#{reference_to}'"
+              # puts "Created ActiveRecord stub for the referenced entity '#{reference_to}'"
             end
-            
+
             one_to_many = relationship.one_to_many
             foreign_key = relationship.foreign_key
             
@@ -469,7 +476,7 @@ module ActiveRecord
               klass.belongs_to referenceName.to_sym, :class_name => reference_to, :foreign_key => foreign_key, :dependent => false
             end
             
-            puts "Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}"
+            #puts "Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}"
             
           end
         end
