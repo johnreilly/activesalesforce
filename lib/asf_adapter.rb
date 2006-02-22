@@ -25,6 +25,7 @@ require 'rubygems'
 require_gem 'rails', ">= 1.0.0"
 
 require 'thread'
+require 'benchmark'
 
 require File.dirname(__FILE__) + '/rforce'
 require File.dirname(__FILE__) + '/column_definition'
@@ -44,30 +45,29 @@ module ActiveRecord
     
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.activesalesforce_connection(config) # :nodoc:
-      puts "\nUsing ActiveSalesforce connection\n"
+      logger.debug("\nUsing ActiveSalesforce connection\n")
       
       url = config[:url]
       sid = config[:sid]
       binding = config[:binding] if config[:binding]
       
       if binding
-        puts "   via provided binding #{binding}\n" 
-        #pp binding
+        logger.debug("   via provided binding #{binding}\n")
       end
         
       if sid
         binding = @@cache["sid=#{sid}"] unless binding
         
         unless binding
-          puts "Establishing new connection for [sid='#{sid}']"
+          logger.debug("Establishing new connection for [sid='#{sid}']")
           
           binding = RForce::Binding.new(url, sid)
           @@cache["sid=#{sid}"] = binding
           
-          puts "Created new connection for [sid='#{sid}']"
+          logger.debug("Created new connection for [sid='#{sid}']")
         end
         
-        ConnectionAdapters::SalesforceAdapter.new(connection, logger, [url, sid], config)
+        ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, sid], config)
       else
         # Default to production system using 7.0 API
         url = "https://www.salesforce.com/services/Soap/u/7.0" unless url
@@ -81,14 +81,16 @@ module ActiveRecord
         binding = @@cache["#{url}.#{username}.#{password}"] unless binding
         
         unless binding
-          puts "Establishing new connection for ['#{url}', '#{username}']"
+          logger.debug("Establishing new connection for ['#{url}', '#{username}']")
           
-          binding = RForce::Binding.new(url, sid)
-          binding.login(username, password).result
+          seconds = Benchmark.realtime {
+            binding = RForce::Binding.new(url, sid)
+            binding.login(username, password).result
+            
+            @@cache["#{url}.#{username}.#{password}"] = binding
+          }
           
-          @@cache["#{url}.#{username}.#{password}"] = binding
-          
-          puts "Created new connection for ['#{url}', '#{username}']"
+          logger.debug("Created new connection for ['#{url}', '#{username}'] in #{seconds} seconds")
         end
         
         ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, username, password, sid], config)
@@ -106,7 +108,7 @@ module ActiveRecord
         
         @fault = fault
 
-        logger.debug("\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n") if logger
+        logger.debug("\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n")
       end
     end
     
@@ -190,166 +192,162 @@ module ActiveRecord
       # DATABASE STATEMENTS ======================================
       
       def select_all(sql, name = nil) #:nodoc:
-        log(sql, name)
-        
-        # Check for SELECT COUNT(*) FROM query
-        selectCountMatch = sql.match(/SELECT COUNT\(\*\) FROM/i)       
-        if selectCountMatch
-          soql = "SELECT id FROM#{selectCountMatch.post_match}"
-        end
-        
-        raw_table_name = sql.match(/FROM (\w+)/i)[1]
-        table_name = raw_table_name.singularize
-        entity_name = entity_name_from_table(table_name)
-        entity_def = get_entity_def(entity_name)
-        
-        column_names = api_column_names(table_name)
-        
-        # Always (unless COUNT*)'ing) select all columns (required for the AR attributes mechanism to work correctly
-        soql = sql.sub(/SELECT .+ FROM/i, "SELECT #{column_names.join(', ')} FROM") unless selectCountMatch
-
-        soql.sub!(/ FROM \w+/i, " FROM #{entity_def.api_name}")
-        
-        # Look for a LIMIT clause
-        soql.sub!(/LIMIT 1/i, "")
-        
-        # Look for an OFFSET clause
-        soql.sub!(/\d+ OFFSET \d+/i, "")
-        
-        # Fixup column references to use api names
-        columns = columns_map(table_name)
-        while soql =~ /\w+\.(\w+)/i
-          column_name = $~[1]
+        log(sql, name) {
+          # Check for SELECT COUNT(*) FROM query
+          selectCountMatch = sql.match(/SELECT COUNT\(\*\) FROM/i)       
+          if selectCountMatch
+            soql = "SELECT id FROM#{selectCountMatch.post_match}"
+          end
           
-          column = columns[column_name]
-          soql = $~.pre_match + column.api_name + $~.post_match
-        end
-        
-        # Update table name references
-        soql.sub!(/#{raw_table_name}\./i, "#{entity_def.api_name}.")
-        
-        log(soql, name)
-        
-        @connection.batch_size = @batch_size if @batch_size
-        @batch_size = nil
-        
-        queryResult = get_result(@connection.query(:queryString => soql), :query)
-        records = queryResult[:records]
-        
-        result = ResultArray.new(queryResult[:size].to_i)
-        return result unless records
-        
-        records = [ records ] unless records.is_a?(Array)
-        
-        records.each do |record|
-          row = {}
+          raw_table_name = sql.match(/FROM (\w+)/i)[1]
+          table_name = raw_table_name.singularize
+          entity_name = entity_name_from_table(table_name)
+          entity_def = get_entity_def(entity_name)
           
-          record.each do |name, value| 
-            if name != :type
-              # Ids may be returned in an array with 2 duplicate entries...
-              value = value[0] if name == :Id && value.is_a?(Array)
-
-              column = entity_def.api_name_to_column[name.to_s]
-              attribute_name = column.name
-              
-              if column.type == :boolean
-                row[attribute_name] = (value.casecmp("true") == 0)
-              else
-                row[attribute_name] = value
+          column_names = api_column_names(table_name)
+          
+          # Always (unless COUNT*)'ing) select all columns (required for the AR attributes mechanism to work correctly
+          soql = sql.sub(/SELECT .+ FROM/i, "SELECT #{column_names.join(', ')} FROM") unless selectCountMatch
+  
+          soql.sub!(/ FROM \w+/i, " FROM #{entity_def.api_name}")
+          
+          # Look for a LIMIT clause
+          soql.sub!(/LIMIT 1/i, "")
+          
+          # Look for an OFFSET clause
+          soql.sub!(/\d+ OFFSET \d+/i, "")
+          
+          # Fixup column references to use api names
+          columns = columns_map(table_name)
+          while soql =~ /\w+\.(\w+)/i
+            column_name = $~[1]
+            
+            column = columns[column_name]
+            soql = $~.pre_match + column.api_name + $~.post_match
+          end
+          
+          # Update table name references
+          soql.sub!(/#{raw_table_name}\./i, "#{entity_def.api_name}.")
+          
+          @connection.batch_size = @batch_size if @batch_size
+          @batch_size = nil
+          
+          queryResult = get_result(@connection.query(:queryString => soql), :query)
+          records = queryResult[:records]
+          
+          result = ResultArray.new(queryResult[:size].to_i)
+          return result unless records
+          
+          records = [ records ] unless records.is_a?(Array)
+          
+          records.each do |record|
+            row = {}
+            
+            record.each do |name, value| 
+              if name != :type
+                # Ids may be returned in an array with 2 duplicate entries...
+                value = value[0] if name == :Id && value.is_a?(Array)
+  
+                column = entity_def.api_name_to_column[name.to_s]
+                attribute_name = column.name
+                
+                if column.type == :boolean
+                  row[attribute_name] = (value.casecmp("true") == 0)
+                else
+                  row[attribute_name] = value
+                end
               end
-            end
-          end  
+            end  
+            
+            result << row   
+          end
           
-          result << row   
-        end
-        
-        if selectCountMatch
-          [{ :count => result.actual_size }]
-        else
-          result
-        end
+          if selectCountMatch
+            [{ :count => result.actual_size }]
+          else
+            result
+          end
+        }
       end
       
       
       def select_one(sql, name = nil) #:nodoc:
         self.batch_size = 1
-        
-        log(sql, name)
-        
+
         result = select_all(sql, name)
-        
+          
         result.nil? ? nil : result.first
       end
       
       
       def insert(sql, name = nil, pk = nil, id_value = nil, sequence_name = nil)
-        log(sql, name)
-        
-        # Convert sql to sobject
-        table_name = sql.match(/INSERT INTO (\w+) /i)[1].singularize
-        entity_name = entity_name_from_table(table_name)
-        columns = columns_map(table_name)
-        
-        # Extract array of column names
-        names = sql.match(/\((.+)\) VALUES/i)[1].scan(/\w+/i)
-        
-        # Extract arrays of values
-        values = sql.match(/VALUES\s*\((.+)\)/i)[1]
-        values = values.scan(/(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
-
-        values.map! { |v| v[7] }
-        
-        fields = get_fields(columns, names, values, :createable)
-        
-        sobject = create_sobject(entity_name, nil, fields)
+        log(sql, name) {
+          # Convert sql to sobject
+          table_name = sql.match(/INSERT INTO (\w+) /i)[1].singularize
+          entity_name = entity_name_from_table(table_name)
+          columns = columns_map(table_name)
           
-        check_result(get_result(@connection.create(:sObjects => sobject), :create))[0][:id]
+          # Extract array of column names
+          names = sql.match(/\((.+)\) VALUES/i)[1].scan(/\w+/i)
+          
+          # Extract arrays of values
+          values = sql.match(/VALUES\s*\((.+)\)/i)[1]
+          values = values.scan(/(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
+  
+          values.map! { |v| v[7] }
+          
+          fields = get_fields(columns, names, values, :createable)
+          
+          sobject = create_sobject(entity_name, nil, fields)
+            
+          check_result(get_result(@connection.create(:sObjects => sobject), :create))[0][:id]
+        }
       end      
       
       
       def update(sql, name = nil) #:nodoc:
-        log(sql, name)
-        
-        # Convert sql to sobject
-        table_name = sql.match(/UPDATE (\w+) /i)[1].singularize
-        entity_name = entity_name_from_table(table_name)
-        columns = columns_map(table_name)
-        
-        match = sql.match(/SET\s+(.+)\s+WHERE/mi)[1]
-        names = match.scan(/(\w+)\s*=\s*('|NULL|TRUE|FALSE)/i)
-        names.map! { |v| v[0] }
-        
-        values = match.scan(/=\s*(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
-        values.map! { |v| v[7] }
-
-        fields = get_fields(columns, names, values, :updateable)
-        
-        id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/i)[1]
-        
-        sobject = create_sobject(entity_name, id, fields)
-        
-        check_result(get_result(@connection.update(:sObjects => sobject), :update))
+        log(sql, name) {
+          # Convert sql to sobject
+          table_name = sql.match(/UPDATE (\w+) /i)[1].singularize
+          entity_name = entity_name_from_table(table_name)
+          columns = columns_map(table_name)
+          
+          match = sql.match(/SET\s+(.+)\s+WHERE/mi)[1]
+          names = match.scan(/(\w+)\s*=\s*('|NULL|TRUE|FALSE)/i)
+          names.map! { |v| v[0] }
+          
+          values = match.scan(/=\s*(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
+          values.map! { |v| v[7] }
+  
+          fields = get_fields(columns, names, values, :updateable)
+          
+          id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/i)[1]
+          
+          sobject = create_sobject(entity_name, id, fields)
+          
+          check_result(get_result(@connection.update(:sObjects => sobject), :update))
+        }
       end
       
       
       def delete(sql, name = nil) 
-        log(sql, name)
-        
-        # Extract the id
-        match = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/mi)
-        
-        if match 
-          ids = [ match[1] ]
-        else
-          # Check for the form id IN ('x', 'y')
-          match = sql.match(/WHERE\s+id\s+IN\s*\((.+)\)/mi)[1]
-          ids = match.scan(/\w+/)
-        end
-        
-        ids_element = []        
-        ids.each { |id| ids_element << :ids << id }
-        
-        check_result(get_result(@connection.delete(ids_element), :delete))
+        log(sql, name) {
+          # Extract the id
+          match = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/mi)
+          
+          if match 
+            ids = [ match[1] ]
+          else
+            # Check for the form id IN ('x', 'y')
+            match = sql.match(/WHERE\s+id\s+IN\s*\((.+)\)/mi)[1]
+            ids = match.scan(/\w+/)
+          end
+          
+          ids_element = []        
+          ids.each { |id| ids_element << :ids << id }
+          
+          check_result(get_result(@connection.delete(ids_element), :delete))
+        }
       end
       
       
@@ -398,44 +396,48 @@ module ActiveRecord
       def get_entity_def(entity_name)
         cached_entity_def = @entity_def_map[entity_name]
         return cached_entity_def if cached_entity_def
-        
-        cached_columns = []
-        cached_relationships = []
-        
-        begin
-          metadata = get_result(@connection.describeSObject(:sObjectType => entity_name), :describeSObject)
-          custom = false
-        rescue SalesforceError => e
-          # Fallback and see if we can find a custom object with this name
-          metadata = get_result(@connection.describeSObject(:sObjectType => entity_name + "__c"), :describeSObject)
-          custom = true
-        end
-        
-        metadata[:fields].each do |field| 
-          column = SalesforceColumn.new(field) 
-          cached_columns << column
+
+        log("Retrieving metadata for '#{entity_name}'", "get_entity_def()") {
+          cached_columns = []
+          cached_relationships = []
           
-          cached_relationships << SalesforceRelationship.new(field, column) if field[:type] =~ /reference/i
-        end
-        
-        relationships = metadata[:childRelationships]
-        if relationships
-          relationships = [ relationships ] unless relationships.is_a? Array
+          begin
+            metadata = get_result(@connection.describeSObject(:sObjectType => entity_name), :describeSObject)
+            custom = false
+          rescue SalesforceError => e
+            # Fallback and see if we can find a custom object with this name
+            @logger.info("   Unable to find medata for '#{entity_name}', falling back to custom object name #{entity_name + "__c"}")
+            
+            metadata = get_result(@connection.describeSObject(:sObjectType => entity_name + "__c"), :describeSObject)
+            custom = true
+          end
           
-          relationships.each do |relationship|  
-            if relationship[:cascadeDelete] == "true"
-              r = SalesforceRelationship.new(relationship)
-              cached_relationships << r
+          metadata[:fields].each do |field| 
+            column = SalesforceColumn.new(field) 
+            cached_columns << column
+            
+            cached_relationships << SalesforceRelationship.new(field, column) if field[:type] =~ /reference/i
+          end
+          
+          relationships = metadata[:childRelationships]
+          if relationships
+            relationships = [ relationships ] unless relationships.is_a? Array
+            
+            relationships.each do |relationship|  
+              if relationship[:cascadeDelete] == "true"
+                r = SalesforceRelationship.new(relationship)
+                cached_relationships << r
+              end
             end
           end
-        end
-        
-        entity_def = EntityDefinition.new(entity_name, cached_columns, cached_relationships, custom)
-        @entity_def_map[entity_name] = entity_def
-        
-        configure_active_record entity_def
-        
-        entity_def
+          
+          entity_def = EntityDefinition.new(entity_name, cached_columns, cached_relationships, custom)
+          @entity_def_map[entity_name] = entity_def
+          
+          configure_active_record entity_def
+          
+          entity_def
+        }
       end
       
       
@@ -459,7 +461,7 @@ module ActiveRecord
             # DCHASMAN TODO Figure out how to handle polymorphic refs (e.g. Note.parent can refer to 
             # Account, Contact, Opportunity, Contract, Asset, Product2, <CustomObject1> ... <CustomObject(n)>
             if reference_to.is_a? Array
-              puts "   Skipping unsupported polymophic one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to [#{relationship.reference_to.join(', ')}] using #{foreign_key}"
+              @logger.info("   Skipping unsupported polymophic one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to [#{relationship.reference_to.join(', ')}] using #{foreign_key}")
               next 
             end
 
@@ -470,7 +472,7 @@ module ActiveRecord
               referenced_klass = reference_to.constantize
             rescue NameError => e
               # Automatically create a least a stub for the referenced entity
-              puts "   Creating ActiveRecord stub for the referenced entity '#{reference_to}'"
+              @logger.info("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")
                           
               referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
               
@@ -483,7 +485,7 @@ module ActiveRecord
               klass.belongs_to referenceName.to_sym, :class_name => reference_to, :foreign_key => foreign_key, :dependent => false
             end
             
-            puts "   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}"
+            @logger.info("   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}")
             
           end
         end

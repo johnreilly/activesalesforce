@@ -34,6 +34,7 @@ module Asf
   module UnitTests
 
     module RecordedTestCase
+      LOGGER = Logger.new(STDOUT)
       @@config = YAML.load_file(File.dirname(__FILE__) + '/config.yml').symbolize_keys
     
       attr_reader :connection
@@ -73,6 +74,7 @@ module Asf
         
         @connection = MockBinding.new(url, nil, recording?)
 
+        ActiveRecord::Base.logger = LOGGER
         ActiveRecord::Base.clear_connection_cache!
         ActiveRecord::Base.reset_column_information_and_inheritable_attributes_for_all_subclasses
         ActiveRecord::Base.establish_connection(:adapter => 'activesalesforce', :username => config[:username], 
