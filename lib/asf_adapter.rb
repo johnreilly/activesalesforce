@@ -194,7 +194,7 @@ module ActiveRecord
       def select_all(sql, name = nil) #:nodoc:
         log(sql, name) {
           # Check for SELECT COUNT(*) FROM query
-          selectCountMatch = sql.match(/SELECT COUNT\(\*\) FROM/i)       
+          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+FROM/i)       
           if selectCountMatch
             soql = "SELECT id FROM#{selectCountMatch.post_match}"
           end
@@ -209,13 +209,13 @@ module ActiveRecord
           # Always (unless COUNT*)'ing) select all columns (required for the AR attributes mechanism to work correctly
           soql = sql.sub(/SELECT .+ FROM/i, "SELECT #{column_names.join(', ')} FROM") unless selectCountMatch
   
-          soql.sub!(/ FROM \w+/i, " FROM #{entity_def.api_name}")
+          soql.sub!(/\s+FROM\s+\w+/i, " FROM #{entity_def.api_name}")
           
           # Look for a LIMIT clause
-          soql.sub!(/LIMIT 1/i, "")
+          soql.sub!(/LIMIT\s+1/i, "")
           
           # Look for an OFFSET clause
-          soql.sub!(/\d+ OFFSET \d+/i, "")
+          soql.sub!(/\d+\s+OFFSET\s+\d+/i, "")
           
           # Fixup column references to use api names
           columns = columns_map(table_name)
@@ -283,12 +283,12 @@ module ActiveRecord
       def insert(sql, name = nil, pk = nil, id_value = nil, sequence_name = nil)
         log(sql, name) {
           # Convert sql to sobject
-          table_name = sql.match(/INSERT INTO (\w+) /i)[1].singularize
+          table_name = sql.match(/INSERT\s+INTO\s+(\w+)\s+/i)[1].singularize
           entity_name = entity_name_from_table(table_name)
           columns = columns_map(table_name)
           
           # Extract array of column names
-          names = sql.match(/\((.+)\) VALUES/i)[1].scan(/\w+/i)
+          names = sql.match(/\((.+)\)\s+VALUES/i)[1].scan(/\w+/i)
           
           # Extract arrays of values
           values = sql.match(/VALUES\s*\((.+)\)/i)[1]
@@ -308,7 +308,7 @@ module ActiveRecord
       def update(sql, name = nil) #:nodoc:
         log(sql, name) {
           # Convert sql to sobject
-          table_name = sql.match(/UPDATE (\w+) /i)[1].singularize
+          table_name = sql.match(/UPDATE\s+(\w+)\s+/i)[1].singularize
           entity_name = entity_name_from_table(table_name)
           columns = columns_map(table_name)
           
