@@ -395,7 +395,15 @@ module ActiveRecord
       
       def get_entity_def(entity_name)
         cached_entity_def = @entity_def_map[entity_name]
-        return cached_entity_def if cached_entity_def
+        
+        if cached_entity_def
+          # Check for the loss of asf AR setup 
+          entity_klass = entity_name.constantize          
+
+          configure_active_record cached_entity_def unless entity_klass.respond_to?(:asf_augmented?)
+
+          return cached_entity_def 
+        end
 
         log("Retrieving metadata for '#{entity_name}'", "get_entity_def()") {
           cached_columns = []
@@ -406,7 +414,7 @@ module ActiveRecord
             custom = false
           rescue SalesforceError => e
             # Fallback and see if we can find a custom object with this name
-            @logger.info("   Unable to find medata for '#{entity_name}', falling back to custom object name #{entity_name + "__c"}")
+            @logger.debug("   Unable to find medata for '#{entity_name}', falling back to custom object name #{entity_name + "__c"}")
             
             metadata = get_result(@connection.describeSObject(:sObjectType => entity_name + "__c"), :describeSObject)
             custom = true
@@ -445,6 +453,12 @@ module ActiveRecord
         entity_name = entity_def.name
         klass = entity_name.constantize
         
+        class << klass
+          def asf_augmented?
+            true
+          end
+        end
+        
         klass.set_inheritance_column nil
         klass.lock_optimistically = false
         klass.record_timestamps = false
@@ -461,7 +475,7 @@ module ActiveRecord
             # DCHASMAN TODO Figure out how to handle polymorphic refs (e.g. Note.parent can refer to 
             # Account, Contact, Opportunity, Contract, Asset, Product2, <CustomObject1> ... <CustomObject(n)>
             if reference_to.is_a? Array
-              @logger.info("   Skipping unsupported polymophic one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to [#{relationship.reference_to.join(', ')}] using #{foreign_key}")
+              @logger.debug("   Skipping unsupported polymophic one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to [#{relationship.reference_to.join(', ')}] using #{foreign_key}")
               next 
             end
 
@@ -472,7 +486,7 @@ module ActiveRecord
               referenced_klass = reference_to.constantize
             rescue NameError => e
               # Automatically create a least a stub for the referenced entity
-              @logger.info("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")
+              @logger.debug("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")
                           
               referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
               
@@ -485,7 +499,7 @@ module ActiveRecord
               klass.belongs_to referenceName.to_sym, :class_name => reference_to, :foreign_key => foreign_key, :dependent => false
             end
             
-            @logger.info("   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}")
+            @logger.debug("   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}")
             
           end
         end
