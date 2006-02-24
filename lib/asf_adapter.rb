@@ -232,11 +232,14 @@ module ActiveRecord
           
           # Fixup column references to use api names
           columns = columns_map(table_name)
-          while soql =~ /\w+\.(\w+)/i
-            column_name = $~[1]
+          soql.gsub!(/((?:\w+\.)?\w+)(?=\s*(?:=|!=|<|>|<=|>=)\s*(?:'[^']*'|NULL|TRUE|FALSE))/mi) do |column_name| 
+            # strip away any table alias
+            column_name.sub!(/\w+\./, '')
             
             column = columns[column_name]
-            soql = $~.pre_match + column.api_name + $~.post_match
+            raise SalesforceError.new(@logger, "Column not found for #{column_name}!") unless column
+            
+            column.api_name
           end
           
           # Update table name references
