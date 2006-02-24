@@ -1,0 +1,1176 @@
+--- 
+delete(ids:0033000000GdtiQAAR): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :deleteResponse: 
+      :result: 
+        :success: "true"
+        :errors: 
+        :id: 0033000000GdtiQAAR
+update(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Contact:Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }:0033000000GdtvSAAR:LastName:LN1:FirstName:FN1_2): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :updateResponse: 
+      :result: 
+        :success: "true"
+        :errors: 
+        :id: 0033000000GdtvSAAR
+create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Contact:LastName:LN2:FirstName:FN2): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :createResponse: 
+      :result: 
+        :success: "true"
+        :errors: 
+        :id: 0033000000GdtiQAAR
+delete(ids:0033000000GdtwGAAR): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :deleteResponse: 
+      :result: 
+        :success: "true"
+        :errors: 
+        :id: 0033000000GdtwGAAR
+login(username:***************************:password:********): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :loginResponse: 
+      :result: 
+        :serverUrl: https://na1-api.salesforce.com/services/Soap/u/7.0
+        :passwordExpired: "false"
+        :userId: 00530000000jM0DAAU
+        :userInfo: 
+          :userTimeZone: America/Los_Angeles
+          :organizationId: 00D300000001MlZEAU
+          :userDefaultCurrencyIsoCode: USD
+          :userLanguage: en_US
+          :userUiSkin: Theme2
+          :userId: 00530000000jM0DAAU
+          :organizationMultiCurrency: "true"
+          :userEmail: pbrondum@salesforce.com
+          :accessibilityMode: "false"
+          :userLocale: en_US
+          :currencySymbol: 
+          :organizationName: Universal Containers
+          :userFullName: Admin User
+        :sessionId: 9xbNa8e_B7YHEnBXFIrl3DEGlmJmTQoaqbiiR26YzCIq0qLK24srK0CmFOmSEEeW_PD6ZYwXuZKvTP5yzpresmpYnKO9AsNCSeX5jsUoLXQ=
+create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Contact:HomePhone:555-555-1212:LastName:DutchTestLastName:FirstName:DutchTestFirstName): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :createResponse: 
+      :result: 
+        :success: "true"
+        :errors: 
+        :id: 0033000000GdtwGAAR
+delete(ids:0033000000GdtvSAAR): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :deleteResponse: 
+      :result: 
+        :success: "true"
+        :errors: 
+        :id: 0033000000GdtvSAAR
+update(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Contact:Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }:0033000000GdtiQAAR:LastName:LN2:FirstName:FN2_2): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :updateResponse: 
+      :result: 
+        :success: "true"
+        :errors: 
+        :id: 0033000000GdtiQAAR
+describeSObject(sObjectType:Contact): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :describeSObjectResponse: 
+      :result: 
+        :searchable: "true"
+        :retrieveable: "true"
+        :childRelationships: 
+        - :cascadeDelete: "true"
+          :field: ContactId
+          :childSObject: AccountContactRole
+          :relationshipName: AccountContactRoles
+        - :cascadeDelete: "false"
+          :field: ContactId
+          :childSObject: Asset
+          :relationshipName: Assets
+        - :cascadeDelete: "false"
+          :field: ParentId
+          :childSObject: Attachment
+          :relationshipName: Attachments
+        - :cascadeDelete: "true"
+          :field: ContactId
+          :childSObject: CampaignMember
+          :relationshipName: CampaignMembers
+        - :cascadeDelete: "false"
+          :field: ContactId
+          :childSObject: Case
+          :relationshipName: Cases
+        - :cascadeDelete: "true"
+          :field: FK_Contact__c
+          :childSObject: Collateral_Request_Object__c
+        - :cascadeDelete: "false"
+          :field: ReportsToId
+          :childSObject: Contact
+        - :cascadeDelete: "false"
+          :field: CustomerSignedId
+          :childSObject: Contract
+        - :cascadeDelete: "true"
+          :field: ContactId
+          :childSObject: ContractContactRole
+          :relationshipName: ContractContactRoles
+        - :cascadeDelete: "false"
+          :field: Facility_Manager__c
+          :childSObject: Distribution_Lot__c
+        - :cascadeDelete: "true"
+          :field: WhoId
+          :childSObject: Event
+          :relationshipName: Events
+        - :cascadeDelete: "true"
+          :field: AttendeeId
+          :childSObject: EventAttendee
+        - :cascadeDelete: "false"
+          :field: ConvertedContactId
+          :childSObject: Lead
+        - :cascadeDelete: "false"
+          :field: Contact__c
+          :childSObject: MWA1_Submission__c
+        - :cascadeDelete: "true"
+          :field: ParentId
+          :childSObject: Note
+          :relationshipName: Notes
+        - :cascadeDelete: "true"
+          :field: ContactId
+          :childSObject: OpportunityContactRole
+          :relationshipName: OpportunityContactRoles
+        - :cascadeDelete: "false"
+          :field: Contact__c
+          :childSObject: SFDC_Script_Lead_Association__c
+        - :cascadeDelete: "false"
+          :field: ContactId
+          :childSObject: SelfServiceUser
+        - :cascadeDelete: "true"
+          :field: WhoId
+          :childSObject: Task
+          :relationshipName: Tasks
+        :queryable: "true"
+        :labelPlural: Contacts
+        :label: Contact
+        :fields: 
+        - :scale: "0"
+          :digits: "0"
+          :label: Contact ID
+          :byteLength: "18"
+          :length: "18"
+          :filterable: "true"
+          :type: id
+          :restrictedPicklist: "false"
+          :updateable: "false"
+          :autoNumber: "false"
+          :name: Id
+          :createable: "false"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: tns:ID
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Account ID
+          :byteLength: "18"
+          :length: "18"
+          :filterable: "true"
+          :type: reference
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :referenceTo: Account
+          :autoNumber: "false"
+          :name: AccountId
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: tns:ID
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Last Name
+          :byteLength: "240"
+          :length: "80"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: LastName
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "true"
+          :soapType: xsd:string
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: First Name
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: FirstName
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "true"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Salutation
+          :byteLength: "120"
+          :picklistValues: 
+          - :label: Mr.
+            :value: Mr.
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Ms.
+            :value: Ms.
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Mrs.
+            :value: Mrs.
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Dr.
+            :value: Dr.
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Prof.
+            :value: Prof.
+            :defaultValue: "false"
+            :active: "true"
+          :length: "40"
+          :filterable: "true"
+          :type: picklist
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Salutation
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Other Street
+          :byteLength: "765"
+          :length: "255"
+          :filterable: "true"
+          :type: textarea
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: OtherStreet
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Other City
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: OtherCity
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Other State/Province
+          :byteLength: "60"
+          :length: "20"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: OtherState
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Other Zip/Postal Code
+          :byteLength: "60"
+          :length: "20"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: OtherPostalCode
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Other Country
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: OtherCountry
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Mailing Street
+          :byteLength: "765"
+          :length: "255"
+          :filterable: "true"
+          :type: textarea
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: MailingStreet
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Mailing City
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: MailingCity
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Mailing State/Province
+          :byteLength: "60"
+          :length: "20"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: MailingState
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Mailing Zip/Postal Code
+          :byteLength: "60"
+          :length: "20"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: MailingPostalCode
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Mailing Country
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: MailingCountry
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Business Phone
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: phone
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Phone
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Business Fax
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: phone
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Fax
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Mobile Phone
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: phone
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: MobilePhone
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Home Phone
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: phone
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: HomePhone
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Other Phone
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: phone
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: OtherPhone
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Asst. Phone
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: phone
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: AssistantPhone
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Reports To ID
+          :byteLength: "18"
+          :length: "18"
+          :filterable: "true"
+          :type: reference
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :referenceTo: Contact
+          :autoNumber: "false"
+          :name: ReportsToId
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: tns:ID
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Email Address
+          :byteLength: "240"
+          :length: "80"
+          :filterable: "true"
+          :type: email
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Email
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Title
+          :byteLength: "240"
+          :length: "80"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Title
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Department
+          :byteLength: "240"
+          :length: "80"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Department
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Assistant's Name
+          :byteLength: "120"
+          :length: "40"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: AssistantName
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Lead Source
+          :byteLength: "120"
+          :picklistValues: 
+          - :label: Web
+            :value: Web
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Phone Inquiry
+            :value: Phone Inquiry
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Partner Referral
+            :value: Partner Referral
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Partner Application
+            :value: Partner Application
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Purchased List
+            :value: Purchased List
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Other
+            :value: Other
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Test Campaign
+            :value: Test Campaign
+            :defaultValue: "false"
+            :active: "true"
+          :length: "40"
+          :filterable: "true"
+          :type: picklist
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: LeadSource
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Birthdate
+          :byteLength: "0"
+          :length: "0"
+          :filterable: "true"
+          :type: date
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Birthdate
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:dateTime
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Contact Description
+          :byteLength: "32000"
+          :length: "32000"
+          :filterable: "false"
+          :type: textarea
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Description
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Contact Currency
+          :byteLength: "9"
+          :picklistValues: 
+          - :label: British Pound
+            :value: GBP
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Euro
+            :value: EUR
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Japanese Yen
+            :value: JPY
+            :defaultValue: "false"
+            :active: "true"
+          - :label: U.S. Dollar
+            :value: USD
+            :defaultValue: "true"
+            :active: "true"
+          :length: "3"
+          :filterable: "true"
+          :type: picklist
+          :restrictedPicklist: "true"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: CurrencyIsoCode
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Owner ID
+          :byteLength: "18"
+          :length: "18"
+          :filterable: "true"
+          :type: reference
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :referenceTo: User
+          :autoNumber: "false"
+          :name: OwnerId
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: tns:ID
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Email Opt Out
+          :byteLength: "0"
+          :length: "0"
+          :filterable: "true"
+          :type: boolean
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: HasOptedOutOfEmail
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:boolean
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Created Date
+          :byteLength: "0"
+          :length: "0"
+          :filterable: "true"
+          :type: datetime
+          :restrictedPicklist: "false"
+          :updateable: "false"
+          :autoNumber: "false"
+          :name: CreatedDate
+          :createable: "false"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:dateTime
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Created By ID
+          :byteLength: "18"
+          :length: "18"
+          :filterable: "true"
+          :type: reference
+          :restrictedPicklist: "false"
+          :updateable: "false"
+          :referenceTo: User
+          :autoNumber: "false"
+          :name: CreatedById
+          :createable: "false"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: tns:ID
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Last Modified Date
+          :byteLength: "0"
+          :length: "0"
+          :filterable: "true"
+          :type: datetime
+          :restrictedPicklist: "false"
+          :updateable: "false"
+          :autoNumber: "false"
+          :name: LastModifiedDate
+          :createable: "false"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:dateTime
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Last Modified By ID
+          :byteLength: "18"
+          :length: "18"
+          :filterable: "true"
+          :type: reference
+          :restrictedPicklist: "false"
+          :updateable: "false"
+          :referenceTo: User
+          :autoNumber: "false"
+          :name: LastModifiedById
+          :createable: "false"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: tns:ID
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: System Modstamp
+          :byteLength: "0"
+          :length: "0"
+          :filterable: "true"
+          :type: datetime
+          :restrictedPicklist: "false"
+          :updateable: "false"
+          :autoNumber: "false"
+          :name: SystemModstamp
+          :createable: "false"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:dateTime
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Last Stay-in-Touch Request Date
+          :byteLength: "0"
+          :length: "0"
+          :filterable: "true"
+          :type: datetime
+          :restrictedPicklist: "false"
+          :updateable: "false"
+          :autoNumber: "false"
+          :name: LastCURequestDate
+          :createable: "false"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:dateTime
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Last Stay-in-Touch Save Date
+          :byteLength: "0"
+          :length: "0"
+          :filterable: "true"
+          :type: datetime
+          :restrictedPicklist: "false"
+          :updateable: "false"
+          :autoNumber: "false"
+          :name: LastCUUpdateDate
+          :createable: "false"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:dateTime
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Do Not Call
+          :byteLength: "0"
+          :length: "0"
+          :filterable: "true"
+          :type: boolean
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: DoNotCall
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:boolean
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "false"
+        - :scale: "0"
+          :digits: "0"
+          :label: Training Completed
+          :byteLength: "4099"
+          :picklistValues: 
+          - :label: Market Positioning
+            :value: Market Positioning
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Order Processing
+            :value: Order Processing
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Product Details
+            :value: Product Details
+            :defaultValue: "false"
+            :active: "true"
+          :length: "4099"
+          :filterable: "true"
+          :type: multipicklist
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Training_Completed__c
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "true"
+        - :scale: "0"
+          :digits: "0"
+          :label: Languages
+          :byteLength: "300"
+          :length: "100"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Languages__c
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "true"
+        - :scale: "0"
+          :digits: "0"
+          :label: Level
+          :byteLength: "765"
+          :picklistValues: 
+          - :label: Primary
+            :value: Primary
+            :defaultValue: "false"
+            :active: "true"
+          - :label: Tertiary
+            :value: Tertiary
+            :defaultValue: "false"
+            :active: "true"
+          :length: "255"
+          :filterable: "true"
+          :type: picklist
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Level__c
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "true"
+        - :scale: "0"
+          :digits: "0"
+          :label: Call contact using Skype
+          :byteLength: "3900"
+          :length: "1300"
+          :filterable: "true"
+          :type: string
+          :restrictedPicklist: "false"
+          :updateable: "false"
+          :autoNumber: "false"
+          :name: Call_contact_using_Skype__c
+          :createable: "false"
+          :calculated: "true"
+          :nameField: "false"
+          :htmlFormatted: "true"
+          :soapType: xsd:string
+          :nillable: "true"
+          :precision: "0"
+          :defaultedOnCreate: "false"
+          :custom: "true"
+        - :scale: "0"
+          :digits: "0"
+          :label: Call_today
+          :byteLength: "0"
+          :length: "0"
+          :filterable: "true"
+          :type: boolean
+          :restrictedPicklist: "false"
+          :updateable: "true"
+          :autoNumber: "false"
+          :name: Call_today__c
+          :createable: "true"
+          :calculated: "false"
+          :nameField: "false"
+          :soapType: xsd:boolean
+          :nillable: "false"
+          :precision: "0"
+          :defaultedOnCreate: "true"
+          :custom: "true"
+        :urlEdit: https://na1.salesforce.com/{ID}/e
+        :undeletable: "false"
+        :updateable: "true"
+        :deletable: "true"
+        :name: Contact
+        :layoutable: "true"
+        :createable: "true"
+        :replicateable: "true"
+        :urlDetail: https://na1.salesforce.com/{ID}
+        :urlNew: https://na1.salesforce.com/003/e
+        :keyPrefix: "003"
+        :custom: "false"
+        :activateable: "false"
+create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Contact:LastName:LN1:FirstName:FN1): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :createResponse: 
+      :result: 
+        :success: "true"
+        :errors: 
+        :id: 0033000000GdtvSAAR
+query(queryString:SELECT Id, AccountId, LastName, FirstName, Salutation, OtherStreet, OtherCity, OtherState, OtherPostalCode, OtherCountry, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, Phone, Fax, MobilePhone, HomePhone, OtherPhone, AssistantPhone, ReportsToId, Email, Title, Department, AssistantName, LeadSource, Birthdate, Description, CurrencyIsoCode, OwnerId, HasOptedOutOfEmail, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastCURequestDate, LastCUUpdateDate, DoNotCall, Training_Completed__c, Languages__c, Level__c, Call_contact_using_Skype__c, Call_today__c FROM Contact WHERE (Id = '0033000000GdtwGAAR')  ): !ruby/object:RForce::SoapResponse 
+  parsed: 
+    :queryResponse: 
+      :result: 
+        :done: "true"
+        :records: 
+          :Languages__c: 
+          :LastCUUpdateDate: 
+          :OtherState: 
+          :Salutation: 
+          :Id: 
+          - 0033000000GdtwGAAR
+          - 0033000000GdtwGAAR
+          :Call_contact_using_Skype__c: <a href="/servlet/servlet.Integration?lid=01N300000000CnR&amp;eid=0033000000GdtwG" target="_blank"> </a>
+          :AssistantName: 
+          :ReportsToId: 
+          :Fax: 
+          :LastModifiedDate: "2006-02-24T13:49:03.000Z"
+          :OwnerId: 00530000000jM0DAAU
+          :Birthdate: 
+          :LastName: DutchTestLastName
+          :CreatedDate: "2006-02-24T13:49:03.000Z"
+          :Department: 
+          :MailingState: 
+          :OtherCountry: 
+          :OtherStreet: 
+          :Email: 
+          :HomePhone: 555-555-1212
+          :MailingCountry: 
+          :type: Contact
+          :Level__c: 
+          :DoNotCall: "false"
+          :LastModifiedById: 00530000000jM0DAAU
+          :AssistantPhone: 
+          :LastCURequestDate: 
+          :MobilePhone: 
+          :MailingStreet: 
+          :AccountId: 
+          :HasOptedOutOfEmail: "false"
+          :Description: 
+          :Title: 
+          :OtherPostalCode: 
+          :Call_today__c: "false"
+          :Training_Completed__c: 
+          :LeadSource: 
+          :OtherCity: 
+          :OtherPhone: 
+          :Phone: 
+          :MailingCity: 
+          :FirstName: DutchTestFirstName
+          :SystemModstamp: "2006-02-24T13:49:03.000Z"
+          :CreatedById: 00530000000jM0DAAU
+          :CurrencyIsoCode: USD
+          :MailingPostalCode: 
+        :size: "1"
+        :queryLocator: 

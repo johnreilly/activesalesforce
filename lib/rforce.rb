@@ -1,12 +1,3 @@
-require 'net/https'
-require 'uri'
-require 'zlib'
-require 'stringio'
-require 'rexml/document'
-require 'rexml/xpath'
-require 'rubygems'
-require_gem 'builder'
-
 =begin
   RForce v0.1
   Copyright (c) 2005 Ian Dees
@@ -55,6 +46,18 @@ require_gem 'builder'
 #
 #    binding.create 'sObject {"xsi:type" => "Opportunity"}' => opportunity
 #
+
+
+require 'net/https'
+require 'uri'
+require 'zlib'
+require 'stringio'
+require 'rexml/document'
+require 'rexml/xpath'
+require 'rubygems'
+require_gem 'builder'
+
+
 module RForce
 
   #Allows indexing hashes like method calls: hash.key

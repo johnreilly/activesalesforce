@@ -1,3 +1,20 @@
+=begin
+  ActiveSalesforce
+  Copyright 2006 Doug Chasman
+ 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+=end
+
 require 'rubygems'
 
 #require_gem 'activesalesforce', '>= 0.2.6'
@@ -25,7 +42,7 @@ module Asf
       def initialize(test_method_name)
         super(test_method_name)
         
-        #force_recording :test_master_detail
+        #force_recording :test_batch_insert
       end
       
       def setup
@@ -105,6 +122,29 @@ module Asf
         department.jobs__c << job
         
         department.destroy
+      end
+      
+      def test_batch_insert
+        c1 = Contact.new(:first_name => 'FN1', :last_name => 'LN1')
+        c2 = Contact.new(:first_name => 'FN2', :last_name => 'LN2')
+
+        Contact.transaction(c1, c2) do
+          c1.save
+          c2.save
+        end
+
+        c1.first_name << '_2'        
+        c2.first_name << '_2'        
+
+        Contact.transaction(c1, c2) do
+          c1.save
+          c2.save
+        end
+        
+        Contact.transaction(c1, c2) do
+          c2.destroy
+          c1.destroy
+        end
       end
                   
     end
