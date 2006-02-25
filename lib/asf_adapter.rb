@@ -114,15 +114,8 @@ module ActiveRecord
       class EntityDefinition
         attr_reader :name, :columns, :column_name_to_column, :api_name_to_column, :relationships
         
-        def custom?
-          @custom
-        end
-        
-        def api_name
-          @custom ? name + "__c" : name
-        end
-        
-        def initialize(name, columns, relationships, custom)
+        def initialize(connection, name, columns, relationships, custom)
+          @connection = connection
           @name = name
           @columns = columns
           @relationships = relationships
@@ -134,6 +127,23 @@ module ActiveRecord
           @api_name_to_column = {}
           @columns.each { |column| @api_name_to_column[column.api_name] = column }
         end
+
+        def custom?
+          @custom
+        end
+        
+        def api_name
+          @custom ? name + "__c" : name
+        end
+        
+        def layouts
+          return @layouts if @layouts
+          
+          # Lazy load Layout information
+          response = @connection.binding.describeLayout(:sObjectType => api_name)
+          @layouts = @connection.get_result(response, :describeLayout)
+        end
+        
       end
       
       include StringHelper
@@ -524,7 +534,7 @@ module ActiveRecord
             end
           end
           
-          entity_def = EntityDefinition.new(entity_name, cached_columns, cached_relationships, custom)
+          entity_def = EntityDefinition.new(self, entity_name, cached_columns, cached_relationships, custom)
           @entity_def_map[entity_name] = entity_def
           
           configure_active_record entity_def
