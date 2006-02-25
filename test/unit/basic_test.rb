@@ -42,14 +42,15 @@ module Asf
       def initialize(test_method_name)
         super(test_method_name)
         
-        #force_recording :test_batch_insert
+        force_recording :test_batch_insert
       end
       
       def setup
         puts "\nStarting test '#{self.class.name.gsub('::', '')}.#{method_name}'"
 
         super
-          
+
+if false          
         @contact = Contact.new
         contact.first_name = 'DutchTestFirstName'
         contact.last_name = 'DutchTestLastName'
@@ -57,22 +58,24 @@ module Asf
         contact.save   
         
         contact.reload
+end        
       end
       
       def teardown
-        contact.destroy if contact
+        #contact.destroy if contact
 
         super
       end
-      
-      def test_count_contacts
-        assert Contact.count > 0
-      end
-      
+
+
       def test_create_a_contact
         contact.id
       end
 
+      def test_count_contacts
+        assert Contact.count > 0
+      end
+      
       def test_save_a_contact
         contact.id
       end
@@ -123,6 +126,7 @@ module Asf
         
         department.destroy
       end
+
       
       def test_batch_insert
         c1 = Contact.new(:first_name => 'FN1', :last_name => 'LN1')

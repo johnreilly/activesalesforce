@@ -289,6 +289,8 @@ module RForce
 
     #Turns method calls on this object into remote SOAP calls.
     def method_missing(method, *args)
+      pp args
+      
       unless args.size == 1 && [Hash, Array].include?(args[0].class)
         raise 'Expected 1 Hash or Array argument'
       end

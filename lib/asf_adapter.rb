@@ -24,6 +24,7 @@ require 'benchmark'
 require File.dirname(__FILE__) + '/rforce'
 require File.dirname(__FILE__) + '/column_definition'
 require File.dirname(__FILE__) + '/relationship_definition'
+require File.dirname(__FILE__) + '/boxcar_command'
 
 class ResultArray < Array
   attr_reader :actual_size
@@ -145,8 +146,13 @@ module ActiveRecord
         @connection_options, @config = connection_options, config
         
         @entity_def_map = {}
+        
+        @command_boxcar = []
       end
       
+      def binding
+        @connection
+      end
       
       def adapter_name #:nodoc:
         'ActiveSalesforce'
@@ -188,17 +194,27 @@ module ActiveRecord
       # Begins the transaction (and turns off auto-committing).
       def begin_db_transaction()    
         log('Opening boxcar', 'begin_db_transaction()')
+        @command_boxcar = []
       end
 
       # Commits the transaction (and turns on auto-committing).
       def commit_db_transaction()   
-        log('Committing boxcar', 'commit_db_transaction()')
+        log("Committing boxcar with #{@command_boxcar.length} commands", 'commit_db_transaction()')
+ 
+        @command_boxcar.each do |command|
+          command.execute
+        end
+        
+        # check_result(get_result(@connection.create(sobject), :create))[0][:id]
+        # check_result(get_result(@connection.update(sobject), :update))
+        # check_result(get_result(@connection.delete(ids_element), :delete))
       end
 
       # Rolls back the transaction (and turns on auto-committing). Must be
       # done if the transaction block raises an exception or returns false.
       def rollback_db_transaction() 
         log('Rolling back boxcar', 'rollback_db_transaction()')
+        @command_boxcar = []
       end
       
       
@@ -315,8 +331,12 @@ module ActiveRecord
           fields = get_fields(columns, names, values, :createable)
           
           sobject = create_sobject(entity_name, nil, fields)
-            
-          check_result(get_result(@connection.create(:sObjects => sobject), :create))[0][:id]
+          
+          # Track the id to be able to update it when the create() is actually executed
+          id = String.new
+          @command_boxcar << ActiveSalesforce::BoxcarCommand::Insert.new(self, sobject, id)
+          
+          id
         }
       end      
       
@@ -341,7 +361,7 @@ module ActiveRecord
           
           sobject = create_sobject(entity_name, id, fields)
           
-          check_result(get_result(@connection.update(:sObjects => sobject), :update))
+          @command_boxcar << ActiveSalesforce::BoxcarCommand::Update.new(self, sobject)
         }
       end
       
@@ -362,7 +382,7 @@ module ActiveRecord
           ids_element = []        
           ids.each { |id| ids_element << :ids << id }
           
-          check_result(get_result(@connection.delete(ids_element), :delete))
+          @command_boxcar << ActiveSalesforce::BoxcarCommand::Delete.new(self, ids_element)
         }
       end
       
@@ -543,7 +563,9 @@ module ActiveRecord
       def create_sobject(entity_name, id, fields)
         entity_def = get_entity_def(entity_name)
         
-        sobj = [ 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }', entity_def.api_name ]
+        sobj = []
+        
+        sobj << 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << entity_def.api_name
         sobj << 'Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << id if id    
         
         # now add any changed fields
@@ -552,7 +574,7 @@ module ActiveRecord
           sobj << name.to_sym << value if value
         end
         
-        sobj
+        [ :sObjects, sobj ]
       end
       
       
