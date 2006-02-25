@@ -25,18 +25,15 @@ module ActiveSalesforce
   module BoxcarCommand
   
     class Base
-      def initialize(connection, method, args)
+      attr_reader :verb, :args
+      
+      def initialize(connection, verb, args)
         @connection = connection
-        @method = method
+        @verb = verb
         @args = args
       end
       
-      def execute
-        response = @connection.binding.send(@method, @args)
-        
-        result = @connection.get_result(response, @method)
-        
-        @connection.check_result(result)
+      def after_execute(result)
       end
     end
     
@@ -47,8 +44,8 @@ module ActiveSalesforce
         @idproxy = idproxy
       end
       
-      def execute
-        @idproxy << super()[0][:id]
+      def after_execute(result)
+        @idproxy << result[:id]
       end
     end
     

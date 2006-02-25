@@ -49,7 +49,7 @@ module ActiveRecord
       if binding
         logger.debug("   via provided binding #{binding}\n")
       end
-        
+      
       if sid
         binding = @@cache["sid=#{sid}"] unless binding
         
@@ -102,13 +102,14 @@ module ActiveRecord
         super message
         
         @fault = fault
-
+        
         logger.debug("\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n")
       end
     end
     
     
     class SalesforceAdapter < AbstractAdapter
+      MAX_BOXCAR_SIZE = 200
       
       class EntityDefinition
         attr_reader :name, :columns, :column_name_to_column, :api_name_to_column, :relationships
@@ -196,20 +197,68 @@ module ActiveRecord
         log('Opening boxcar', 'begin_db_transaction()')
         @command_boxcar = []
       end
-
+      
+      
+      def send_commands(commands)
+        # Send the boxcar'ed command set
+        verb = commands[0].verb
+        
+        args = []
+        commands.each do |command| 
+          command.args.each { |arg| args << arg }
+        end
+        
+        puts "  send_commands(:#{verb}, [#{args.join(', ')}])"
+        
+        response = @connection.send(verb, args)
+        
+        result = get_result(response, verb)
+        
+        result = [ result ] unless result.is_a?(Array)
+        errors = []
+        result.each_with_index do |r, n|
+          success = r[:success] == "true"
+          
+          # Give each command a chance to process its own result
+          command = commands[n]
+          command.after_execute(r)
+          
+          # Handle the set of failures
+          errors << r[:errors] unless r[:success] == "true"
+        end
+        
+        unless errors.empty?
+          message = errors.join("\n")
+          fault = (errors.map { |error| error[:message] }).join("\n")
+          SalesforceError.new(@logger, message, fault) 
+        end
+        
+        result
+      end
+      
+      
       # Commits the transaction (and turns on auto-committing).
       def commit_db_transaction()   
         log("Committing boxcar with #{@command_boxcar.length} commands", 'commit_db_transaction()')
- 
+        
+        previous_command = nil
+        commands = []
         @command_boxcar.each do |command|
-          command.execute
+          if commands.length >= MAX_BOXCAR_SIZE or (previous_command and (command.verb != previous_command.verb))
+            send_commands(commands)
+            commands = []
+          else
+            commands << command
+          end
+          
+          previous_command = command
         end
         
-        # check_result(get_result(@connection.create(sobject), :create))[0][:id]
-        # check_result(get_result(@connection.update(sobject), :update))
-        # check_result(get_result(@connection.delete(ids_element), :delete))
+        # Finish off the partial boxcar
+        send_commands(commands) unless commands.empty?
+        
       end
-
+      
       # Rolls back the transaction (and turns on auto-committing). Must be
       # done if the transaction block raises an exception or returns false.
       def rollback_db_transaction() 
@@ -237,7 +286,7 @@ module ActiveRecord
           
           # Always (unless COUNT*)'ing) select all columns (required for the AR attributes mechanism to work correctly
           soql = sql.sub(/SELECT .+ FROM/i, "SELECT #{column_names.join(', ')} FROM") unless selectCountMatch
-  
+          
           soql.sub!(/\s+FROM\s+\w+/i, " FROM #{entity_def.api_name}")
           
           # Look for a LIMIT clause
@@ -279,7 +328,7 @@ module ActiveRecord
               if name != :type
                 # Ids may be returned in an array with 2 duplicate entries...
                 value = value[0] if name == :Id && value.is_a?(Array)
-  
+                
                 column = entity_def.api_name_to_column[name.to_s]
                 attribute_name = column.name
                 
@@ -305,9 +354,9 @@ module ActiveRecord
       
       def select_one(sql, name = nil) #:nodoc:
         self.batch_size = 1
-
+        
         result = select_all(sql, name)
-          
+        
         result.nil? ? nil : result.first
       end
       
@@ -325,7 +374,7 @@ module ActiveRecord
           # Extract arrays of values
           values = sql.match(/VALUES\s*\((.+)\)/i)[1]
           values = values.scan(/(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
-  
+          
           values.map! { |v| v[7] }
           
           fields = get_fields(columns, names, values, :createable)
@@ -354,7 +403,7 @@ module ActiveRecord
           
           values = match.scan(/=\s*(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
           values.map! { |v| v[7] }
-  
+          
           fields = get_fields(columns, names, values, :updateable)
           
           id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/i)[1]
@@ -394,16 +443,16 @@ module ActiveRecord
           
           if value
             column = columns[name]
-          
+            
             raise SalesforceError.new(@logger, "Column not found for #{name}!") unless column
             
             value.gsub!(/''/, "'") if value.is_a? String
-          
+            
             include_field = ((not value.empty?) and column.send(access_check))            
             fields[column.api_name] = value if include_field
           end
         end
-
+        
         fields      
       end
       
@@ -435,12 +484,12 @@ module ActiveRecord
         if cached_entity_def
           # Check for the loss of asf AR setup 
           entity_klass = entity_name.constantize          
-
+          
           configure_active_record cached_entity_def unless entity_klass.respond_to?(:asf_augmented?)
-
+          
           return cached_entity_def 
         end
-
+        
         log("Retrieving metadata for '#{entity_name}'", "get_entity_def()") {
           cached_columns = []
           cached_relationships = []
@@ -514,7 +563,7 @@ module ActiveRecord
               @logger.debug("   Skipping unsupported polymophic one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to [#{relationship.reference_to.join(', ')}] using #{foreign_key}")
               next 
             end
-
+            
             # Handle references to custom objects
             reference_to = reference_to.chop.chop.chop.capitalize if reference_to.match(/__c$/)
             
@@ -523,12 +572,12 @@ module ActiveRecord
             rescue NameError => e
               # Automatically create a least a stub for the referenced entity
               @logger.debug("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")
-                          
+              
               referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
               
               # configure_active_record(get_entity_def(reference_to))
             end
-
+            
             if one_to_many
               klass.has_many referenceName.to_sym, :class_name => reference_to, :foreign_key => foreign_key, :dependent => false
             else
