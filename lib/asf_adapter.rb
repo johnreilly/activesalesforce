@@ -17,14 +17,15 @@
 
 require 'rubygems'
 require_gem 'rails', ">= 1.0.0"
-
-require 'thread'
+  
+require 'thread'  
 require 'benchmark'
 
 require File.dirname(__FILE__) + '/rforce'
 require File.dirname(__FILE__) + '/column_definition'
 require File.dirname(__FILE__) + '/relationship_definition'
 require File.dirname(__FILE__) + '/boxcar_command'
+require File.dirname(__FILE__) + '/entity_definition'
 
 class ResultArray < Array
   attr_reader :actual_size
@@ -42,8 +43,11 @@ module ActiveRecord
     def self.activesalesforce_connection(config) # :nodoc:
       logger.debug("\nUsing ActiveSalesforce connection\n")
       
+      # Default to production system using 7.0 API
       url = config[:url]
-      sid = config[:sid]
+      url = "https://www.salesforce.com/services/Soap/u/7.0" unless url
+
+      sid = config[:sid]  
       binding = config[:binding] if config[:binding]
       
       if binding
@@ -64,9 +68,6 @@ module ActiveRecord
         
         ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, sid], config)
       else
-        # Default to production system using 7.0 API
-        url = "https://www.salesforce.com/services/Soap/u/7.0" unless url
-        
         # Check to insure that the second to last path component is a 'u' for Partner API
         raise ConnectionAdapters::SalesforceError.new(logger, "Invalid salesforce server url '#{url}', must be a valid Parter API URL") unless url.match(/\/u\//i)
         
@@ -109,44 +110,9 @@ module ActiveRecord
     
     
     class SalesforceAdapter < AbstractAdapter
-      MAX_BOXCAR_SIZE = 200
-      
-      class EntityDefinition
-        attr_reader :name, :columns, :column_name_to_column, :api_name_to_column, :relationships
-        
-        def initialize(connection, name, columns, relationships, custom)
-          @connection = connection
-          @name = name
-          @columns = columns
-          @relationships = relationships
-          @custom = custom
-          
-          @column_name_to_column = {}          
-          @columns.each { |column| @column_name_to_column[column.name] = column }
-          
-          @api_name_to_column = {}
-          @columns.each { |column| @api_name_to_column[column.api_name] = column }
-        end
-
-        def custom?
-          @custom
-        end
-        
-        def api_name
-          @custom ? name + "__c" : name
-        end
-        
-        def layouts
-          return @layouts if @layouts
-          
-          # Lazy load Layout information
-          response = @connection.binding.describeLayout(:sObjectType => api_name)
-          @layouts = @connection.get_result(response, :describeLayout)
-        end
-        
-      end
-      
       include StringHelper
+ 
+      MAX_BOXCAR_SIZE = 200
       
       attr_accessor :batch_size
       attr_reader :entity_def_map
@@ -534,7 +500,7 @@ module ActiveRecord
             end
           end
           
-          entity_def = EntityDefinition.new(self, entity_name, cached_columns, cached_relationships, custom)
+          entity_def = ActiveSalesforce::EntityDefinition.new(self, entity_name, cached_columns, cached_relationships, custom)
           @entity_def_map[entity_name] = entity_def
           
           configure_active_record entity_def
