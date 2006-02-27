@@ -19,7 +19,7 @@ module ActiveSalesforce
   
   module ActiveRecord
     
-    module Base
+    module Mixin
       def self.append_features(base) #:nodoc:
         super
         
