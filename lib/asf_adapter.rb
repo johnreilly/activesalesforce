@@ -26,6 +26,8 @@ require File.dirname(__FILE__) + '/column_definition'
 require File.dirname(__FILE__) + '/relationship_definition'
 require File.dirname(__FILE__) + '/boxcar_command'
 require File.dirname(__FILE__) + '/entity_definition'
+require File.dirname(__FILE__) + '/asf_active_record'
+
 
 class ResultArray < Array
   attr_reader :actual_size
@@ -34,6 +36,7 @@ class ResultArray < Array
     @actual_size = actual_size
   end
 end
+
 
 module ActiveRecord    
   class Base   
@@ -93,7 +96,7 @@ module ActiveRecord
       end
     end
   end
-  
+
   
   module ConnectionAdapters
     class SalesforceError < RuntimeError
@@ -125,11 +128,20 @@ module ActiveRecord
         @entity_def_map = {}
         
         @command_boxcar = []
+        @class_to_entity_map = {}
       end
+      
+      
+      def set_class_for_entity(klass, entity_name)
+        @logger.debug("Setting @class_to_entity_map['#{entity_name.upcase}'] = #{klass}")
+        @class_to_entity_map[entity_name.upcase] = klass
+      end
+      
       
       def binding
         @connection
       end
+      
       
       def adapter_name #:nodoc:
         'ActiveSalesforce'
@@ -459,7 +471,7 @@ module ActiveRecord
         
         if cached_entity_def
           # Check for the loss of asf AR setup 
-          entity_klass = entity_name.constantize          
+          entity_klass = class_from_entity_name(entity_name)
           
           configure_active_record cached_entity_def unless entity_klass.respond_to?(:asf_augmented?)
           
@@ -512,7 +524,7 @@ module ActiveRecord
       
       def configure_active_record(entity_def)
         entity_name = entity_def.name
-        klass = entity_name.constantize
+        klass = class_from_entity_name(entity_name)
         
         class << klass
           def asf_augmented?
@@ -544,7 +556,7 @@ module ActiveRecord
             reference_to = reference_to.chop.chop.chop.capitalize if reference_to.match(/__c$/)
             
             begin
-              referenced_klass = reference_to.constantize
+              referenced_klass = class_from_entity_name(reference_to)
             rescue NameError => e
               # Automatically create a least a stub for the referenced entity
               @logger.debug("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")
@@ -582,6 +594,16 @@ module ActiveRecord
       
       def entity_name_from_table(table_name)
         return table_name.singularize.camelize
+      end
+      
+      
+      def class_from_entity_name(entity_name)
+          entity_klass = @class_to_entity_map[entity_name.upcase]
+          @logger.debug("Found matching class '#{entity_klass}' for entity '#{entity_name}'") if entity_klass
+          
+          entity_klass = entity_name.constantize unless entity_klass
+                    
+          entity_klass
       end
       
       
