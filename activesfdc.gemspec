@@ -42,5 +42,5 @@ SPEC = Gem::Specification.new do |s|
   s.extra_rdoc_files = ["README"]
   s.add_dependency("rails", ">= 1.0.0")
   s.add_dependency("builder", ">= 1.2.4")
-  s.add_dependency("asf_scaffold_generator", ">= 0.0.2")
+  s.add_dependency("asf_scaffold_generator", ">= 0.0.7")
 end
