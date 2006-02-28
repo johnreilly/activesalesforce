@@ -128,7 +128,7 @@ module RForce
   #Implements the connection to the SalesForce server.
   class Binding
     DEFAULT_BATCH_SIZE = 10
-    attr_accessor :batch_size
+    attr_accessor :batch_size, :url
 
     #Fill in the guts of this typical SOAP envelope
     #with the session ID and the body of the SOAP request.

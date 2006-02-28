@@ -118,7 +118,7 @@ module ActiveRecord
       MAX_BOXCAR_SIZE = 200
       
       attr_accessor :batch_size
-      attr_reader :entity_def_map
+      attr_reader :entity_def_map, :config
       
       def initialize(connection, logger, connection_options, config)
         super(connection, logger)
