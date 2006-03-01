@@ -118,7 +118,7 @@ module ActiveRecord
       MAX_BOXCAR_SIZE = 200
       
       attr_accessor :batch_size
-      attr_reader :entity_def_map, :config
+      attr_reader :entity_def_map, :keyprefix_to_entity_def_map, :config
       
       def initialize(connection, logger, connection_options, config)
         super(connection, logger)
@@ -126,6 +126,7 @@ module ActiveRecord
         @connection_options, @config = connection_options, config
         
         @entity_def_map = {}
+        @keyprefix_to_entity_def_map = {}
         
         @command_boxcar = []
         @class_to_entity_map = {}
@@ -530,8 +531,13 @@ module ActiveRecord
             end
           end
           
-          entity_def = ActiveSalesforce::EntityDefinition.new(self, entity_name, cached_columns, cached_relationships, custom)
+          key_prefix = metadata[:keyPrefix]
+          
+          entity_def = ActiveSalesforce::EntityDefinition.new(self, entity_name, 
+            cached_columns, cached_relationships, custom, key_prefix)
+            
           @entity_def_map[entity_name] = entity_def
+          @keyprefix_to_entity_def_map[key_prefix] = entity_def
           
           configure_active_record entity_def
           

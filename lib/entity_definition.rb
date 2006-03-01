@@ -23,14 +23,15 @@ require 'pp'
 
 module ActiveSalesforce  
   class EntityDefinition
-    attr_reader :name, :columns, :column_name_to_column, :api_name_to_column, :relationships
+    attr_reader :name, :columns, :column_name_to_column, :api_name_to_column, :relationships, :key_prefix
     
-    def initialize(connection, name, columns, relationships, custom)
+    def initialize(connection, name, columns, relationships, custom, key_prefix)
       @connection = connection
       @name = name
       @columns = columns
       @relationships = relationships
       @custom = custom
+      @key_prefix = key_prefix
       
       @column_name_to_column = {}          
       @columns.each { |column| @column_name_to_column[column.name] = column }
