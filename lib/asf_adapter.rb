@@ -424,6 +424,24 @@ module ActiveRecord
       end
       
       
+      def retrieve_field_values(object_type, fields, ids, name = nil) 
+        msg = "retrieve(#{object_type}, [#{ids.to_a.join(', ')}])"
+        log(msg, name) {
+          retrieve_element = []      
+          retrieve_element << :fieldList << fields.to_a.join(", ")
+          retrieve_element << 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << object_type
+          ids.to_a.each { |id| retrieve_element << :ids << id }
+          
+          result = get_result(@connection.retrieve(retrieve_element), :retrieve)
+          
+          result = [ result ] unless result.is_a?(Array)
+          
+          # Remove unwanted :type and normalize :Id if required
+          result.map { |v| v.delete(:type); v[:Id] = v[:Id][0] if v[:Id].is_a? Array; v }
+        }
+      end
+      
+      
       def get_fields(columns, names, values, access_check) 
         fields = {}
         names.each_with_index do | name, n | 

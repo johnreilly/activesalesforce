@@ -41,6 +41,7 @@ module ActiveRecord
         @type = get_type(field[:type])
         @limit = field[:length]
         @label = field[:label]
+        @name_field = field[:nameField] == "true"
         
         @text = [:string, :text].include? @type
         @number = [:float, :integer].include? @type
@@ -56,6 +57,10 @@ module ActiveRecord
           @name = @name.chop.chop << "id__c" if @custom
         end
       end
+      
+      def is_name?
+        @name_field
+      end 
       
       def get_type(field_type)
           case field_type

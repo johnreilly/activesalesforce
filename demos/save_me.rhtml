@@ -1,0 +1,5 @@
+<% require 'set' %>
+<% ids_to_resolve = (@contact.class.columns.inject(Set.new) { |memo, column| value = @contact.send(column.name); memo.add(value) if value and column.reference_to; memo }).to_a %>
+<h3>Ids to be resolved via AJAX => [<%= ids_to_resolve.join(", ") %>]<h3>
+
+<%= link_to_remote("Resove IDs", :url => { :action => :resolve_ids, :ids_to_resolve => ids_to_resolve }, :complete => "alert('Resolved response ' + request.responseText)") %>
