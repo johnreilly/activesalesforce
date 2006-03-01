@@ -1,0 +1,62 @@
+=begin
+  ActiveSalesforce
+  Copyright 2006 Doug Chasman
+ 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+=end
+
+require 'rubygems'
+require_gem 'rails', ">= 1.0.0"
+
+require 'pp'
+
+
+module ActiveSalesforce  
+  class IdResolver
+    
+    def initialize(connection)
+      @connection = connection
+      @object_type_to_ids = {}
+    end
+    
+    
+    def add(record)
+      record.class.columns.each do column
+        reference_to = column.reference_to
+        next unless reference_to
+        
+        value = object.send(column.name)
+        if value
+          ids = @object_type_to_ids[reference_to]
+          
+          unless ids
+            ids = []
+            @object_type_to_ids[reference_to] = ids
+          end
+          
+          ids << value          
+        end
+      end
+    end
+    
+    
+    def resolve
+      @object_type_to_ids.each do |object_type, ids|
+        name_columns = (Contact.columns.reject { |column| not column.is_name? }).map { |column| column.api_name }
+        field_values = @connection.retrieve_field_values(object_type, fields, ids, name = nil) 
+      end
+    end
+    
+  end
+  
+end    
