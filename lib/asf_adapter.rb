@@ -27,6 +27,7 @@ require File.dirname(__FILE__) + '/relationship_definition'
 require File.dirname(__FILE__) + '/boxcar_command'
 require File.dirname(__FILE__) + '/entity_definition'
 require File.dirname(__FILE__) + '/asf_active_record'
+require File.dirname(__FILE__) + '/id_resolver'
 
 
 class ResultArray < Array

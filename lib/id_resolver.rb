@@ -31,30 +31,52 @@ module ActiveSalesforce
     
     
     def add(record)
-      record.class.columns.each do column
+      record.class.columns.each do |column|
         reference_to = column.reference_to
         next unless reference_to
         
-        value = object.send(column.name)
+        value = record.send(column.name)
         if value
           ids = @object_type_to_ids[reference_to]
           
           unless ids
-            ids = []
+            ids = Set.new
             @object_type_to_ids[reference_to] = ids
           end
           
-          ids << value          
+          ids << value
         end
       end
     end
     
     
     def resolve
+      result = {}
+      
       @object_type_to_ids.each do |object_type, ids|
-        name_columns = (Contact.columns.reject { |column| not column.is_name? }).map { |column| column.api_name }
-        field_values = @connection.retrieve_field_values(object_type, fields, ids, name = nil) 
+        entity_def = @connection.get_entity_def(object_type)
+        
+        fields = (entity_def.columns.reject { |column| not column.is_name? }).map { |column| column.api_name }
+        
+        field_values = @connection.retrieve_field_values(object_type, fields, ids.to_a, "#{self}.resolve()") 
+        
+        field_values.each do |field_value|
+          id = field_value.delete(:Id)
+          result[id] = field_value
+        end
       end
+      
+      result
+    end
+    
+    
+    def serialize
+      YAML.dump @object_type_to_ids
+    end
+
+
+    def deserialize(source)
+      @object_type_to_ids = YAML.load(source)
     end
     
   end
