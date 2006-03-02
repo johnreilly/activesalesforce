@@ -37,6 +37,9 @@ module ActiveSalesforce
       # Look to see if a SID was passed in the URL
       params = controller.params
       sid = params[:sid]
+      
+      puts "Checking for the presence of a SID for [#{@@klasses.to_a.join(', ')}]"
+      
       if sid
         api_server_url = params[:api_server_url]
         api_server_url = 'http://na1-api.salesforce.com/services/Soap/u/7.0' unless api_server_url
