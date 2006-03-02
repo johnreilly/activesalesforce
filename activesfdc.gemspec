@@ -24,7 +24,7 @@
 require 'rubygems'
 SPEC = Gem::Specification.new do |s|
   s.name = "activesalesforce"
-  s.version = "0.3.8"
+  s.version = "0.3.9"
   s.author = "Doug Chasman"
   s.email = "dchasman@salesforce.com"
   s.homepage = "http://rubyforge.org/projects/activesfdc/"
@@ -42,5 +42,5 @@ SPEC = Gem::Specification.new do |s|
   s.extra_rdoc_files = ["README"]
   s.add_dependency("rails", ">= 1.0.0")
   s.add_dependency("builder", ">= 1.2.4")
-  s.add_dependency("asf_scaffold_generator", ">= 0.0.8")
+  s.add_dependency("asf_scaffold_generator", ">= 0.0.9")
 end
