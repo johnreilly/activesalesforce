@@ -30,8 +30,14 @@ module ActiveSalesforce
     end
     
     
-    def add(record)
-      record.class.columns.each do |column|
+    def add(record, columns = nil)
+      if columns
+        columns = columns.to_a.map { |column_name| record.column_for_attribute(column_name) }
+      else
+        columns = record.class.columns
+      end
+      
+      columns.each do |column|
         reference_to = column.reference_to
         next unless reference_to
         
