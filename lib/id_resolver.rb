@@ -43,13 +43,7 @@ module ActiveSalesforce
         
         value = record.send(column.name)
         if value
-          ids = @object_type_to_ids[reference_to]
-          
-          unless ids
-            ids = Set.new
-            @object_type_to_ids[reference_to] = ids
-          end
-          
+          ids = @object_type_to_ids[reference_to] ||= Set.new
           ids << value
         end
       end
