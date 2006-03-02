@@ -25,6 +25,15 @@
   		
 5. proceed using standard Rails development techniques!  	
 
+== Advanced Features
+
+  1. Session ID based Authentication: Add the following to /app/controllers/application.rb to enable SID auth for all controllers
+  
+  		class ApplicationController < ActionController::Base
+  			before_filter ActiveSalesforce::SessionIDAuthenticationFilter
+		end
+		
+  2. Boxcar'ing of updates, inserts, and deletes. Use <YourModel>.transaction() to demark boxcar boundaries.
 
 == Description of contents
 
