@@ -66,6 +66,9 @@ module ActiveSalesforce
         end
       end
       
+      puts "Resolving IDs"
+      pp result
+      
       result
     end
     
