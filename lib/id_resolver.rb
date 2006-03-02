@@ -58,6 +58,8 @@ module ActiveSalesforce
         
         fields = (entity_def.columns.reject { |column| not column.is_name? }).map { |column| column.api_name }
         
+        # DCHASMAN TODO Boxcar into requests of no more than 200 retrieves per request
+        puts "Resolving references to #{object_type}"
         field_values = @connection.retrieve_field_values(object_type, fields, ids.to_a, "#{self}.resolve()") 
         
         field_values.each do |field_value|
@@ -65,9 +67,6 @@ module ActiveSalesforce
           result[id] = field_value
         end
       end
-      
-      puts "Resolving IDs"
-      pp result
       
       result
     end
