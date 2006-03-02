@@ -559,6 +559,7 @@ module ActiveRecord
         end
         
         klass.set_inheritance_column nil
+        klass.set_primary_key "id" 
         klass.lock_optimistically = false
         klass.record_timestamps = false
         klass.default_timezone = :utc 
