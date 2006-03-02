@@ -494,7 +494,7 @@ module ActiveRecord
           # Check for the loss of asf AR setup 
           entity_klass = class_from_entity_name(entity_name)
           
-          configure_active_record cached_entity_def unless entity_klass.respond_to?(:asf_augmented?)
+          configure_active_record(cached_entity_def) unless entity_klass.respond_to?(:asf_augmented?)
           
           return cached_entity_def 
         end
