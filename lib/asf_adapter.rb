@@ -1,23 +1,23 @@
 =begin
-  ActiveSalesforce
-  Copyright 2006 Doug Chasman
- 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
- 
-     http://www.apache.org/licenses/LICENSE-2.0
- 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+ActiveSalesforce
+Copyright 2006 Doug Chasman
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 =end
 
 require 'rubygems'
 require_gem 'rails', ">= 1.0.0"
-  
+
 require 'thread'  
 require 'benchmark'
 
@@ -29,6 +29,7 @@ require File.dirname(__FILE__) + '/entity_definition'
 require File.dirname(__FILE__) + '/asf_active_record'
 require File.dirname(__FILE__) + '/id_resolver'
 require File.dirname(__FILE__) + '/sid_authentication_filter'
+require File.dirname(__FILE__) + '/recording_binding'
 
 
 class ResultArray < Array
@@ -51,18 +52,18 @@ module ActiveRecord
       # Default to production system using 7.0 API
       url = config[:url]
       url = "https://www.salesforce.com/services/Soap/u/7.0" unless url
-
+      
       sid = config[:sid]  
       username = config[:username]
       password = config[:password]
-
+      
       # Recording/playback support      
       recording_source = config[:recording_source]
       recording = config[:recording]
       
       if recording_source
         recording_source = File.open(recording_source, recording ? "w" : "r")
-        binding = RecordingBinding.new(url, nil, recording != nil, recording_source)
+        binding = ActiveSalesforce::RecordingBinding.new(url, nil, recording != nil, recording_source, logger)
         binding.login(username, password) unless sid
       end
       
@@ -81,7 +82,7 @@ module ActiveRecord
         ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, sid], config)
       else
         # Check to insure that the second to last path component is a 'u' for Partner API
-        raise ConnectionAdapters::SalesforceError.new(logger, "Invalid salesforce server url '#{url}', must be a valid Parter API URL") unless url.match(/\/u\//i)
+        raise ActiveSalesforce::ASFError.new(logger, "Invalid salesforce server url '#{url}', must be a valid Parter API URL") unless url.match(/\/u\//i)
         
         binding = @@cache["#{url}.#{username}.#{password}"] unless binding
         
@@ -102,25 +103,13 @@ module ActiveRecord
       end
     end
   end
-
+  
   
   module ConnectionAdapters
-    class SalesforceError < RuntimeError
-      attr :fault
-      
-      def initialize(logger, message, fault = nil)
-        super message
-        
-        @fault = fault
-        
-        logger.debug("\nSalesforceError:\n   message='#{message}'\n   fault='#{fault}'\n\n")
-      end
-    end
-    
     
     class SalesforceAdapter < AbstractAdapter
       include StringHelper
- 
+      
       MAX_BOXCAR_SIZE = 200
       
       attr_accessor :batch_size
@@ -225,7 +214,7 @@ module ActiveRecord
         unless errors.empty?
           message = errors.join("\n")
           fault = (errors.map { |error| error[:message] }).join("\n")
-          SalesforceError.new(@logger, message, fault) 
+          ActiveSalesforce::ASFError.new(@logger, message, fault) 
         end
         
         result
@@ -297,7 +286,7 @@ module ActiveRecord
             column_name.sub!(/\w+\./, '')
             
             column = columns[column_name]
-            raise SalesforceError.new(@logger, "Column not found for #{column_name}!") unless column
+            raise ActiveSalesforce::ASFError.new(@logger, "Column not found for #{column_name}!") unless column
             
             column.api_name
           end
@@ -444,7 +433,16 @@ module ActiveRecord
           result = [ result ] unless result.is_a?(Array)
           
           # Remove unwanted :type and normalize :Id if required
-          result.map { |v| v.delete(:type); v[:Id] = v[:Id][0] if v[:Id].is_a? Array; v }
+          field_values = []
+          result.each do |v| 
+            v = v.dup
+            v.delete(:type)
+            v[:Id] = v[:Id][0] if v[:Id].is_a? Array
+            
+            field_values << v
+          end
+          
+          field_values
         }
       end
       
@@ -457,7 +455,7 @@ module ActiveRecord
           if value
             column = columns[name]
             
-            raise SalesforceError.new(@logger, "Column not found for #{name}!") unless column
+            raise ActiveSalesforce::ASFError.new(@logger, "Column not found for #{name}!") unless column
             
             value.gsub!(/''/, "'") if value.is_a? String
             
@@ -474,7 +472,7 @@ module ActiveRecord
         responseName = (method.to_s + "Response").to_sym
         finalResponse = response[responseName]
         
-        raise SalesforceError.new(@logger, response[:Fault][:faultstring], response.fault) unless finalResponse
+        raise ActiveSalesforce::ASFError.new(@logger, response[:Fault][:faultstring], response.fault) unless finalResponse
         
         result = finalResponse[:result]
       end       
@@ -484,7 +482,7 @@ module ActiveRecord
         result = [ result ] unless result.is_a?(Array)
         
         result.each do |r|
-          raise SalesforceError.new(@logger, r[:errors], r[:errors][:message]) unless r[:success] == "true"
+          raise ActiveSalesforce::ASFError.new(@logger, r[:errors], r[:errors][:message]) unless r[:success] == "true"
         end
         
         result
@@ -510,7 +508,7 @@ module ActiveRecord
           begin
             metadata = get_result(@connection.describeSObject(:sObjectType => entity_name), :describeSObject)
             custom = false
-          rescue SalesforceError => e
+          rescue ActiveSalesforce::ASFError => e
             # Fallback and see if we can find a custom object with this name
             @logger.debug("   Unable to find medata for '#{entity_name}', falling back to custom object name #{entity_name + "__c"}")
             
@@ -540,8 +538,8 @@ module ActiveRecord
           key_prefix = metadata[:keyPrefix]
           
           entity_def = ActiveSalesforce::EntityDefinition.new(self, entity_name, 
-            cached_columns, cached_relationships, custom, key_prefix)
-            
+          cached_columns, cached_relationships, custom, key_prefix)
+          
           @entity_def_map[entity_name] = entity_def
           @keyprefix_to_entity_def_map[key_prefix] = entity_def
           
@@ -632,12 +630,12 @@ module ActiveRecord
       
       
       def class_from_entity_name(entity_name)
-          entity_klass = @class_to_entity_map[entity_name.upcase]
-          @logger.debug("Found matching class '#{entity_klass}' for entity '#{entity_name}'") if entity_klass
-          
-          entity_klass = entity_name.constantize unless entity_klass
-                    
-          entity_klass
+        entity_klass = @class_to_entity_map[entity_name.upcase]
+        @logger.debug("Found matching class '#{entity_klass}' for entity '#{entity_name}'") if entity_klass
+        
+        entity_klass = entity_name.constantize unless entity_klass
+        
+        entity_klass
       end
       
       
