@@ -19,28 +19,24 @@ require 'yaml'
 require File.dirname(__FILE__) + '/rforce'
 
 
-class MockBinding < RForce::Binding
+class RecordingBinding < RForce::Binding
   attr_reader :recorded_responses
   
-  #Connect to the server securely.
-  def initialize(url, sid, recording)
+  def initialize(url, sid, recording, recording_source)
+    super(url, sid) 
+
     @recording = recording
     @recorded_responses = {}
+    @recording_source = recording_source
+
+    unless @recording
+      YAML.load_documents(recording_source) do |recorded_response|
+        @recorded_responses.merge!(recorded_response)
+      end
+    end
+  end
+  
     
-    super(url, sid) if @recording
-  end
-  
-  
-  def save(f)
-    YAML.dump(@recorded_responses, f)
-  end
-  
-  
-  def load(f)
-    @recorded_responses = YAML.load(f)
-  end
-  
-  
   #Call a method on the remote server.  Arguments can be
   #a hash or (if order is important) an array of alternating
   #keys and values.
@@ -50,18 +46,17 @@ class MockBinding < RForce::Binding
     key = "#{method}(#{safe_args.join(':')})"
     
     if @recording
-      response = super(method, args)
-      @recorded_responses[key] = response
+      unless @recorded_responses[key]
+        response = super(method, args)
+        YAML.dump({ key, response }, @recording_source)
+        
+        # track this { key => request } to avoid duplication in the YAML
+        @recorded_responses[key] = true
+      end
     else
       response = @recorded_responses[key]
       
-      unless response
-        @recorded_responses.each do |request, reponse|
-          #pp request
-        end
-        
-        raise "Unable to find matching response for recorded request '#{key}'" 
-      end
+      raise "Unable to find matching response for recorded request '#{key}'" unless response
     end
     
     response

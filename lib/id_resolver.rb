@@ -23,6 +23,7 @@ require 'pp'
 
 module ActiveSalesforce  
   class IdResolver
+    attr_reader :object_type_to_ids
     
     def initialize(connection)
       @connection = connection

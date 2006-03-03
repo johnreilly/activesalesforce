@@ -53,10 +53,17 @@ module ActiveRecord
       url = "https://www.salesforce.com/services/Soap/u/7.0" unless url
 
       sid = config[:sid]  
-      binding = config[:binding] if config[:binding]
+      username = config[:username]
+      password = config[:password]
+
+      # Recording/playback support      
+      recording_source = config[:recording_source]
+      recording = config[:recording]
       
-      if binding
-        logger.debug("   via provided binding #{binding}\n")
+      if recording_source
+        recording_source = File.open(recording_source, recording ? "w" : "r")
+        binding = RecordingBinding.new(url, nil, recording != nil, recording_source)
+        binding.login(username, password) unless sid
       end
       
       if sid
@@ -76,9 +83,6 @@ module ActiveRecord
         # Check to insure that the second to last path component is a 'u' for Partner API
         raise ConnectionAdapters::SalesforceError.new(logger, "Invalid salesforce server url '#{url}', must be a valid Parter API URL") unless url.match(/\/u\//i)
         
-        username = config[:username]
-        password = config[:password]
-        
         binding = @@cache["#{url}.#{username}.#{password}"] unless binding
         
         unless binding
@@ -86,7 +90,7 @@ module ActiveRecord
           
           seconds = Benchmark.realtime {
             binding = RForce::Binding.new(url, sid)
-            binding.login(username, password).result
+            binding.login(username, password)
             
             @@cache["#{url}.#{username}.#{password}"] = binding
           }

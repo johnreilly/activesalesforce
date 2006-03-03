@@ -31,9 +31,7 @@ module Asf
       LOGGER = Logger.new(STDOUT)
       @@config = YAML.load_file(File.dirname(__FILE__) + '/config.yml').symbolize_keys
     
-      attr_reader :connection
-      
-      
+
       def recording?
         @recording
       end
@@ -66,35 +64,19 @@ module Asf
     
         @recording = (((not File.exists?(recording_file_name)) or config[:recording]) or @force_recording.include?(method_name.to_sym))
         
-        @connection = MockBinding.new(url, nil, recording?)
+        action = { :adapter => 'activesalesforce', :username => config[:username], 
+          :password => config[:password], :recording_source => recording_file_name, }
+        
+        action[:recording] = true if @recording
 
         ActiveRecord::Base.logger = LOGGER
         ActiveRecord::Base.clear_connection_cache!
         ActiveRecord::Base.reset_column_information_and_inheritable_attributes_for_all_subclasses
-        ActiveRecord::Base.establish_connection(:adapter => 'activesalesforce', :username => config[:username], 
-          :password => config[:password], :binding => connection)
-            
-        unless recording?
-          File.open(recording_file_name) do |f|
-            puts "Opening recorded binding #{recording_file_name}"
-            connection.load(f)
-          end
-        end
+        ActiveRecord::Base.establish_connection(action)
         
-        response = connection.login(config[:username], config[:password])  
+        @connection = ActiveRecord::Base.connection
       end
       
-      
-      def teardown
-        if recording?
-          puts "Saving recorded binding #{recording_file_name}"
-
-          File.open(recording_file_name, "w") do |f|
-            connection.save(f)
-          end
-        end 
-      end
-    
       
       def recording_file_name
         File.dirname(__FILE__) + "/recorded_results/#{self.class.name.gsub('::', '')}.#{method_name}.recording"
