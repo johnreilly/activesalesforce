@@ -30,15 +30,7 @@ require File.dirname(__FILE__) + '/asf_active_record'
 require File.dirname(__FILE__) + '/id_resolver'
 require File.dirname(__FILE__) + '/sid_authentication_filter'
 require File.dirname(__FILE__) + '/recording_binding'
-
-
-class ResultArray < Array
-  attr_reader :actual_size
-  
-  def initialize(actual_size)
-    @actual_size = actual_size
-  end
-end
+require File.dirname(__FILE__) + '/result_array'
 
 
 module ActiveRecord    
@@ -274,10 +266,10 @@ module ActiveRecord
           soql.sub!(/\s+FROM\s+\w+/i, " FROM #{entity_def.api_name}")
           
           # Look for a LIMIT clause
-          soql.sub!(/LIMIT\s+1/i, "")
+          limit = extract_sql_modifier(soql, "LIMIT")
           
           # Look for an OFFSET clause
-          soql.sub!(/\d+\s+OFFSET\s+\d+/i, "")
+          offset = extract_sql_modifier(soql, "OFFSET")
           
           # Fixup column references to use api names
           columns = columns_map(table_name)
@@ -295,12 +287,14 @@ module ActiveRecord
           soql.sub!(/#{raw_table_name}\./i, "#{entity_def.api_name}.")
           
           @connection.batch_size = @batch_size if @batch_size
+          @connection.batch_size = limit if limit
+          
           @batch_size = nil
           
           queryResult = get_result(@connection.query(:queryString => soql), :query)
           records = queryResult[:records]
           
-          result = ResultArray.new(queryResult[:size].to_i)
+          result = ActiveSalesforce::ResultArray.new(queryResult[:size].to_i)
           return result unless records
           
           records = [ records ] unless records.is_a?(Array)
@@ -324,7 +318,10 @@ module ActiveRecord
               end
             end  
             
-            result << row   
+            result << row
+            
+            # Insure that only LIMIT rows are returned
+            break if limit and result.length >= limit   
           end
           
           if selectCountMatch
@@ -468,6 +465,17 @@ module ActiveRecord
       end
       
       
+      def extract_sql_modifier(soql, modifier)
+          value = soql.match(/\s+#{modifier}\s+(\d+)/i)
+          if value            
+            value = value[1].to_i
+            soql.sub!(/\s+#{modifier}\s+\d+/i, "")
+          end
+          
+          value
+      end
+      
+      
       def get_result(response, method)
         responseName = (method.to_s + "Response").to_sym
         finalResponse = response[responseName]
@@ -538,7 +546,7 @@ module ActiveRecord
           key_prefix = metadata[:keyPrefix]
           
           entity_def = ActiveSalesforce::EntityDefinition.new(self, entity_name, 
-          cached_columns, cached_relationships, custom, key_prefix)
+                                                              cached_columns, cached_relationships, custom, key_prefix)
           
           @entity_def_map[entity_name] = entity_def
           @keyprefix_to_entity_def_map[key_prefix] = entity_def
