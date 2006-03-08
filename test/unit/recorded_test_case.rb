@@ -17,8 +17,6 @@
 
 
 require 'test/unit'
-require 'mock_binding'
-
 require 'set'
 
 require 'pp'

@@ -18,9 +18,9 @@
 require 'rubygems'
 
 #require_gem 'activesalesforce', '>= 0.2.6'
-require 'activesalesforce'
+require File.dirname(__FILE__) + '/../../lib/activesalesforce'
 
-require 'recorded_test_case'
+require File.dirname(__FILE__) + '/recorded_test_case'
 require 'pp'
 
 
