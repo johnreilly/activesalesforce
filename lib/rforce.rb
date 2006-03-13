@@ -132,25 +132,25 @@ module RForce
     
     #Fill in the guts of this typical SOAP envelope
     #with the session ID and the body of the SOAP request.
-Envelope = <<-HERE
-    <?xml version="1.0" encoding="utf-8" ?>
-    <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-      xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <env:Header>
-        <SessionHeader>
-          <sessionId>%s</sessionId>
-        </SessionHeader>
-        <QueryOptions>
-          <batchSize>%d</batchSize>
-        </QueryOptions>
-        %s
-      </env:Header>
-      <env:Body>
-      %s
-      </env:Body>
-    </env:Envelope>
-HERE
+    Envelope = <<-HERE
+<?xml version="1.0" encoding="utf-8" ?>
+<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <env:Header>
+    <SessionHeader>
+      <sessionId>%s</sessionId>
+    </SessionHeader>
+    <QueryOptions>
+      <batchSize>%d</batchSize>
+    </QueryOptions>
+    %s
+  </env:Header>
+  <env:Body>
+    %s
+  </env:Body>
+</env:Envelope>
+    HERE
     
     AssignmentRuleHeaderUsingRuleId = "<AssignmentRuleHeader><assignment_rule_id>%s</assignment_rule_id></AssignmentRuleHeader>"
     AssignmentRuleHeaderUsingDefaultRule = "<AssignmentRuleHeader><use_default_rule>true</use_default_rule></AssignmentRuleHeader>"
@@ -192,7 +192,10 @@ HERE
       
       response = call_remote(:login, [:username, user, :password, password])
       
-      raise "Incorrect user name / password [#{response.fault}]" unless response.loginResponse
+      unless response.loginResponse
+        pp response
+        raise "Incorrect user name / password [#{response.fault}]" 
+      end
       
       result = response[:loginResponse][:result]
       @session_id = result[:sessionId]
@@ -216,13 +219,7 @@ HERE
       extra_headers << (AssignmentRuleHeaderUsingRuleId % assignment_rule_id) if assignment_rule_id
       extra_headers << AssignmentRuleHeaderUsingDefaultRule if use_default_rule
       extra_headers << MruHeader if update_mru
-      
-      if extra_headers != ""
-        puts "\n\nEXTRA HEADERS!!!"
-        pp extra_headers 
-        puts "\n\n"
-      end
-      
+
       #Fill in the blanks of the SOAP envelope with our
       #session ID and the expanded XML of our request.
       request = (Envelope % [@session_id, @batch_size, extra_headers, expanded])
