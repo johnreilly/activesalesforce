@@ -18,7 +18,6 @@
 
 require 'test/unit'
 require 'set'
-
 require 'pp'
 
 
@@ -63,7 +62,7 @@ module Asf
         @recording = (((not File.exists?(recording_file_name)) or config[:recording]) or @force_recording.include?(method_name.to_sym))
         
         action = { :adapter => 'activesalesforce', :username => config[:username], 
-          :password => config[:password], :recording_source => recording_file_name, }
+          :password => config[:password], :recording_source => recording_file_name }
         
         action[:recording] = true if @recording
 

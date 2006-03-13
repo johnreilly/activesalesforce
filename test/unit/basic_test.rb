@@ -17,7 +17,7 @@
 
 require 'rubygems'
 
-#require_gem 'activesalesforce', '>= 0.2.6'
+#require_gem 'activesalesforce', '>= 0.4.3'
 require File.dirname(__FILE__) + '/../../lib/activesalesforce'
 
 require File.dirname(__FILE__) + '/recorded_test_case'
@@ -42,7 +42,7 @@ module Asf
       def initialize(test_method_name)
         super(test_method_name)
         
-        #force_recording :test_batch_insert
+        #force_recording :test_use_update_mru
       end
       
       def setup
@@ -51,6 +51,9 @@ module Asf
         super
 
         @contact = Contact.new
+        
+        reset_header_options
+        
         contact.first_name = 'DutchTestFirstName'
         contact.last_name = 'DutchTestLastName'
         contact.home_phone = '555-555-1212'
@@ -60,9 +63,18 @@ module Asf
       end
       
       def teardown
+        reset_header_options
+      
         contact.destroy if contact
 
         super
+      end
+      
+      def reset_header_options
+        binding = Contact.connection.binding
+        binding.assignment_rule_id = nil
+        binding.use_default_rule = false
+        binding.update_mru = false      
       end
 
 
@@ -101,6 +113,23 @@ module Asf
         user = contact.created_by
         assert_equal contact.created_by_id, user.id
       end
+      
+      def test_use_update_mru
+        Contact.connection.binding.update_mru = true
+        contact.save
+      end
+
+      def test_use_default_rule
+        Contact.connection.binding.use_default_rule = true
+        contact.save
+      end
+
+      def test_assignment_rule_id
+        Contact.connection.binding.assignment_rule_id = "1234567890"
+        contact.save
+      end
+      
+      
  
       def test_add_notes_to_contact
         n1 = Note.new(:title => "My Title", :body => "My Body")
