@@ -30,6 +30,9 @@ end
 class Department < ActiveRecord::Base
 end
 
+class Address < ActiveRecord::Base
+end
+
 
 module Asf
   module UnitTests
@@ -42,7 +45,7 @@ module Asf
       def initialize(test_method_name)
         super(test_method_name)
         
-        #force_recording :test_use_update_mru
+        #force_recording :test_master_detail
       end
       
       def setup
@@ -183,6 +186,10 @@ module Asf
           c2.destroy
           c1.destroy
         end
+      end
+      
+      def test_find_addresses
+        adresses = Address.find(:all)
       end
                   
     end

@@ -185,8 +185,6 @@ module RForce
     #Log in to the server and remember the session ID
     #returned to us by SalesForce.
     def login(user, password)
-      puts "\n\nIn login(#{user})\n\n"
-      
       @user = user
       @password = password
       

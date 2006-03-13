@@ -254,11 +254,9 @@ module ActiveRecord
           end
           
           raw_table_name = sql.match(/FROM (\w+)/i)[1]
-          table_name = raw_table_name.singularize
-          entity_name = entity_name_from_table(table_name)
-          entity_def = get_entity_def(entity_name)
+          table_name, columns, entity_def = lookup(raw_table_name)
           
-          column_names = api_column_names(table_name)
+          column_names = columns.map { |column| column.api_name }
           
           # Always (unless COUNT*)'ing) select all columns (required for the AR attributes mechanism to work correctly
           soql = sql.sub(/SELECT .+ FROM/i, "SELECT #{column_names.join(', ')} FROM") unless selectCountMatch
@@ -272,7 +270,7 @@ module ActiveRecord
           offset = extract_sql_modifier(soql, "OFFSET")
           
           # Fixup column references to use api names
-          columns = columns_map(table_name)
+          columns = entity_def.column_name_to_column
           soql.gsub!(/((?:\w+\.)?\w+)(?=\s*(?:=|!=|<|>|<=|>=)\s*(?:'[^']*'|NULL|TRUE|FALSE))/mi) do |column_name| 
             # strip away any table alias
             column_name.sub!(/\w+\./, '')
@@ -345,9 +343,8 @@ module ActiveRecord
       def insert(sql, name = nil, pk = nil, id_value = nil, sequence_name = nil)
         log(sql, name) {
           # Convert sql to sobject
-          table_name = sql.match(/INSERT\s+INTO\s+(\w+)\s+/i)[1].singularize
-          entity_name = entity_name_from_table(table_name)
-          columns = columns_map(table_name)
+          table_name, columns, entity_def = lookup(sql.match(/INSERT\s+INTO\s+(\w+)\s+/i)[1])
+          columns = entity_def.column_name_to_column
           
           # Extract array of column names
           names = sql.match(/\((.+)\)\s+VALUES/i)[1].scan(/\w+/i)
@@ -360,7 +357,7 @@ module ActiveRecord
           
           fields = get_fields(columns, names, values, :createable)
           
-          sobject = create_sobject(entity_name, nil, fields)
+          sobject = create_sobject(entity_def.api_name, nil, fields)
           
           # Track the id to be able to update it when the create() is actually executed
           id = String.new
@@ -374,9 +371,8 @@ module ActiveRecord
       def update(sql, name = nil) #:nodoc:
         log(sql, name) {
           # Convert sql to sobject
-          table_name = sql.match(/UPDATE\s+(\w+)\s+/i)[1].singularize
-          entity_name = entity_name_from_table(table_name)
-          columns = columns_map(table_name)
+          table_name, columns, entity_def = lookup(sql.match(/UPDATE\s+(\w+)\s+/i)[1])
+          columns = entity_def.column_name_to_column
           
           match = sql.match(/SET\s+(.+)\s+WHERE/mi)[1]
           names = match.scan(/(\w+)\s*=\s*('|NULL|TRUE|FALSE)/i)
@@ -389,7 +385,7 @@ module ActiveRecord
           
           id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/i)[1]
           
-          sobject = create_sobject(entity_name, id, fields)
+          sobject = create_sobject(entity_def.api_name, id, fields)
           
           @command_boxcar << ActiveSalesforce::BoxcarCommand::Update.new(self, sobject)
         }
@@ -621,19 +617,8 @@ module ActiveRecord
       
       
       def columns(table_name, name = nil)
-        entity_name = entity_name_from_table(table_name)
-        get_entity_def(entity_name).columns
-      end
-      
-      
-      def columns_map(table_name, name = nil)
-        entity_name = entity_name_from_table(table_name)
-        get_entity_def(entity_name).column_name_to_column
-      end
-      
-      
-      def entity_name_from_table(table_name)
-        return table_name.singularize.camelize
+        table_name, columns, entity_def = lookup(table_name)
+        entity_def.columns
       end
       
       
@@ -648,11 +633,9 @@ module ActiveRecord
       
       
       def create_sobject(entity_name, id, fields)
-        entity_def = get_entity_def(entity_name)
-        
         sobj = []
         
-        sobj << 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << entity_def.api_name
+        sobj << 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << entity_name
         sobj << 'Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << id if id    
         
         # now add any changed fields
@@ -668,10 +651,14 @@ module ActiveRecord
       def column_names(table_name)
         columns(table_name).map { |column| column.name }
       end
+
       
-      
-      def api_column_names(table_name)
-        columns(table_name).map { |column| column.api_name }
+      def lookup(raw_table_name)
+        table_name = raw_table_name.singularize
+        entity_def = get_entity_def(table_name.camelize)
+        columns = entity_def.columns
+        
+        [table_name, columns, entity_def]
       end
       
     end
