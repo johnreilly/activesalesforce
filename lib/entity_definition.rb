@@ -23,11 +23,12 @@ require 'pp'
 
 module ActiveSalesforce  
   class EntityDefinition
-    attr_reader :name, :columns, :column_name_to_column, :api_name_to_column, :relationships, :key_prefix
+    attr_reader :name, :asf_class, :columns, :column_name_to_column, :api_name_to_column, :relationships, :key_prefix
     
-    def initialize(connection, name, columns, relationships, custom, key_prefix)
+    def initialize(connection, name, asf_class, columns, relationships, custom, key_prefix)
       @connection = connection
       @name = name
+      @asf_class = asf_class
       @columns = columns
       @relationships = relationships
       @custom = custom

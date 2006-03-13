@@ -105,7 +105,7 @@ module ActiveRecord
       MAX_BOXCAR_SIZE = 200
       
       attr_accessor :batch_size
-      attr_reader :entity_def_map, :keyprefix_to_entity_def_map, :config
+      attr_reader :entity_def_map, :keyprefix_to_entity_def_map, :config, :class_to_entity_map
       
       def initialize(connection, logger, connection_options, config)
         super(connection, logger)
@@ -121,8 +121,10 @@ module ActiveRecord
       
       
       def set_class_for_entity(klass, entity_name)
-        @logger.debug("Setting @class_to_entity_map['#{entity_name.upcase}'] = #{klass}")
+        @logger.debug("Setting @class_to_entity_map['#{entity_name.upcase}'] = #{klass} for connection #{self}")
         @class_to_entity_map[entity_name.upcase] = klass
+        
+        pp @class_to_entity_map
       end
       
       
@@ -541,13 +543,13 @@ module ActiveRecord
           
           key_prefix = metadata[:keyPrefix]
           
-          entity_def = ActiveSalesforce::EntityDefinition.new(self, entity_name, 
+          entity_def = ActiveSalesforce::EntityDefinition.new(self, entity_name, entity_klass,
                                                               cached_columns, cached_relationships, custom, key_prefix)
           
           @entity_def_map[entity_name] = entity_def
           @keyprefix_to_entity_def_map[key_prefix] = entity_def
           
-          configure_active_record entity_def
+          configure_active_record(entity_def)
           
           entity_def
         }
@@ -557,7 +559,7 @@ module ActiveRecord
       def configure_active_record(entity_def)
         entity_name = entity_def.name
         klass = class_from_entity_name(entity_name)
-        
+
         class << klass
           def asf_augmented?
             true
@@ -584,7 +586,7 @@ module ActiveRecord
             # DCHASMAN TODO Figure out how to handle polymorphic refs (e.g. Note.parent can refer to 
             # Account, Contact, Opportunity, Contract, Asset, Product2, <CustomObject1> ... <CustomObject(n)>
             if reference_to.is_a? Array
-              @logger.debug("   Skipping unsupported polymophic one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to [#{relationship.reference_to.join(', ')}] using #{foreign_key}")
+              @logger.debug("   Skipping unsupported polymophic one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{klass} to [#{relationship.reference_to.join(', ')}] using #{foreign_key}")
               next 
             end
             
@@ -599,16 +601,19 @@ module ActiveRecord
               
               referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
               
+              # Automatically inherit the connection from the referencee
+              referenced_klass.connection = klass.connection
+              
               # configure_active_record(get_entity_def(reference_to))
             end
             
             if one_to_many
-              klass.has_many referenceName.to_sym, :class_name => reference_to, :foreign_key => foreign_key, :dependent => false
+              klass.has_many referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => false
             else
-              klass.belongs_to referenceName.to_sym, :class_name => reference_to, :foreign_key => foreign_key, :dependent => false
+              klass.belongs_to referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => false
             end
             
-            #@logger.debug("   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{entity_name} to #{relationship.reference_to} using #{foreign_key}")
+            @logger.debug("   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{klass} to #{referenced_klass} using #{foreign_key}")
             
           end
         end
