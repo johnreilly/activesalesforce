@@ -569,7 +569,7 @@ module ActiveRecord
         # Add support for SID-based authentication
         ActiveSalesforce::SessionIDAuthenticationFilter.register(klass)
         
-        klass.set_inheritance_column nil
+        klass.set_inheritance_column nil unless entity_def.custom?
         klass.set_primary_key "id" 
         klass.lock_optimistically = false
         klass.record_timestamps = false
