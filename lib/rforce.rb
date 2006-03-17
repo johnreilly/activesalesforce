@@ -134,28 +134,29 @@ module RForce
     #with the session ID and the body of the SOAP request.
     Envelope = <<-HERE
 <?xml version="1.0" encoding="utf-8" ?>
-<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <env:Header>
-    <SessionHeader>
-      <sessionId>%s</sessionId>
-    </SessionHeader>
-    <QueryOptions>
-      <batchSize>%d</batchSize>
-    </QueryOptions>
+<soap:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:partner="urn:partner.soap.sforce.com">
+    xmlns:spartner="urn:sobject.partner.soap.sforce.com">
+  <soap:Header>
+    <partner:SessionHeader soap:mustUnderstand='1'>
+      <partner:sessionId>%s</partner:sessionId>
+    </partner:SessionHeader>
+    <partner:QueryOptions soap:mustUnderstand='1'>
+      <partner:batchSize>%d</partner:batchSize>
+    </partner:QueryOptions>
     %s
-  </env:Header>
-  <env:Body>
+  </soap:Header>
+  <soap:Body>
     %s
-  </env:Body>
-</env:Envelope>
+  </soap:Body>
+</soap:Envelope>
     HERE
     
-    AssignmentRuleHeaderUsingRuleId = "<AssignmentRuleHeader><assignment_rule_id>%s</assignment_rule_id></AssignmentRuleHeader>"
-    AssignmentRuleHeaderUsingDefaultRule = "<AssignmentRuleHeader><use_default_rule>true</use_default_rule></AssignmentRuleHeader>"
-    MruHeader = "<MruHeader><update_mru>true</update_mru></MruHeader>"
-
+    AssignmentRuleHeaderUsingRuleId = '<partner:AssignmentRuleHeader soap:mustUnderstand="1"><partner:assignmentRuleId>%s</partner:assignmentRuleId></partner:AssignmentRuleHeader>'
+    AssignmentRuleHeaderUsingDefaultRule = '<partner:AssignmentRuleHeader soap:mustUnderstand="1"><partner:useDefaultRule>true</partner:useDefaultRule></partner:AssignmentRuleHeader>'
+    MruHeader = '<partner:MruHeader soap:mustUnderstand="1"><partner:updateMru>true</partner:updateMru></partner:MruHeader>'
     
     #Connect to the server securely.
     def initialize(url, sid)
