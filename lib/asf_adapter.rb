@@ -150,6 +150,7 @@ module ActiveRecord
         when NilClass              then quoted_value = "NULL"
         when TrueClass             then quoted_value = "TRUE"
         when FalseClass            then quoted_value = "FALSE"
+        when Float, Fixnum, Bignum then quoted_value = "'#{value.to_s}'"
         else                       quoted_value = super(value, column)
         end      
         
