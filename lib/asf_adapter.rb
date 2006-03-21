@@ -33,6 +33,7 @@ require File.dirname(__FILE__) + '/recording_binding'
 require File.dirname(__FILE__) + '/result_array'
 
 
+
 module ActiveRecord    
   class Base   
     @@cache = {}
@@ -123,8 +124,6 @@ module ActiveRecord
       def set_class_for_entity(klass, entity_name)
         @logger.debug("Setting @class_to_entity_map['#{entity_name.upcase}'] = #{klass} for connection #{self}")
         @class_to_entity_map[entity_name.upcase] = klass
-        
-        pp @class_to_entity_map
       end
       
       
@@ -187,13 +186,12 @@ module ActiveRecord
           command.args.each { |arg| args << arg }
         end
         
-        puts "  send_commands(:#{verb}, [#{args.join(', ')}])"
-        
         response = @connection.send(verb, args)
         
         result = get_result(response, verb)
         
         result = [ result ] unless result.is_a?(Array)
+        
         errors = []
         result.each_with_index do |r, n|
           success = r[:success] == "true"
@@ -209,7 +207,7 @@ module ActiveRecord
         unless errors.empty?
           message = errors.join("\n")
           fault = (errors.map { |error| error[:message] }).join("\n")
-          ActiveSalesforce::ASFError.new(@logger, message, fault) 
+          raise ActiveSalesforce::ASFError.new(@logger, message, fault) 
         end
         
         result
@@ -661,7 +659,13 @@ module ActiveRecord
       
       def lookup(raw_table_name)
         table_name = raw_table_name.singularize
-        entity_def = get_entity_def(table_name.camelize)
+        
+        # See if a table name to AR class mapping was registered
+        klass = @class_to_entity_map[table_name.upcase]
+        
+        entity_name = klass ? raw_table_name : table_name.camelize
+        
+        entity_def = get_entity_def(entity_name)
         columns = entity_def.columns
         
         [table_name, columns, entity_def]

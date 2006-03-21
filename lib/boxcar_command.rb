@@ -45,7 +45,8 @@ module ActiveSalesforce
       end
       
       def after_execute(result)
-        @idproxy << result[:id]
+        id = result[:id]
+        @idproxy << id if id
       end
     end
     
