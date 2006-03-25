@@ -67,7 +67,7 @@ module Asf
         action[:recording] = true if @recording
 
         ActiveRecord::Base.logger = LOGGER
-        ActiveRecord::Base.clear_connection_cache!
+        ActiveRecord::Base.clear_active_connections!
         ActiveRecord::Base.reset_column_information_and_inheritable_attributes_for_all_subclasses
         ActiveRecord::Base.establish_connection(action)
         
