@@ -352,9 +352,8 @@ module ActiveRecord
           
           # Extract arrays of values
           values = sql.match(/VALUES\s*\((.+)\)/i)[1]
-          values = values.scan(/(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
-          
-          values.map! { |v| v[7] }
+          values = values.scan(/(NULL|TRUE|FALSE|'(?:(?:[^']|'')*)'),*/mi).flatten
+          values.map! { |v| v.first == "'" ? v.slice(1, v.length - 2) : v == "NULL" ? nil : v }
           
           fields = get_fields(columns, names, values, :createable)
           
@@ -376,11 +375,10 @@ module ActiveRecord
           columns = entity_def.column_name_to_column
           
           match = sql.match(/SET\s+(.+)\s+WHERE/mi)[1]
-          names = match.scan(/(\w+)\s*=\s*('|NULL|TRUE|FALSE)/i)
-          names.map! { |v| v[0] }
+          names = match.scan(/(\w+)\s*=\s*(?:'|NULL|TRUE|FALSE)/i).flatten
           
-          values = match.scan(/=\s*(((NULL))|((TRUE))|((FALSE))|'(([^']|'')*)'),*/mi)
-          values.map! { |v| v[7] }
+          values = match.scan(/=\s*(NULL|TRUE|FALSE|'(?:(?:[^']|'')*)'),*/mi).flatten
+          values.map! { |v| v.first == "'" ? v.slice(1, v.length - 2) : v == "NULL" ? nil : v }
           
           fields = get_fields(columns, names, values, :updateable)
           
