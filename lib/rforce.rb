@@ -253,6 +253,10 @@ module RForce
 
         login(@user, @password)
 
+		#  repackage and rencode request with the new session id
+		request = (Envelope % [@session_id, @batch_size, extra_headers, expanded])
+		request = encode(request)
+
         #Send the request to the server and read the response.
         response = @server.post2(@url.path, request.lstrip, headers)
 
