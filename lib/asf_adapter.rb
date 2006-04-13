@@ -105,7 +105,7 @@ module ActiveRecord
       
       MAX_BOXCAR_SIZE = 200
       
-      attr_accessor :batch_size
+      attr_accessor :batch_size, :auto_create_stubs
       attr_reader :entity_def_map, :keyprefix_to_entity_def_map, :config, :class_to_entity_map
       
       def initialize(connection, logger, connection_options, config)
@@ -118,6 +118,8 @@ module ActiveRecord
         
         @command_boxcar = []
         @class_to_entity_map = {}
+        
+        @auto_create_stubs = false
       end
       
       
@@ -568,9 +570,6 @@ module ActiveRecord
         
         klass.set_inheritance_column nil unless entity_def.custom?
         klass.set_primary_key "id" 
-        klass.lock_optimistically = false
-        klass.record_timestamps = false
-        klass.default_timezone = :utc 
         
         # Create relationships for any reference field
         entity_def.relationships.each do |relationship|
@@ -588,30 +587,33 @@ module ActiveRecord
             end
             
             # Handle references to custom objects
-            reference_to = reference_to.chop.chop.chop.capitalize if reference_to.match(/__c$/)
+            reference_to = reference_to.chop(3).capitalize if reference_to.match(/__c$/)
             
             begin
               referenced_klass = class_from_entity_name(reference_to)
             rescue NameError => e
-              # Automatically create a least a stub for the referenced entity
-              @logger.debug("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")
-              
-              referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
-              
-              # Automatically inherit the connection from the referencee
-              referenced_klass.connection = klass.connection
-              
-              # configure_active_record(get_entity_def(reference_to))
+              if auto_create_stubs
+                # Automatically create a least a stub for the referenced entity
+                @logger.debug("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")
+                
+                referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
+                
+                # Automatically inherit the connection from the referencee
+                referenced_klass.connection = klass.connection
+                
+                # configure_active_record(get_entity_def(reference_to))
+              end
             end
             
-            if one_to_many
-              klass.has_many referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => false
-            else
-              klass.belongs_to referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => false
-            end
-            
-            @logger.debug("   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{klass} to #{referenced_klass} using #{foreign_key}")
-            
+            if referenced_klass
+              if one_to_many
+                klass.has_many referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => false
+              else
+                klass.belongs_to referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => false
+              end
+              
+              @logger.debug("   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{klass} to #{referenced_klass} using #{foreign_key}")
+            end            
           end
         end
         
