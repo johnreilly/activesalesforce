@@ -105,7 +105,7 @@ module ActiveRecord
       
       MAX_BOXCAR_SIZE = 200
       
-      attr_accessor :batch_size, :auto_create_stubs
+      attr_accessor :batch_size
       attr_reader :entity_def_map, :keyprefix_to_entity_def_map, :config, :class_to_entity_map
       
       def initialize(connection, logger, connection_options, config)
@@ -118,8 +118,6 @@ module ActiveRecord
         
         @command_boxcar = []
         @class_to_entity_map = {}
-        
-        @auto_create_stubs = false
       end
       
       
@@ -591,8 +589,11 @@ module ActiveRecord
             
             begin
               referenced_klass = class_from_entity_name(reference_to)
+              
+              # Verify that we found an ActiveRecord descendant that uses the SalesforceAdapter
+              referenced_klass = nil unless referenced_klass.connection.is_a?(SalesforceAdapter)
+
             rescue NameError => e
-              if auto_create_stubs
                 # Automatically create a least a stub for the referenced entity
                 @logger.debug("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")
                 
@@ -600,9 +601,6 @@ module ActiveRecord
                 
                 # Automatically inherit the connection from the referencee
                 referenced_klass.connection = klass.connection
-                
-                # configure_active_record(get_entity_def(reference_to))
-              end
             end
             
             if referenced_klass
