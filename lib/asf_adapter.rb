@@ -585,7 +585,7 @@ module ActiveRecord
             end
             
             # Handle references to custom objects
-            reference_to = reference_to.chop(3).capitalize if reference_to.match(/__c$/)
+            reference_to = reference_to.chomp("__c").capitalize if reference_to.match(/__c$/)
             
             begin
               referenced_klass = class_from_entity_name(reference_to)
