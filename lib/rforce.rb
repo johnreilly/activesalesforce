@@ -233,7 +233,7 @@ module RForce
         'Connection' => 'Keep-Alive',
         'Content-Type' => 'text/xml',
         'SOAPAction' => '""',
-        'User-Agent' => 'ActiveSalesforce'
+        'User-Agent' => 'activesalesforce rforce/1.0'
       }
 
       unless show_debug
