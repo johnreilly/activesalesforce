@@ -248,19 +248,23 @@ module ActiveRecord
       
       def select_all(sql, name = nil) #:nodoc:
         log(sql, name) {
-          # Check for SELECT COUNT(*) FROM query
-          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+FROM/i)       
-          if selectCountMatch
-            soql = "SELECT id FROM#{selectCountMatch.post_match}"
-          end
-          
           raw_table_name = sql.match(/FROM (\w+)/i)[1]
           table_name, columns, entity_def = lookup(raw_table_name)
           
           column_names = columns.map { |column| column.api_name }
-          
-          # Always (unless COUNT*)'ing) select all columns (required for the AR attributes mechanism to work correctly
-          soql = sql.sub(/SELECT .+ FROM/i, "SELECT #{column_names.join(', ')} FROM") unless selectCountMatch
+
+          # Check for SELECT COUNT(*) FROM query
+          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+FROM/i)       
+          if selectCountMatch
+            soql = "SELECT id FROM#{selectCountMatch.post_match}"
+          else 
+            if sql.match(/SELECT\s+\*\s+FROM/i)
+              # Always convert SELECT * to select all columns (required for the AR attributes mechanism to work correctly)
+              soql = sql.sub(/SELECT .+ FROM/i, "SELECT #{column_names.join(', ')} FROM")
+            else
+              soql = sql
+            end
+          end
           
           soql.sub!(/\s+FROM\s+\w+/i, " FROM #{entity_def.api_name}")
           
@@ -295,12 +299,10 @@ module ActiveRecord
 
           add_rows(entity_def, query_result, result, limit)
           
-          while ((query_result[:done].casecmp("true") != 0) and (result.size <= limit or limit == 0))
+          while ((query_result[:done].casecmp("true") != 0) and (result.size < limit or limit == 0))
             # Now queryMore            
             locator = query_result[:queryLocator];
-            query_result = get_result(@connection.querymore(:queryLocator => locator), :queryMore)
-            
-            puts "queryMore()'ing"
+            query_result = get_result(@connection.queryMore(:queryLocator => locator), :queryMore)
             
             add_rows(entity_def, query_result, result, limit)
           end
