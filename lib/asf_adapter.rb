@@ -38,9 +38,13 @@ module ActiveRecord
   class Base   
     @@cache = {}
     
+    def self.debug(msg)
+      logger.debug(msg) if logger
+    end
+
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.activesalesforce_connection(config) # :nodoc:
-      logger.debug("\nUsing ActiveSalesforce connection\n")
+      debug("\nUsing ActiveSalesforce connection\n")
       
       # Default to production system using 7.0 API
       url = config[:url]
@@ -64,12 +68,12 @@ module ActiveRecord
         binding = @@cache["sid=#{sid}"] unless binding
         
         unless binding
-          logger.debug("Establishing new connection for [sid='#{sid}']")
+          debug("Establishing new connection for [sid='#{sid}']")
           
           binding = RForce::Binding.new(url, sid)
           @@cache["sid=#{sid}"] = binding
           
-          logger.debug("Created new connection for [sid='#{sid}']")
+          debug("Created new connection for [sid='#{sid}']")
         end
         
         ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, sid], config)
@@ -80,7 +84,7 @@ module ActiveRecord
         binding = @@cache["#{url}.#{username}.#{password}"] unless binding
         
         unless binding
-          logger.debug("Establishing new connection for ['#{url}', '#{username}']")
+          debug("Establishing new connection for ['#{url}', '#{username}']")
           
           seconds = Benchmark.realtime {
             binding = RForce::Binding.new(url, sid)
@@ -89,7 +93,7 @@ module ActiveRecord
             @@cache["#{url}.#{username}.#{password}"] = binding
           }
           
-          logger.debug("Created new connection for ['#{url}', '#{username}'] in #{seconds} seconds")
+          debug("Created new connection for ['#{url}', '#{username}'] in #{seconds} seconds")
         end
         
         ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, username, password, sid], config)
@@ -122,7 +126,7 @@ module ActiveRecord
       
       
       def set_class_for_entity(klass, entity_name)
-        @logger.debug("Setting @class_to_entity_map['#{entity_name.upcase}'] = #{klass} for connection #{self}")
+        debug("Setting @class_to_entity_map['#{entity_name.upcase}'] = #{klass} for connection #{self}")
         @class_to_entity_map[entity_name.upcase] = klass
       end
       
@@ -525,7 +529,7 @@ module ActiveRecord
             custom = false
           rescue ActiveSalesforce::ASFError => e
             # Fallback and see if we can find a custom object with this name
-            @logger.debug("   Unable to find medata for '#{entity_name}', falling back to custom object name #{entity_name + "__c"}")
+            debug("   Unable to find medata for '#{entity_name}', falling back to custom object name #{entity_name + "__c"}")
             
             metadata = get_result(@connection.describeSObject(:sObjectType => entity_name + "__c"), :describeSObject)
             custom = true
@@ -592,7 +596,7 @@ module ActiveRecord
             # DCHASMAN TODO Figure out how to handle polymorphic refs (e.g. Note.parent can refer to 
             # Account, Contact, Opportunity, Contract, Asset, Product2, <CustomObject1> ... <CustomObject(n)>
             if reference_to.is_a? Array
-              @logger.debug("   Skipping unsupported polymophic one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{klass} to [#{relationship.reference_to.join(', ')}] using #{foreign_key}")
+              debug("   Skipping unsupported polymophic one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{klass} to [#{relationship.reference_to.join(', ')}] using #{foreign_key}")
               next 
             end
             
@@ -607,7 +611,7 @@ module ActiveRecord
 
             rescue NameError => e
                 # Automatically create a least a stub for the referenced entity
-                @logger.debug("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")
+                debug("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")
                 
                 referenced_klass = klass.class_eval("::#{reference_to} = Class.new(ActiveRecord::Base)")
                 
@@ -622,7 +626,7 @@ module ActiveRecord
                 klass.belongs_to referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => false
               end
               
-              @logger.debug("   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{klass} to #{referenced_klass} using #{foreign_key}")
+              debug("   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{klass} to #{referenced_klass} using #{foreign_key}")
             end            
           end
         end
@@ -638,7 +642,7 @@ module ActiveRecord
       
       def class_from_entity_name(entity_name)
         entity_klass = @class_to_entity_map[entity_name.upcase]
-        @logger.debug("Found matching class '#{entity_klass}' for entity '#{entity_name}'") if entity_klass
+        debug("Found matching class '#{entity_klass}' for entity '#{entity_name}'") if entity_klass
         
         entity_klass = entity_name.constantize unless entity_klass
         
@@ -679,6 +683,11 @@ module ActiveRecord
         columns = entity_def.columns
         
         [table_name, columns, entity_def]
+      end
+      
+      
+      def debug(msg)
+        @logger.debug(msg) if @logger
       end
       
     end
