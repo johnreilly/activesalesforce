@@ -83,7 +83,7 @@ module ActiveRecord
         ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, sid], config)
       else
         # Check to insure that the second to last path component is a 'u' for Partner API
-        raise ActiveSalesforce::ASFError.new(logger, "Invalid salesforce server url '#{url}', must be a valid Parter API URL") unless url.match(/\/u\//i)
+        raise ActiveSalesforce::ASFError.new(logger, "Invalid salesforce server url '#{url}', must be a valid Parter API URL") unless url.match(/\/u\//mi)
         
         binding = @@cache["#{url}.#{username}.#{password}"] unless binding
         
@@ -256,7 +256,7 @@ module ActiveRecord
       
       def select_all(sql, name = nil) #:nodoc:
         log(sql, name) {
-          raw_table_name = sql.match(/FROM (\w+)/i)[1]
+          raw_table_name = sql.match(/FROM (\w+)/mi)[1]
           table_name, columns, entity_def = lookup(raw_table_name)
           
           column_names = columns.map { |column| column.api_name }
@@ -264,23 +264,23 @@ module ActiveRecord
           # Check for SELECT COUNT(*) FROM query
           
           # Rails 1.1
-          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+AS\s+count_all\s+FROM/i)
+          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+AS\s+count_all\s+FROM/mi)
           
           # Rails 1.0
-          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+FROM/i) unless selectCountMatch 
+          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+FROM/mi) unless selectCountMatch 
           
           if selectCountMatch
             soql = "SELECT id FROM#{selectCountMatch.post_match}"
           else 
-            if sql.match(/SELECT\s+\*\s+FROM/i)
+            if sql.match(/SELECT\s+\*\s+FROM/mi)
               # Always convert SELECT * to select all columns (required for the AR attributes mechanism to work correctly)
-              soql = sql.sub(/SELECT .+ FROM/i, "SELECT #{column_names.join(', ')} FROM")
+              soql = sql.sub(/SELECT .+ FROM/mi, "SELECT #{column_names.join(', ')} FROM")
             else
               soql = sql
             end
           end
           
-          soql.sub!(/\s+FROM\s+\w+/i, " FROM #{entity_def.api_name}")
+          soql.sub!(/\s+FROM\s+\w+/mi, " FROM #{entity_def.api_name}")
           
           # Look for a LIMIT clause
           limit = extract_sql_modifier(soql, "LIMIT")
@@ -302,7 +302,7 @@ module ActiveRecord
           end
           
           # Update table name references
-          soql.sub!(/#{raw_table_name}\./i, "#{entity_def.api_name}.")
+          soql.sub!(/#{raw_table_name}\./mi, "#{entity_def.api_name}.")
 
           @connection.batch_size = @batch_size if @batch_size
           @batch_size = nil
@@ -370,14 +370,14 @@ module ActiveRecord
       def insert(sql, name = nil, pk = nil, id_value = nil, sequence_name = nil)
         log(sql, name) {
           # Convert sql to sobject
-          table_name, columns, entity_def = lookup(sql.match(/INSERT\s+INTO\s+(\w+)\s+/i)[1])
+          table_name, columns, entity_def = lookup(sql.match(/INSERT\s+INTO\s+(\w+)\s+/mi)[1])
           columns = entity_def.column_name_to_column
           
           # Extract array of column names
-          names = sql.match(/\((.+)\)\s+VALUES/i)[1].scan(/\w+/i)
+          names = sql.match(/\((.+)\)\s+VALUES/mi)[1].scan(/\w+/mi)
           
           # Extract arrays of values
-          values = sql.match(/VALUES\s*\((.+)\)/i)[1]
+          values = sql.match(/VALUES\s*\((.+)\)/mi)[1]
           values = values.scan(/(NULL|TRUE|FALSE|'(?:(?:[^']|'')*)'),*/mi).flatten
           values.map! { |v| v.first == "'" ? v.slice(1, v.length - 2) : v == "NULL" ? nil : v }
           
@@ -397,18 +397,18 @@ module ActiveRecord
       def update(sql, name = nil) #:nodoc:
         log(sql, name) {
           # Convert sql to sobject
-          table_name, columns, entity_def = lookup(sql.match(/UPDATE\s+(\w+)\s+/i)[1])
+          table_name, columns, entity_def = lookup(sql.match(/UPDATE\s+(\w+)\s+/mi)[1])
           columns = entity_def.column_name_to_column
           
           match = sql.match(/SET\s+(.+)\s+WHERE/mi)[1]
-          names = match.scan(/(\w+)\s*=\s*(?:'|NULL|TRUE|FALSE)/i).flatten
+          names = match.scan(/(\w+)\s*=\s*(?:'|NULL|TRUE|FALSE)/mi).flatten
           
           values = match.scan(/=\s*(NULL|TRUE|FALSE|'(?:(?:[^']|'')*)'),*/mi).flatten
           values.map! { |v| v.first == "'" ? v.slice(1, v.length - 2) : v == "NULL" ? nil : v }
           
           fields = get_fields(columns, names, values, :updateable)
           
-          id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/i)[1]
+          id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/mi)[1]
           
           sobject = create_sobject(entity_def.api_name, id, fields)
           
@@ -487,10 +487,10 @@ module ActiveRecord
       
       
       def extract_sql_modifier(soql, modifier)
-          value = soql.match(/\s+#{modifier}\s+(\d+)/i)
+          value = soql.match(/\s+#{modifier}\s+(\d+)/mi)
           if value            
             value = value[1].to_i
-            soql.sub!(/\s+#{modifier}\s+\d+/i, "")
+            soql.sub!(/\s+#{modifier}\s+\d+/mi, "")
           end
           
           value
@@ -549,7 +549,7 @@ module ActiveRecord
             column = SalesforceColumn.new(field) 
             cached_columns << column
             
-            cached_relationships << SalesforceRelationship.new(field, column) if field[:type] =~ /reference/i
+            cached_relationships << SalesforceRelationship.new(field, column) if field[:type] =~ /reference/mi
           end
           
           relationships = metadata[:childRelationships]
