@@ -41,6 +41,10 @@ module ActiveRecord
     def self.debug(msg)
       logger.debug(msg) if logger
     end
+    
+    def self.flush_connections()
+      @@cache = {}
+    end
 
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.activesalesforce_connection(config) # :nodoc:
@@ -258,7 +262,13 @@ module ActiveRecord
           column_names = columns.map { |column| column.api_name }
 
           # Check for SELECT COUNT(*) FROM query
-          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+FROM/i)       
+          
+          # Rails 1.1
+          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+AS\s+count_all\s+FROM/i)
+          
+          # Rails 1.0
+          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+FROM/i) unless selectCountMatch 
+          
           if selectCountMatch
             soql = "SELECT id FROM#{selectCountMatch.post_match}"
           else 
