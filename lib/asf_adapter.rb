@@ -228,15 +228,17 @@ module ActiveRecord
         
         previous_command = nil
         commands = []
+        
         @command_boxcar.each do |command|
           if commands.length >= MAX_BOXCAR_SIZE or (previous_command and (command.verb != previous_command.verb))
             send_commands(commands)
+            
             commands = []
+            previous_command = nil
           else
             commands << command
+	        previous_command = command
           end
-          
-          previous_command = command
         end
         
         # Finish off the partial boxcar
