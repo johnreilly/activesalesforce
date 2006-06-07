@@ -55,7 +55,7 @@ require 'stringio'
 require 'rexml/document'
 require 'rexml/xpath'
 require 'rubygems'
-require_gem 'builder'
+require_gem 'builder', ">= 2.0.0"
 
 
 module RForce
@@ -222,7 +222,7 @@ module RForce
       #Fill in the blanks of the SOAP envelope with our
       #session ID and the expanded XML of our request.
       request = (Envelope % [@session_id, @batch_size, extra_headers, expanded])
-
+      
       # reset the batch size for the next request
       @batch_size = DEFAULT_BATCH_SIZE
 

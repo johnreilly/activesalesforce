@@ -54,9 +54,9 @@ module ActiveRecord
       url = config[:url]
       url = "https://www.salesforce.com/services/Soap/u/7.0" unless url
       
-      sid = config[:sid]  
-      username = config[:username]
-      password = config[:password]
+      sid = config[:sid]
+      username = config[:username].to_s
+      password = config[:password].to_s
       
       # Recording/playback support      
       recording_source = config[:recording_source]
@@ -88,7 +88,7 @@ module ActiveRecord
         binding = @@cache["#{url}.#{username}.#{password}"] unless binding
         
         unless binding
-          debug("Establishing new connection for ['#{url}', '#{username}']")
+          debug("Establishing new connection for ['#{url}', '#{username}'")
           
           seconds = Benchmark.realtime {
             binding = RForce::Binding.new(url, sid)
