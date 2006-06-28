@@ -440,6 +440,41 @@ module ActiveRecord
       end
       
       
+      def get_updated(object_type, start_date, end_date, name = nil)
+        msg = "get_updated(#{object_type}, #{start_date}, #{end_date})"
+        log(msg, name) {
+          get_updated_element = []
+          get_updated_element << 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << object_type
+          get_updated_element << :startDate << start_date
+          get_updated_element << :endDate << end_date
+          
+          result = get_result(@connection.getUpdated(get_updated_element), :getUpdated)
+          
+          result[:ids]
+        }
+      end
+      
+      
+      def get_deleted(object_type, start_date, end_date, name = nil)
+        msg = "get_deleted(#{object_type}, #{start_date}, #{end_date})"
+        log(msg, name) {
+          get_deleted_element = []
+          get_deleted_element << 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << object_type
+          get_deleted_element << :startDate << start_date
+          get_deleted_element << :endDate << end_date
+          
+          result = get_result(@connection.getDeleted(get_deleted_element), :getDeleted)
+          
+          ids = []
+          result[:deletedRecords].each do |v| 
+            ids << v[:id]
+          end
+          
+          ids
+        }      
+      end
+      
+      
       def retrieve_field_values(object_type, fields, ids, name = nil) 
         msg = "retrieve(#{object_type}, [#{ids.to_a.join(', ')}])"
         log(msg, name) {
