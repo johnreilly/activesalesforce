@@ -293,7 +293,7 @@ module ActiveRecord
           
           # Fixup column references to use api names
           columns = entity_def.column_name_to_column
-          soql.gsub!(/((?:\w+\.)?\w+)(?=\s*(?:=|!=|<|>|<=|>=)\s*(?:'[^']*'|NULL|TRUE|FALSE))/mi) do |column_name| 
+          soql.gsub!(/((?:\w+\.)?\w+)(?=\s*(?:=|!=|<|>|<=|>=|like)\s*(?:'[^']*'|NULL|TRUE|FALSE))/mi) do |column_name| 
             # strip away any table alias
             column_name.sub!(/\w+\./, '')
             
