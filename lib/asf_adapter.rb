@@ -427,8 +427,8 @@ module ActiveRecord
           if match 
             ids = [ match[1] ]
           else
-            # Check for the form id IN ('x', 'y')
-            match = sql.match(/WHERE\s+id\s+IN\s*\((.+)\)/mi)[1]
+            # Check for the form (id IN ('x', 'y'))
+            match = sql.match(/WHERE\s+\(\s*id\s+IN\s*\((.+)\)\)/mi)[1]
             ids = match.scan(/\w+/)
           end
           
@@ -471,6 +471,14 @@ module ActiveRecord
           end
           
           ids
+        }      
+      end
+
+      
+      def get_user_info(name = nil)
+        msg = "get_user_info()"
+        log(msg, name) {
+          get_result(@connection.getUserInfo([]), :getUserInfo)
         }      
       end
       
