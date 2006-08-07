@@ -151,7 +151,7 @@ module ActiveRecord
       
       
       # QUOTING ==================================================
-      
+            
       def quote(value, column = nil)
         case value
         when NilClass              then quoted_value = "NULL"
@@ -522,8 +522,18 @@ module ActiveRecord
             
             value.gsub!(/''/, "'") if value.is_a? String
             
-            include_field = ((not value.empty?) and column.send(access_check))            
-            fields[column.api_name] = value if include_field
+            include_field = ((not value.empty?) and column.send(access_check))  
+            
+            if (include_field)           
+              case column.type
+                when :date 
+                  value = Time.parse(value + "Z").utc.strftime("%Y-%m-%d")
+                when :datetime
+                  value = Time.parse(value + "Z").utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+              end
+                          
+              fields[column.api_name] = value
+            end
           end
         end
         
