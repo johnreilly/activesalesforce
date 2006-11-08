@@ -31,7 +31,7 @@ require File.dirname(__FILE__) + '/id_resolver'
 require File.dirname(__FILE__) + '/sid_authentication_filter'
 require File.dirname(__FILE__) + '/recording_binding'
 require File.dirname(__FILE__) + '/result_array'
-
+ 
 
 
 module ActiveRecord    
@@ -409,10 +409,11 @@ module ActiveRecord
           values.map! { |v| v.first == "'" ? v.slice(1, v.length - 2) : v == "NULL" ? nil : v }
           
           fields = get_fields(columns, names, values, :updateable)
+		  null_fields = get_null_fields(columns, names, values, :updateable)          
           
           id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/mi)[1]
           
-          sobject = create_sobject(entity_def.api_name, id, fields)
+          sobject = create_sobject(entity_def.api_name, id, fields, null_fields)
           
           @command_boxcar << ActiveSalesforce::BoxcarCommand::Update.new(self, sobject)
         }
@@ -540,6 +541,19 @@ module ActiveRecord
         fields      
       end
       
+	  def get_null_fields(columns, names, values, access_check)
+     	fields = {}
+ 	  	names.each_with_index do | name, n |
+ 			value = values[n]
+
+ 			if !value
+ 				column = columns[name]
+ 				fields[column.api_name] = nil if column.send(access_check)
+ 			end
+ 		end
+
+		fields
+	  end
       
       def extract_sql_modifier(soql, modifier)
           value = soql.match(/\s+#{modifier}\s+(\d+)/mi)
@@ -715,17 +729,22 @@ module ActiveRecord
       end
       
       
-      def create_sobject(entity_name, id, fields)
+      def create_sobject(entity_name, id, fields, null_fields = [])
         sobj = []
         
         sobj << 'type { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << entity_name
         sobj << 'Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << id if id    
         
-        # now add any changed fields
+        # add any changed fields
         fieldValues = {}
         fields.each do | name, value |
           sobj << name.to_sym << value if value
         end
+        
+        # add null fields
+        null_fields.each do | name, value |
+			sobj << 'fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << name
+		end
         
         [ :sObjects, sobj ]
       end
