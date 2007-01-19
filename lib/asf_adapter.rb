@@ -52,7 +52,11 @@ module ActiveRecord
       
       # Default to production system using 8.0 API
       url = config[:url]
-      url = "https://www.salesforce.com/services/Soap/u/8.0" unless url
+      url = "https://www.salesforce.com" unless url
+
+      uri = URI.parse(url)
+      uri.path = "/services/Soap/u/8.0"
+      url = uri.to_s      
       
       sid = config[:sid]
       client_id = config[:client_id]
