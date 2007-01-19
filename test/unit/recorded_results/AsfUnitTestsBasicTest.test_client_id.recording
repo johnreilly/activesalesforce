@@ -21,7 +21,7 @@ login(username::password:): !ruby/object:RForce::SoapResponse
           :organizationId: 00DT0000000D3YHMA0
           :userId: 005T0000000eI4DIAU
           :userEmail: dchasman@salesforce.com
-        :sessionId: .E.GMzLwLKOyh27auY7_0J7ZaZGCCN8mYEliC5_vdEx7Lvhm77DvCalp93JfCA5eib95Yz_ZSD8Y0lkJyMuCh1IWIEc=
+        :sessionId: GMZpNXhdaN.0D47OcpWrt4T5NgFbeS7sDSTOoFSfCRB_OEYpKltRL_6Pj_93OQmH2uCOglzMMlXgoy4lD.FML7rtHN0=
         :serverUrl: https://tapp0-api.salesforce.com/services/Soap/u/8.0
         :passwordExpired: "false"
         :userId: 005T0000000eI4DIAU
@@ -1166,9 +1166,9 @@ create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Contact
     :createResponse: 
       :result: 
         :success: "true"
-        :id: 003T0000008l1jjIAA
+        :id: 003T0000008l2dUIAQ
 --- 
-query(queryString:SELECT Id, IsDeleted, MasterRecordId, AccountId, LastName, FirstName, Salutation, Name, OtherStreet, OtherCity, OtherState, OtherPostalCode, OtherCountry, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, Phone, Fax, MobilePhone, HomePhone, OtherPhone, AssistantPhone, ReportsToId, Email, Title, Department, AssistantName, LeadSource, Birthdate, Description, OwnerId, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastActivityDate, LastCURequestDate, LastCUUpdateDate FROM Contact WHERE (Id = '003T0000008l1jjIAA')): !ruby/object:RForce::SoapResponse 
+query(queryString:SELECT Id, IsDeleted, MasterRecordId, AccountId, LastName, FirstName, Salutation, Name, OtherStreet, OtherCity, OtherState, OtherPostalCode, OtherCountry, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, Phone, Fax, MobilePhone, HomePhone, OtherPhone, AssistantPhone, ReportsToId, Email, Title, Department, AssistantName, LeadSource, Birthdate, Description, OwnerId, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastActivityDate, LastCURequestDate, LastCUUpdateDate FROM Contact WHERE (Id = '003T0000008l2dUIAQ')): !ruby/object:RForce::SoapResponse 
   parsed: 
     :queryResponse: 
       :result: 
@@ -1183,7 +1183,7 @@ query(queryString:SELECT Id, IsDeleted, MasterRecordId, AccountId, LastName, Fir
           :Title: 
           :MailingCity: 
           :Name: DutchTestFirstName DutchTestLastName
-          :CreatedDate: "2007-01-19T15:17:19.000Z"
+          :CreatedDate: "2007-01-19T15:08:08.000Z"
           :HomePhone: 555-555-1212
           :MobilePhone: 
           :OtherCity: 
@@ -1192,8 +1192,8 @@ query(queryString:SELECT Id, IsDeleted, MasterRecordId, AccountId, LastName, Fir
           :MailingState: 
           :IsDeleted: "false"
           :Id: 
-          - 003T0000008l1jjIAA
-          - 003T0000008l1jjIAA
+          - 003T0000008l2dUIAQ
+          - 003T0000008l2dUIAQ
           :CreatedById: 005T0000000eI4DIAU
           :OtherPhone: 
           :OtherState: 
@@ -1202,7 +1202,7 @@ query(queryString:SELECT Id, IsDeleted, MasterRecordId, AccountId, LastName, Fir
           :LeadSource: 
           :MailingPostalCode: 
           :MasterRecordId: 
-          :LastModifiedDate: "2007-01-19T15:17:19.000Z"
+          :LastModifiedDate: "2007-01-19T15:08:08.000Z"
           :Department: 
           :AssistantPhone: 
           :OtherPostalCode: 
@@ -1217,343 +1217,20 @@ query(queryString:SELECT Id, IsDeleted, MasterRecordId, AccountId, LastName, Fir
           :Phone: 
           :Salutation: 
           :type: Contact
-          :SystemModstamp: "2007-01-19T15:17:19.000Z"
+          :SystemModstamp: "2007-01-19T15:08:08.000Z"
           :Email: 
           :MailingStreet: 
 --- 
-describeSObject(sObjectType:Department): !ruby/object:RForce::SoapResponse 
+update(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Contact:Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }:003T0000008l2dUIAQ:OwnerId:005T0000000eI4DIAU:HomePhone:555-555-1212:LastName:DutchTestLastName:FirstName:DutchTestFirstName:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Department:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:OtherState:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Salutation:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Phone:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:MailingPostalCode:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:MailingStreet:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:MailingCity:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:MailingCountry:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:MobilePhone:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:LeadSource:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:OtherCity:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:AssistantPhone:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Email:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:OtherCountry:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Birthdate:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Title:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Fax:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:OtherPhone:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:OtherStreet:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:AccountId:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:OtherPostalCode:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:AssistantName:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:ReportsToId:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Description:fieldsToNull { :xmlns => "urn:sobject.partner.soap.sforce.com" }:MailingState): !ruby/object:RForce::SoapResponse 
   parsed: 
-    :Fault: 
-      :detail: 
-        :fault: 
-          :row: "-1"
-          :column: "-1"
-          :exceptionCode: INVALID_TYPE
-          :exceptionMessage: sObject type 'Department' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names.
-      :faultcode: sf:INVALID_TYPE
-      :faultstring: "INVALID_TYPE: sObject type 'Department' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names."
---- 
-describeSObject(sObjectType:Department__c): !ruby/object:RForce::SoapResponse 
-  parsed: 
-    :describeSObjectResponse: 
-      :result: 
-        :name: Department__c
-        :createable: "true"
-        :childRelationships: 
-        - :relationshipName: Attachments
-          :field: ParentId
-          :cascadeDelete: "false"
-          :childSObject: Attachment
-        - :relationshipName: Notes
-          :field: ParentId
-          :cascadeDelete: "true"
-          :childSObject: Note
-        - :relationshipName: NotesAndAttachments
-          :field: ParentId
-          :cascadeDelete: "true"
-          :childSObject: NoteAndAttachment
-        - :relationshipName: ProcessInstances
-          :field: TargetObjectId
-          :cascadeDelete: "true"
-          :childSObject: ProcessInstance
-        - :relationshipName: ProcessSteps
-          :field: TargetObjectId
-          :cascadeDelete: "false"
-          :childSObject: ProcessInstanceHistory
-        :undeletable: "true"
-        :labelPlural: Departments
-        :custom: "true"
-        :urlDetail: https://tapp0.salesforce.com/{ID}
-        :layoutable: "true"
-        :urlEdit: https://tapp0.salesforce.com/{ID}/e
-        :mergeable: "false"
-        :label: Department
-        :replicateable: "true"
-        :activateable: "false"
-        :urlNew: https://tapp0.salesforce.com/a01/e
-        :queryable: "true"
-        :fields: 
-        - :scale: "0"
-          :name: Id
-          :filterable: "true"
-          :createable: "false"
-          :length: "18"
-          :custom: "false"
-          :byteLength: "18"
-          :unique: "false"
-          :namePointing: "false"
-          :nameField: "false"
-          :calculated: "false"
-          :restrictedPicklist: "false"
-          :label: Record ID
-          :caseSensitive: "false"
-          :soapType: tns:ID
-          :sortable: "true"
-          :defaultedOnCreate: "true"
-          :nillable: "false"
-          :type: id
-          :precision: "0"
-          :digits: "0"
-          :updateable: "false"
-          :autoNumber: "false"
-        - :scale: "0"
-          :relationshipName: Owner
-          :name: OwnerId
-          :filterable: "true"
-          :createable: "true"
-          :length: "18"
-          :custom: "false"
-          :byteLength: "18"
-          :unique: "false"
-          :namePointing: "true"
-          :nameField: "false"
-          :calculated: "false"
-          :restrictedPicklist: "false"
-          :label: Owner ID
-          :caseSensitive: "false"
-          :soapType: tns:ID
-          :sortable: "true"
-          :defaultedOnCreate: "true"
-          :nillable: "false"
-          :type: reference
-          :precision: "0"
-          :digits: "0"
-          :updateable: "true"
-          :referenceTo: 
-          - Group
-          - User
-          :autoNumber: "false"
-        - :scale: "0"
-          :name: IsDeleted
-          :filterable: "true"
-          :createable: "false"
-          :length: "0"
-          :custom: "false"
-          :byteLength: "0"
-          :unique: "false"
-          :namePointing: "false"
-          :nameField: "false"
-          :calculated: "false"
-          :restrictedPicklist: "false"
-          :label: Deleted
-          :caseSensitive: "false"
-          :soapType: xsd:boolean
-          :sortable: "true"
-          :defaultedOnCreate: "true"
-          :nillable: "false"
-          :type: boolean
-          :precision: "0"
-          :digits: "0"
-          :updateable: "false"
-          :autoNumber: "false"
-        - :scale: "0"
-          :name: Name
-          :filterable: "true"
-          :createable: "true"
-          :length: "80"
-          :custom: "false"
-          :byteLength: "240"
-          :unique: "false"
-          :namePointing: "false"
-          :nameField: "true"
-          :calculated: "false"
-          :restrictedPicklist: "false"
-          :label: Department Name
-          :caseSensitive: "false"
-          :soapType: xsd:string
-          :sortable: "true"
-          :defaultedOnCreate: "true"
-          :nillable: "true"
-          :type: string
-          :precision: "0"
-          :digits: "0"
-          :updateable: "true"
-          :autoNumber: "false"
-        - :scale: "0"
-          :name: CreatedDate
-          :filterable: "true"
-          :createable: "false"
-          :length: "0"
-          :custom: "false"
-          :byteLength: "0"
-          :unique: "false"
-          :namePointing: "false"
-          :nameField: "false"
-          :calculated: "false"
-          :restrictedPicklist: "false"
-          :label: Created Date
-          :caseSensitive: "false"
-          :soapType: xsd:dateTime
-          :sortable: "true"
-          :defaultedOnCreate: "true"
-          :nillable: "false"
-          :type: datetime
-          :precision: "0"
-          :digits: "0"
-          :updateable: "false"
-          :autoNumber: "false"
-        - :scale: "0"
-          :relationshipName: CreatedBy
-          :name: CreatedById
-          :filterable: "true"
-          :createable: "false"
-          :length: "18"
-          :custom: "false"
-          :byteLength: "18"
-          :unique: "false"
-          :namePointing: "false"
-          :nameField: "false"
-          :calculated: "false"
-          :restrictedPicklist: "false"
-          :label: Created By ID
-          :caseSensitive: "false"
-          :soapType: tns:ID
-          :sortable: "true"
-          :defaultedOnCreate: "true"
-          :nillable: "false"
-          :type: reference
-          :precision: "0"
-          :digits: "0"
-          :updateable: "false"
-          :referenceTo: User
-          :autoNumber: "false"
-        - :scale: "0"
-          :name: LastModifiedDate
-          :filterable: "true"
-          :createable: "false"
-          :length: "0"
-          :custom: "false"
-          :byteLength: "0"
-          :unique: "false"
-          :namePointing: "false"
-          :nameField: "false"
-          :calculated: "false"
-          :restrictedPicklist: "false"
-          :label: Last Modified Date
-          :caseSensitive: "false"
-          :soapType: xsd:dateTime
-          :sortable: "true"
-          :defaultedOnCreate: "true"
-          :nillable: "false"
-          :type: datetime
-          :precision: "0"
-          :digits: "0"
-          :updateable: "false"
-          :autoNumber: "false"
-        - :scale: "0"
-          :relationshipName: LastModifiedBy
-          :name: LastModifiedById
-          :filterable: "true"
-          :createable: "false"
-          :length: "18"
-          :custom: "false"
-          :byteLength: "18"
-          :unique: "false"
-          :namePointing: "false"
-          :nameField: "false"
-          :calculated: "false"
-          :restrictedPicklist: "false"
-          :label: Last Modified By ID
-          :caseSensitive: "false"
-          :soapType: tns:ID
-          :sortable: "true"
-          :defaultedOnCreate: "true"
-          :nillable: "false"
-          :type: reference
-          :precision: "0"
-          :digits: "0"
-          :updateable: "false"
-          :referenceTo: User
-          :autoNumber: "false"
-        - :scale: "0"
-          :name: SystemModstamp
-          :filterable: "true"
-          :createable: "false"
-          :length: "0"
-          :custom: "false"
-          :byteLength: "0"
-          :unique: "false"
-          :namePointing: "false"
-          :nameField: "false"
-          :calculated: "false"
-          :restrictedPicklist: "false"
-          :label: System Modstamp
-          :caseSensitive: "false"
-          :soapType: xsd:dateTime
-          :sortable: "true"
-          :defaultedOnCreate: "true"
-          :nillable: "false"
-          :type: datetime
-          :precision: "0"
-          :digits: "0"
-          :updateable: "false"
-          :autoNumber: "false"
-        - :scale: "0"
-          :name: Department_Description__c
-          :filterable: "true"
-          :createable: "true"
-          :length: "100"
-          :custom: "true"
-          :byteLength: "300"
-          :unique: "false"
-          :namePointing: "false"
-          :nameField: "false"
-          :calculated: "false"
-          :restrictedPicklist: "false"
-          :label: Department Description
-          :caseSensitive: "false"
-          :soapType: xsd:string
-          :sortable: "true"
-          :defaultedOnCreate: "false"
-          :nillable: "true"
-          :type: string
-          :precision: "0"
-          :digits: "0"
-          :updateable: "true"
-          :autoNumber: "false"
-        :retrieveable: "true"
-        :keyPrefix: a01
-        :deletable: "true"
-        :recordTypeInfos: 
-          :name: Master
-          :available: "true"
-          :defaultRecordTypeMapping: "true"
-          :recordTypeId: 012000000000000AAA
-        :updateable: "true"
-        :searchable: "true"
---- 
-create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Department__c:Department_Description__c:DutchTestDepartment description): !ruby/object:RForce::SoapResponse 
-  parsed: 
-    :createResponse: 
+    :updateResponse: 
       :result: 
         :success: "true"
-        :id: a01T0000000dPw1IAE
+        :id: 003T0000008l2dUIAQ
 --- 
-query(queryString:SELECT Id, OwnerId, IsDeleted, Name, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, Department_Description__c FROM Department__c WHERE (Id = 'a01T0000000dPw1IAE')): !ruby/object:RForce::SoapResponse 
-  parsed: 
-    :queryResponse: 
-      :result: 
-        :size: "1"
-        :done: "true"
-        :queryLocator: 
-        :records: 
-          :OwnerId: 005T0000000eI4DIAU
-          :Name: a01T0000000dPw1
-          :CreatedDate: "2007-01-19T15:17:22.000Z"
-          :IsDeleted: "false"
-          :Id: 
-          - a01T0000000dPw1IAE
-          - a01T0000000dPw1IAE
-          :Department_Description__c: DutchTestDepartment description
-          :CreatedById: 005T0000000eI4DIAU
-          :LastModifiedDate: "2007-01-19T15:17:22.000Z"
-          :LastModifiedById: 005T0000000eI4DIAU
-          :type: Department__c
-          :SystemModstamp: "2007-01-19T15:17:22.000Z"
---- 
-delete(ids:003T0000008l1jjIAA): !ruby/object:RForce::SoapResponse 
+delete(ids:003T0000008l2dUIAQ): !ruby/object:RForce::SoapResponse 
   parsed: 
     :deleteResponse: 
       :result: 
         :success: "true"
-        :id: 003T0000008l1jjIAA
+        :id: 003T0000008l2dUIAQ

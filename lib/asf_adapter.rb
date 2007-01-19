@@ -70,6 +70,7 @@ module ActiveRecord
       if recording_source
         recording_source = File.open(recording_source, recording ? "w" : "r")
         binding = ActiveSalesforce::RecordingBinding.new(url, nil, recording != nil, recording_source, logger)
+        binding.client_id = client_id if client_id
         binding.login(username, password) unless sid
       end
       
@@ -90,22 +91,22 @@ module ActiveRecord
         # Check to insure that the second to last path component is a 'u' for Partner API
         raise ActiveSalesforce::ASFError.new(logger, "Invalid salesforce server url '#{url}', must be a valid Parter API URL") unless url.match(/\/u\//mi)
         
-        binding = @@cache["#{url}.#{username}.#{password}"] unless binding
+        binding = @@cache["#{url}.#{username}.#{password}.#{client_id}"] unless binding
         
         unless binding
-          debug("Establishing new connection for ['#{url}', '#{username}'")
+          debug("Establishing new connection for ['#{url}', '#{username}, '#{client_id}'")
           
           seconds = Benchmark.realtime {
             binding = RForce::Binding.new(url, sid)
             binding.login(username, password)
             
-            @@cache["#{url}.#{username}.#{password}"] = binding
+            @@cache["#{url}.#{username}.#{password}.#{client_id}"] = binding
           }
           
-          debug("Created new connection for ['#{url}', '#{username}'] in #{seconds} seconds")
+          debug("Created new connection for ['#{url}', '#{username}', '#{client_id}'] in #{seconds} seconds")
         end
         
-        ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, username, password, sid], config)
+        ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, username, password, sid, client_id], config)
       end
     end
   end

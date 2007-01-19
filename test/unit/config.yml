@@ -1,8 +1,4 @@
-url: https://www.salesforce.com/services/Soap/u/7.0
-username: doug_chasman@yahoo.com	
-password: Maceymo@11
-
-#username: admin@summer05_pbrondum.com
-#password: Test2000
-
+url: https://test.salesforce.com
+username: dutch@activesalesforce.com
+password: maceymo
 recording: true

@@ -57,11 +57,9 @@ module Asf
       
       
       def setup
-        url = 'https://www.salesforce.com/services/Soap/u/7.0'
-    
         @recording = (((not File.exists?(recording_file_name)) or config[:recording]) or @force_recording.include?(method_name.to_sym))
         
-        action = { :adapter => 'activesalesforce', :username => config[:username], 
+        action = { :adapter => 'activesalesforce', :url => config[:url], :username => config[:username], 
           :password => config[:password], :recording_source => recording_file_name }
         
         action[:recording] = true if @recording

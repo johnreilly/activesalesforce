@@ -4,3108 +4,1235 @@ login(username::password:): !ruby/object:RForce::SoapResponse
     :loginResponse: 
       :result: 
         :userInfo: 
-          :userTimeZone: America/Los_Angeles
-          :userDefaultCurrencyIsoCode: 
           :userUiSkin: Theme2
-          :accessibilityMode: "false"
-          :userEmail: dchasman@salesforce.com
-          :currencySymbol: $
-          :userFullName: Doug Chasmanii
-          :organizationId: 00D3000000010YJEAY
-          :userLanguage: en_US
           :organizationMultiCurrency: "false"
+          :userFullName: Dutch Chasman
+          :organizationName: activesalesforce.com
+          :userLanguage: en_US
+          :accessibilityMode: "false"
+          :profileId: 00eT0000000i7XpIAI
           :userLocale: en_US
-          :userId: 00530000000hYFzAAM
-          :organizationName: dutchforce.com
-        :sessionId: Re4yOsvZegEejq2vkWvREXF._hgQMYTipH2zhSm0nzc2XyL00BiBogu5dSdcUL0jjtn0594cYq9h3qH8qy1Bj2pYnKO9AsNCSeX5jsUoLXQ=
-        :serverUrl: https://na1-api.salesforce.com/services/Soap/u/7.0
+          :currencySymbol: $
+          :roleId: 
+          :userName: dutch@activesalesforce.com
+          :licenseType: Salesforce
+          :userDefaultCurrencyIsoCode: 
+          :userTimeZone: America/Los_Angeles
+          :organizationId: 00DT0000000D3YHMA0
+          :userId: 005T0000000eI4DIAU
+          :userEmail: dchasman@salesforce.com
+        :sessionId: snL5Yq.gs7Yd8RuU_tvreNhkgpyzKK8.qX4x36BKUf5WnNn2c0L6y42pB0OnRp6F0d1SQ8DB5XyWZfjvUZQExtnnJYE=
+        :serverUrl: https://tapp0-api.salesforce.com/services/Soap/u/8.0
         :passwordExpired: "false"
-        :userId: 00530000000hYFzAAM
+        :userId: 005T0000000eI4DIAU
 --- 
 describeSObject(sObjectType:Contact): !ruby/object:RForce::SoapResponse 
   parsed: 
     :describeSObjectResponse: 
       :result: 
-        :updateable: "true"
-        :searchable: "true"
-        :labelPlural: Contacts
-        :createable: "true"
-        :undeletable: "false"
-        :layoutable: "true"
-        :keyPrefix: "003"
-        :urlDetail: https://na1.salesforce.com/{ID}
-        :queryable: "true"
-        :urlEdit: https://na1.salesforce.com/{ID}/e
         :name: Contact
+        :createable: "true"
         :childRelationships: 
         - :relationshipName: AccountContactRoles
           :field: ContactId
-          :childSObject: AccountContactRole
           :cascadeDelete: "true"
+          :childSObject: AccountContactRole
+        - :relationshipName: ActivityHistories
+          :field: WhoId
+          :cascadeDelete: "true"
+          :childSObject: ActivityHistory
         - :relationshipName: Assets
           :field: ContactId
-          :childSObject: Asset
           :cascadeDelete: "false"
+          :childSObject: Asset
         - :relationshipName: Attachments
           :field: ParentId
-          :childSObject: Attachment
           :cascadeDelete: "false"
+          :childSObject: Attachment
         - :relationshipName: CampaignMembers
           :field: ContactId
-          :childSObject: CampaignMember
           :cascadeDelete: "true"
+          :childSObject: CampaignMember
         - :relationshipName: Cases
           :field: ContactId
+          :cascadeDelete: "false"
           :childSObject: Case
-          :cascadeDelete: "false"
+        - :relationshipName: CaseContactRoles
+          :field: ContactId
+          :cascadeDelete: "true"
+          :childSObject: CaseContactRole
         - :field: ReportsToId
+          :cascadeDelete: "false"
           :childSObject: Contact
+        - :relationshipName: ContractsSigned
+          :field: CustomerSignedId
           :cascadeDelete: "false"
-        - :field: CustomerSignedId
           :childSObject: Contract
-          :cascadeDelete: "false"
         - :relationshipName: ContractContactRoles
           :field: ContactId
-          :childSObject: ContractContactRole
           :cascadeDelete: "true"
+          :childSObject: ContractContactRole
+        - :relationshipName: EmailStatuses
+          :field: WhoId
+          :cascadeDelete: "true"
+          :childSObject: EmailStatus
         - :relationshipName: Events
           :field: WhoId
+          :cascadeDelete: "true"
           :childSObject: Event
-          :cascadeDelete: "true"
         - :field: AttendeeId
-          :childSObject: EventAttendee
           :cascadeDelete: "true"
+          :childSObject: EventAttendee
         - :field: ConvertedContactId
-          :childSObject: Lead
           :cascadeDelete: "false"
+          :childSObject: Lead
         - :relationshipName: Notes
           :field: ParentId
-          :childSObject: Note
           :cascadeDelete: "true"
+          :childSObject: Note
+        - :relationshipName: NotesAndAttachments
+          :field: ParentId
+          :cascadeDelete: "true"
+          :childSObject: NoteAndAttachment
+        - :relationshipName: OpenActivities
+          :field: WhoId
+          :cascadeDelete: "true"
+          :childSObject: OpenActivity
         - :relationshipName: OpportunityContactRoles
           :field: ContactId
-          :childSObject: OpportunityContactRole
           :cascadeDelete: "true"
-        - :field: ContactId
-          :childSObject: SelfServiceUser
+          :childSObject: OpportunityContactRole
+        - :relationshipName: ProcessInstances
+          :field: TargetObjectId
+          :cascadeDelete: "true"
+          :childSObject: ProcessInstance
+        - :relationshipName: ProcessSteps
+          :field: TargetObjectId
           :cascadeDelete: "false"
+          :childSObject: ProcessInstanceHistory
+        - :field: ContactId
+          :cascadeDelete: "false"
+          :childSObject: SelfServiceUser
         - :relationshipName: Tasks
           :field: WhoId
-          :childSObject: Task
           :cascadeDelete: "true"
-        :replicateable: "true"
+          :childSObject: Task
+        :undeletable: "true"
+        :labelPlural: Contacts
         :custom: "false"
-        :urlNew: https://na1.salesforce.com/003/e
+        :urlDetail: https://tapp0.salesforce.com/{ID}
+        :layoutable: "true"
+        :urlEdit: https://tapp0.salesforce.com/{ID}/e
+        :mergeable: "true"
+        :label: Contact
+        :replicateable: "true"
+        :activateable: "false"
+        :urlNew: https://tapp0.salesforce.com/003/e
+        :queryable: "true"
         :fields: 
-        - :updateable: "false"
+        - :scale: "0"
+          :name: Id
           :filterable: "true"
           :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "false"
           :length: "18"
-          :byteLength: "18"
-          :type: id
-          :soapType: tns:ID
-          :scale: "0"
-          :calculated: "false"
-          :name: Id
-          :defaultedOnCreate: "true"
           :custom: "false"
+          :byteLength: "18"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
           :label: Contact ID
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "18"
-          :byteLength: "18"
-          :type: reference
+          :caseSensitive: "false"
           :soapType: tns:ID
-          :scale: "0"
-          :calculated: "false"
-          :name: AccountId
-          :referenceTo: Account
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Account ID
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
+          :sortable: "true"
+          :defaultedOnCreate: "true"
           :nillable: "false"
-          :length: "80"
-          :byteLength: "240"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
+          :type: id
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: IsDeleted
+          :filterable: "true"
+          :createable: "false"
+          :length: "0"
+          :custom: "false"
+          :byteLength: "0"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
           :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Deleted
+          :caseSensitive: "false"
+          :soapType: xsd:boolean
+          :sortable: "true"
+          :defaultedOnCreate: "true"
+          :nillable: "false"
+          :type: boolean
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: MasterRecordId
+          :filterable: "true"
+          :createable: "false"
+          :length: "18"
+          :custom: "false"
+          :byteLength: "18"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Master Record ID
+          :caseSensitive: "false"
+          :soapType: tns:ID
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: reference
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :referenceTo: Contact
+          :autoNumber: "false"
+        - :scale: "0"
+          :relationshipName: Account
+          :name: AccountId
+          :filterable: "true"
+          :createable: "true"
+          :length: "18"
+          :custom: "false"
+          :byteLength: "18"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Account ID
+          :caseSensitive: "false"
+          :soapType: tns:ID
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: reference
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :referenceTo: Account
+          :autoNumber: "false"
+        - :scale: "0"
           :name: LastName
-          :defaultedOnCreate: "false"
+          :filterable: "true"
+          :createable: "true"
+          :length: "80"
           :custom: "false"
+          :byteLength: "240"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
           :label: Last Name
-          :digits: "0"
-          :nameField: "true"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: string
+          :caseSensitive: "false"
           :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: FirstName
+          :sortable: "true"
           :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: First Name
+          :nillable: "false"
+          :type: string
+          :precision: "0"
           :digits: "0"
-          :nameField: "true"
-        - :updateable: "true"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: FirstName
           :filterable: "true"
           :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
           :length: "40"
+          :custom: "false"
           :byteLength: "120"
-          :type: picklist
-          :soapType: xsd:string
-          :scale: "0"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
           :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: First Name
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: Salutation
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Salutation
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
           :picklistValues: 
           - :value: Mr.
-            :defaultValue: "false"
             :label: Mr.
             :active: "true"
-          - :value: Ms.
             :defaultValue: "false"
+          - :value: Ms.
             :label: Ms.
             :active: "true"
-          - :value: Mrs.
             :defaultValue: "false"
+          - :value: Mrs.
             :label: Mrs.
             :active: "true"
-          - :value: Dr.
             :defaultValue: "false"
+          - :value: Dr.
             :label: Dr.
             :active: "true"
-          - :value: Prof.
             :defaultValue: "false"
+          - :value: Prof.
             :label: Prof.
             :active: "true"
-          :name: Salutation
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Salutation
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "18"
-          :byteLength: "18"
-          :type: reference
-          :soapType: tns:ID
-          :scale: "0"
-          :calculated: "false"
-          :name: RecordTypeId
-          :referenceTo: RecordType
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Record Type ID
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "255"
-          :byteLength: "765"
-          :type: textarea
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: OtherStreet
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Other Street
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: OtherCity
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Other City
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "20"
-          :byteLength: "60"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: OtherState
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Other State/Province
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "20"
-          :byteLength: "60"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: OtherPostalCode
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Other Zip/Postal Code
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: OtherCountry
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Other Country
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "255"
-          :byteLength: "765"
-          :type: textarea
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: MailingStreet
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Mailing Street
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: MailingCity
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Mailing City
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "20"
-          :byteLength: "60"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: MailingState
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Mailing State/Province
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "20"
-          :byteLength: "60"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: MailingPostalCode
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Mailing Zip/Postal Code
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: MailingCountry
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Mailing Country
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: phone
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: Phone
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Business Phone
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: phone
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: Fax
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Business Fax
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: phone
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: MobilePhone
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Mobile Phone
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: phone
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: HomePhone
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Home Phone
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: phone
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: OtherPhone
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Other Phone
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: phone
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: AssistantPhone
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Asst. Phone
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "18"
-          :byteLength: "18"
-          :type: reference
-          :soapType: tns:ID
-          :scale: "0"
-          :calculated: "false"
-          :name: ReportsToId
-          :referenceTo: Contact
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Reports To ID
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "80"
-          :byteLength: "240"
-          :type: email
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: Email
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Email Address
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "80"
-          :byteLength: "240"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: Title
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Title
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "80"
-          :byteLength: "240"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: Department
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Department
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: AssistantName
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Assistant's Name
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "40"
-          :byteLength: "120"
-          :type: picklist
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :picklistValues: 
-          - :value: Web
             :defaultValue: "false"
+          :nillable: "true"
+          :type: picklist
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: Name
+          :filterable: "true"
+          :createable: "false"
+          :length: "121"
+          :custom: "false"
+          :byteLength: "363"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "true"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Full Name
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "false"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: OtherStreet
+          :filterable: "true"
+          :createable: "true"
+          :length: "255"
+          :custom: "false"
+          :byteLength: "765"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Other Street
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: textarea
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: OtherCity
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Other City
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: OtherState
+          :filterable: "true"
+          :createable: "true"
+          :length: "20"
+          :custom: "false"
+          :byteLength: "60"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Other State/Province
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: OtherPostalCode
+          :filterable: "true"
+          :createable: "true"
+          :length: "20"
+          :custom: "false"
+          :byteLength: "60"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Other Zip/Postal Code
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: OtherCountry
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Other Country
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: MailingStreet
+          :filterable: "true"
+          :createable: "true"
+          :length: "255"
+          :custom: "false"
+          :byteLength: "765"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Mailing Street
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: textarea
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: MailingCity
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Mailing City
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: MailingState
+          :filterable: "true"
+          :createable: "true"
+          :length: "20"
+          :custom: "false"
+          :byteLength: "60"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Mailing State/Province
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: MailingPostalCode
+          :filterable: "true"
+          :createable: "true"
+          :length: "20"
+          :custom: "false"
+          :byteLength: "60"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Mailing Zip/Postal Code
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: MailingCountry
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Mailing Country
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: Phone
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Business Phone
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: phone
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: Fax
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Business Fax
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: phone
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: MobilePhone
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Mobile Phone
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: phone
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: HomePhone
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Home Phone
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: phone
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: OtherPhone
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Other Phone
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: phone
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: AssistantPhone
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Asst. Phone
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: phone
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :relationshipName: ReportsTo
+          :name: ReportsToId
+          :filterable: "true"
+          :createable: "true"
+          :length: "18"
+          :custom: "false"
+          :byteLength: "18"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Reports To ID
+          :caseSensitive: "false"
+          :soapType: tns:ID
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: reference
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :referenceTo: Contact
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: Email
+          :filterable: "true"
+          :createable: "true"
+          :length: "80"
+          :custom: "false"
+          :byteLength: "240"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Email
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: email
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: Title
+          :filterable: "true"
+          :createable: "true"
+          :length: "80"
+          :custom: "false"
+          :byteLength: "240"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Title
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: Department
+          :filterable: "true"
+          :createable: "true"
+          :length: "80"
+          :custom: "false"
+          :byteLength: "240"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Department
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: AssistantName
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Assistant's Name
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: string
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: LeadSource
+          :filterable: "true"
+          :createable: "true"
+          :length: "40"
+          :custom: "false"
+          :byteLength: "120"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Lead Source
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :picklistValues: 
+          - :value: Advertisement
+            :label: Advertisement
+            :active: "true"
+            :defaultValue: "false"
+          - :value: Employee Referral
+            :label: Employee Referral
+            :active: "true"
+            :defaultValue: "false"
+          - :value: External Referral
+            :label: External Referral
+            :active: "true"
+            :defaultValue: "false"
+          - :value: Partner
+            :label: Partner
+            :active: "true"
+            :defaultValue: "false"
+          - :value: Public Relations
+            :label: Public Relations
+            :active: "true"
+            :defaultValue: "false"
+          - :value: Seminar - Internal
+            :label: Seminar - Internal
+            :active: "true"
+            :defaultValue: "false"
+          - :value: Seminar - Partner
+            :label: Seminar - Partner
+            :active: "true"
+            :defaultValue: "false"
+          - :value: Trade Show
+            :label: Trade Show
+            :active: "true"
+            :defaultValue: "false"
+          - :value: Web
             :label: Web
             :active: "true"
-          - :value: Phone Inquiry
             :defaultValue: "false"
-            :label: Phone Inquiry
+          - :value: Word of mouth
+            :label: Word of mouth
             :active: "true"
-          - :value: Partner Referral
             :defaultValue: "false"
-            :label: Partner Referral
-            :active: "true"
-          - :value: Purchased List
-            :defaultValue: "false"
-            :label: Purchased List
-            :active: "true"
           - :value: Other
-            :defaultValue: "false"
             :label: Other
             :active: "true"
-          :name: LeadSource
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Lead Source
+            :defaultValue: "false"
+          :nillable: "true"
+          :type: picklist
+          :precision: "0"
           :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: Birthdate
           :filterable: "true"
           :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
           :length: "0"
-          :byteLength: "0"
-          :type: date
-          :soapType: xsd:dateTime
-          :scale: "0"
-          :calculated: "false"
-          :name: Birthdate
-          :defaultedOnCreate: "false"
           :custom: "false"
-          :label: Birthdate
-          :digits: "0"
+          :byteLength: "0"
+          :unique: "false"
+          :namePointing: "false"
           :nameField: "false"
-        - :updateable: "true"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Birthdate
+          :caseSensitive: "false"
+          :soapType: xsd:date
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: date
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: Description
           :filterable: "false"
           :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
           :length: "32000"
+          :custom: "false"
           :byteLength: "32000"
-          :type: textarea
-          :soapType: xsd:string
-          :scale: "0"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
           :calculated: "false"
-          :name: Description
-          :defaultedOnCreate: "false"
-          :custom: "false"
+          :restrictedPicklist: "false"
           :label: Contact Description
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
+          :caseSensitive: "false"
+          :soapType: xsd:string
+          :sortable: "false"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: textarea
           :precision: "0"
-          :nillable: "false"
-          :length: "18"
-          :byteLength: "18"
-          :type: reference
-          :soapType: tns:ID
-          :scale: "0"
-          :calculated: "false"
+          :digits: "0"
+          :updateable: "true"
+          :autoNumber: "false"
+        - :scale: "0"
+          :relationshipName: Owner
           :name: OwnerId
-          :referenceTo: User
-          :defaultedOnCreate: "true"
+          :filterable: "true"
+          :createable: "true"
+          :length: "18"
           :custom: "false"
+          :byteLength: "18"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
           :label: Owner ID
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "false"
-          :filterable: "true"
-          :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
+          :caseSensitive: "false"
+          :soapType: tns:ID
+          :sortable: "true"
+          :defaultedOnCreate: "true"
           :nillable: "false"
-          :length: "0"
-          :byteLength: "0"
-          :type: datetime
-          :soapType: xsd:dateTime
-          :scale: "0"
-          :calculated: "false"
+          :type: reference
+          :precision: "0"
+          :digits: "0"
+          :updateable: "true"
+          :referenceTo: User
+          :autoNumber: "false"
+        - :scale: "0"
           :name: CreatedDate
-          :defaultedOnCreate: "true"
+          :filterable: "true"
+          :createable: "false"
+          :length: "0"
           :custom: "false"
+          :byteLength: "0"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
           :label: Created Date
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "false"
-          :filterable: "true"
-          :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
+          :caseSensitive: "false"
+          :soapType: xsd:dateTime
+          :sortable: "true"
+          :defaultedOnCreate: "true"
           :nillable: "false"
-          :length: "18"
-          :byteLength: "18"
-          :type: reference
-          :soapType: tns:ID
-          :scale: "0"
-          :calculated: "false"
+          :type: datetime
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :autoNumber: "false"
+        - :scale: "0"
+          :relationshipName: CreatedBy
           :name: CreatedById
-          :referenceTo: User
-          :defaultedOnCreate: "true"
+          :filterable: "true"
+          :createable: "false"
+          :length: "18"
           :custom: "false"
+          :byteLength: "18"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
           :label: Created By ID
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "false"
-          :filterable: "true"
-          :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
+          :caseSensitive: "false"
+          :soapType: tns:ID
+          :sortable: "true"
+          :defaultedOnCreate: "true"
           :nillable: "false"
-          :length: "0"
-          :byteLength: "0"
-          :type: datetime
-          :soapType: xsd:dateTime
-          :scale: "0"
-          :calculated: "false"
+          :type: reference
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :referenceTo: User
+          :autoNumber: "false"
+        - :scale: "0"
           :name: LastModifiedDate
-          :defaultedOnCreate: "true"
+          :filterable: "true"
+          :createable: "false"
+          :length: "0"
           :custom: "false"
+          :byteLength: "0"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
           :label: Last Modified Date
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "false"
-          :filterable: "true"
-          :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
+          :caseSensitive: "false"
+          :soapType: xsd:dateTime
+          :sortable: "true"
+          :defaultedOnCreate: "true"
           :nillable: "false"
-          :length: "18"
-          :byteLength: "18"
-          :type: reference
-          :soapType: tns:ID
-          :scale: "0"
-          :calculated: "false"
+          :type: datetime
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :autoNumber: "false"
+        - :scale: "0"
+          :relationshipName: LastModifiedBy
           :name: LastModifiedById
-          :referenceTo: User
-          :defaultedOnCreate: "true"
-          :custom: "false"
-          :label: Last Modified By ID
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "false"
           :filterable: "true"
           :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "false"
-          :length: "0"
-          :byteLength: "0"
-          :type: datetime
-          :soapType: xsd:dateTime
-          :scale: "0"
-          :calculated: "false"
-          :name: SystemModstamp
-          :defaultedOnCreate: "true"
-          :custom: "false"
-          :label: System Modstamp
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "false"
-          :filterable: "true"
-          :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "0"
-          :byteLength: "0"
-          :type: datetime
-          :soapType: xsd:dateTime
-          :scale: "0"
-          :calculated: "false"
-          :name: LastCURequestDate
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Last Stay-in-Touch Request Date
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "false"
-          :filterable: "true"
-          :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "0"
-          :byteLength: "0"
-          :type: datetime
-          :soapType: xsd:dateTime
-          :scale: "0"
-          :calculated: "false"
-          :name: LastCUUpdateDate
-          :defaultedOnCreate: "false"
-          :custom: "false"
-          :label: Last Stay-in-Touch Save Date
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "255"
-          :byteLength: "765"
-          :type: picklist
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :picklistValues: 
-          - :value: Primary
-            :defaultValue: "false"
-            :label: Primary
-            :active: "true"
-          - :value: Tertiary
-            :defaultValue: "false"
-            :label: Tertiary
-            :active: "true"
-          :name: Level__c
-          :defaultedOnCreate: "false"
-          :custom: "true"
-          :label: Level
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
-          :length: "100"
-          :byteLength: "300"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "false"
-          :name: Languages__c
-          :defaultedOnCreate: "false"
-          :custom: "true"
-          :label: Languages
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "0"
-          :nillable: "true"
           :length: "18"
+          :custom: "false"
           :byteLength: "18"
-          :type: reference
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Last Modified By ID
+          :caseSensitive: "false"
           :soapType: tns:ID
-          :scale: "0"
-          :calculated: "false"
-          :name: CustomUserRel__c
-          :referenceTo: User
-          :defaultedOnCreate: "false"
-          :custom: "true"
-          :label: CustomUserRel
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "false"
-          :filterable: "true"
-          :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "18"
-          :nillable: "true"
-          :length: "0"
-          :byteLength: "0"
-          :type: double
-          :soapType: xsd:double
-          :scale: "2"
-          :calculated: "true"
-          :name: f2__c
-          :defaultedOnCreate: "false"
-          :custom: "true"
-          :label: f2
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "false"
-          :filterable: "true"
-          :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "18"
-          :nillable: "true"
-          :length: "0"
-          :byteLength: "0"
-          :type: double
-          :soapType: xsd:double
-          :scale: "2"
-          :calculated: "true"
-          :name: f1__c
-          :defaultedOnCreate: "false"
-          :custom: "true"
-          :label: f1
-          :digits: "0"
-          :nameField: "false"
-        - :updateable: "false"
-          :filterable: "true"
-          :createable: "false"
-          :autoNumber: "false"
-          :restrictedPicklist: "false"
+          :sortable: "true"
+          :defaultedOnCreate: "true"
+          :nillable: "false"
+          :type: reference
           :precision: "0"
-          :nillable: "true"
-          :length: "1300"
-          :byteLength: "3900"
-          :type: string
-          :soapType: xsd:string
-          :scale: "0"
-          :calculated: "true"
-          :name: ShowContactViaASF__c
-          :defaultedOnCreate: "false"
-          :custom: "true"
-          :label: ShowContactViaASF
           :digits: "0"
-          :nameField: "false"
-          :htmlFormatted: "true"
-        - :updateable: "true"
-          :filterable: "true"
-          :createable: "true"
+          :updateable: "false"
+          :referenceTo: User
           :autoNumber: "false"
-          :restrictedPicklist: "false"
-          :precision: "14"
-          :nillable: "true"
+        - :scale: "0"
+          :name: SystemModstamp
+          :filterable: "true"
+          :createable: "false"
           :length: "0"
+          :custom: "false"
           :byteLength: "0"
-          :type: double
-          :soapType: xsd:double
-          :scale: "2"
-          :calculated: "false"
-          :name: n1__c
-          :defaultedOnCreate: "false"
-          :custom: "true"
-          :label: n1
-          :digits: "0"
+          :unique: "false"
+          :namePointing: "false"
           :nameField: "false"
-        :activateable: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: System Modstamp
+          :caseSensitive: "false"
+          :soapType: xsd:dateTime
+          :sortable: "true"
+          :defaultedOnCreate: "true"
+          :nillable: "false"
+          :type: datetime
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: LastActivityDate
+          :filterable: "true"
+          :createable: "false"
+          :length: "0"
+          :custom: "false"
+          :byteLength: "0"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Last Activity
+          :caseSensitive: "false"
+          :soapType: xsd:date
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: date
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: LastCURequestDate
+          :filterable: "true"
+          :createable: "false"
+          :length: "0"
+          :custom: "false"
+          :byteLength: "0"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Last Stay-in-Touch Request Date
+          :caseSensitive: "false"
+          :soapType: xsd:dateTime
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: datetime
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :autoNumber: "false"
+        - :scale: "0"
+          :name: LastCUUpdateDate
+          :filterable: "true"
+          :createable: "false"
+          :length: "0"
+          :custom: "false"
+          :byteLength: "0"
+          :unique: "false"
+          :namePointing: "false"
+          :nameField: "false"
+          :calculated: "false"
+          :restrictedPicklist: "false"
+          :label: Last Stay-in-Touch Save Date
+          :caseSensitive: "false"
+          :soapType: xsd:dateTime
+          :sortable: "true"
+          :defaultedOnCreate: "false"
+          :nillable: "true"
+          :type: datetime
+          :precision: "0"
+          :digits: "0"
+          :updateable: "false"
+          :autoNumber: "false"
         :retrieveable: "true"
-        :label: Contact
+        :keyPrefix: "003"
         :deletable: "true"
+        :recordTypeInfos: 
+          :name: Master
+          :available: "true"
+          :defaultRecordTypeMapping: "true"
+          :recordTypeId: 012000000000000AAA
+        :updateable: "true"
+        :searchable: "true"
 --- 
 create(sObjects:type { :xmlns => "urn:sobject.partner.soap.sforce.com" }:Contact:HomePhone:555-555-1212:LastName:DutchTestLastName:FirstName:DutchTestFirstName): !ruby/object:RForce::SoapResponse 
   parsed: 
     :createResponse: 
       :result: 
-        :errors: 
         :success: "true"
-        :id: 0033000000IdebrAAB
+        :id: 003T0000008l3JoIAI
 --- 
-query(queryString:SELECT Id, AccountId, LastName, FirstName, Salutation, RecordTypeId, OtherStreet, OtherCity, OtherState, OtherPostalCode, OtherCountry, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, Phone, Fax, MobilePhone, HomePhone, OtherPhone, AssistantPhone, ReportsToId, Email, Title, Department, AssistantName, LeadSource, Birthdate, Description, OwnerId, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastCURequestDate, LastCUUpdateDate, Level__c, Languages__c, CustomUserRel__c, f2__c, f1__c, ShowContactViaASF__c, n1__c FROM Contact WHERE (Id = '0033000000IdebrAAB')): !ruby/object:RForce::SoapResponse 
+query(queryString:SELECT Id, IsDeleted, MasterRecordId, AccountId, LastName, FirstName, Salutation, Name, OtherStreet, OtherCity, OtherState, OtherPostalCode, OtherCountry, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, Phone, Fax, MobilePhone, HomePhone, OtherPhone, AssistantPhone, ReportsToId, Email, Title, Department, AssistantName, LeadSource, Birthdate, Description, OwnerId, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastActivityDate, LastCURequestDate, LastCUUpdateDate FROM Contact WHERE (Id = '003T0000008l3JoIAI')): !ruby/object:RForce::SoapResponse 
   parsed: 
     :queryResponse: 
       :result: 
-        :queryLocator: 
         :size: "1"
+        :done: "true"
+        :queryLocator: 
         :records: 
-          :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-05-01T23:27:34.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: DutchTestLastName
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: DutchTestFirstName
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000IdebrAAB
-          - 0033000000IdebrAAB
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-05-01T23:27:34.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
+          :OwnerId: 005T0000000eI4DIAU
           :Fax: 
           :OtherStreet: 
-          :LastCURequestDate: 
+          :LastActivityDate: 
           :Title: 
           :MailingCity: 
-          :CreatedDate: "2006-05-01T23:27:34.000Z"
+          :Name: DutchTestFirstName DutchTestLastName
+          :CreatedDate: "2007-01-19T15:08:13.000Z"
+          :HomePhone: 555-555-1212
           :MobilePhone: 
           :OtherCity: 
-          :LastCUUpdateDate: 
+          :LastCURequestDate: 
           :AssistantName: 
           :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
+          :IsDeleted: "false"
+          :Id: 
+          - 003T0000008l3JoIAI
+          - 003T0000008l3JoIAI
+          :CreatedById: 005T0000000eI4DIAU
           :OtherPhone: 
-          :HomePhone: 555-555-1212
           :OtherState: 
-        :done: "true"
+          :LastName: DutchTestLastName
+          :LastCUUpdateDate: 
+          :LeadSource: 
+          :MailingPostalCode: 
+          :MasterRecordId: 
+          :LastModifiedDate: "2007-01-19T15:08:13.000Z"
+          :Department: 
+          :AssistantPhone: 
+          :OtherPostalCode: 
+          :FirstName: DutchTestFirstName
+          :Birthdate: 
+          :MailingCountry: 
+          :AccountId: 
+          :LastModifiedById: 005T0000000eI4DIAU
+          :ReportsToId: 
+          :OtherCountry: 
+          :Description: 
+          :Phone: 
+          :Salutation: 
+          :type: Contact
+          :SystemModstamp: "2007-01-19T15:08:13.000Z"
+          :Email: 
+          :MailingStreet: 
 --- 
-query(queryString:SELECT Id, AccountId, LastName, FirstName, Salutation, RecordTypeId, OtherStreet, OtherCity, OtherState, OtherPostalCode, OtherCountry, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, Phone, Fax, MobilePhone, HomePhone, OtherPhone, AssistantPhone, ReportsToId, Email, Title, Department, AssistantName, LeadSource, Birthdate, Description, OwnerId, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastCURequestDate, LastCUUpdateDate, Level__c, Languages__c, CustomUserRel__c, f2__c, f1__c, ShowContactViaASF__c, n1__c FROM Contact ): !ruby/object:RForce::SoapResponse 
+query(queryString:SELECT COUNT() FROM Contact ): !ruby/object:RForce::SoapResponse 
   parsed: 
     :queryResponse: 
       :result: 
-        :queryLocator: 
-        :size: "41"
-        :records: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-03-30T14:21:06.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: DutchTestLastName
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: DutchTestFirstName
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000H1nusAAB
-          - 0033000000H1nusAAB
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-30T14:21:06.000Z"
-          :Email: dchasman@salesforce.com
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: "2006-03-30T14:21:06.000Z"
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-03-13T14:24:21.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 555-555-1212
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 0013000000B6sc2AAB
-          :n1__c: 
-          :LastModifiedDate: "2006-03-06T22:35:42.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: LN3-Dutchie
-          :Languages__c: 
-          :Birthdate: "2006-02-25"
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: FN3_2
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000GYsGwAAL
-          - 0033000000GYsGwAAL
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-06T22:35:42.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-25T17:22:18.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-03-13T14:12:58.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: DutchTestLastName
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: DutchTestFirstName
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000H1oY0AAJ
-          - 0033000000H1oY0AAJ
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-13T14:12:58.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-03-13T14:12:58.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 555-555-1212
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-02-25T17:21:44.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: LN3
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: FN3_2
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000GYsEMAA1
-          - 0033000000GYsEMAA1
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-25T17:21:44.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-25T17:21:43.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-02-25T17:22:33.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: LN3
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: FN3_2
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000GYsHGAA1
-          - 0033000000GYsHGAA1
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-25T17:22:33.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-25T17:22:31.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-03-29T23:17:07.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Alan
-          :Languages__c: 
-          :Birthdate: "2006-02-21"
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Dutch3Alan was here
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000GLJuYAAX
-          - 0033000000GLJuYAAX
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-29T23:17:07.000Z"
-          :Email: doug_chasman@yahoo.com
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-19T14:31:27.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-02-22T21:01:31.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Test
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Dutch
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000GLJxiAAH
-          - 0033000000GLJxiAAH
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-22T21:01:31.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-19T14:33:09.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 555-555-1212
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-03-13T15:50:11.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: LN3
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: FN3_2
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000H1q9PAAR
-          - 0033000000H1q9PAAR
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-13T15:50:11.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-03-13T15:50:10.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-03-13T14:14:05.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: DutchTestLastName
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: DutchTestFirstName
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000H1osuAAB
-          - 0033000000H1osuAAB
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-13T14:14:05.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-03-13T14:14:05.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 555-555-1212
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-03-13T14:23:38.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: DutchTestLastName
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: DutchTestFirstName
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000H1owcAAB
-          - 0033000000H1owcAAB
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-13T14:23:38.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-03-13T14:23:38.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 555-555-1212
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-03-13T14:19:30.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: DutchTestLastName
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: DutchTestFirstName
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000H1ovPAAR
-          - 0033000000H1ovPAAR
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-13T14:19:30.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-03-13T14:19:30.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 555-555-1212
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Primary
-          :LeadSource: Web
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqLAAQ
-          :n1__c: 
-          :LastModifiedDate: "2006-03-04T17:43:55.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Gonzalez
-          :Languages__c: English
-          :Birthdate: "1956-08-08"
-          :MailingCountry: 
-          :Salutation: Ms.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Procurement
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: DutchieBoyInTheDemo24
-          :CustomUserRel__c: 00530000000hYFzAAM
-          :Description: 
-          :Phone: (512) 757-6000
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LKpAAN
-          - 0033000000B1LKpAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-04T17:43:55.000Z"
-          :Email: rose@edge.com
-          :MailingStreet: |-
-            313 Constitution Place
-            Austin, TX 78767
-            USA
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (512) 757-9000
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: SVP, Procurement
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (512) 757-9340
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Secondary
-          :LeadSource: Web
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqLAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Forbes
-          :Languages__c: English
-          :Birthdate: "1935-05-06"
-          :MailingCountry: 
-          :Salutation: Mr.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Finance
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Sean
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (512) 757-6000
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LKqAAN
-          - 0033000000B1LKqAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: sean@edge.com
-          :MailingStreet: |-
-            312 Constitution Place
-            Austin, TX 78767
-            USA
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (512) 757-9000
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: CFO
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (512) 757-4561
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: Web
-          :MailingPostalCode: "27215"
-          :AccountId: 00130000007qjqMAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Rogers
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: USA
-          :Salutation: Mr.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Jack
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (336) 222-7000
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LKrAAN
-          - 0033000000B1LKrAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: jrogers@burlington.com
-          :MailingStreet: 525 S. Lexington Ave
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (336) 222-8000
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: VP, Facilities
-          :MailingCity: Burlington
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: NC
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Primary
-          :LeadSource: 
-          :MailingPostalCode: "75251"
-          :AccountId: 00130000007qjqNAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: (014) 427-4465
-          :OtherPostalCode: "75251"
-          :LastName: Stumuller
-          :Languages__c: French, English
-          :Birthdate: 
-          :MailingCountry: France
-          :Salutation: Ms.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Finance
-          :ReportsToId: 
-          :OtherCountry: France
-          :FirstName: Pat
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (014) 427-4427
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LKsAAN
-          - 0033000000B1LKsAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: pat@pyramid.net
-          :MailingStreet: 2 Place Jussieu
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (014) 427-4428
-          :OtherStreet: 2 Place Jussieu
-          :LastCURequestDate: 
-          :Title: SVP, Administration and Finance
-          :MailingCity: Paris
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (014) 454-6364
-          :OtherCity: Paris
-          :LastCUUpdateDate: 
-          :AssistantName: Jean Marie
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Secondary
-          :LeadSource: Partner Referral
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqPAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Barr
-          :Languages__c: English
-          :Birthdate: "1942-04-04"
-          :MailingCountry: 
-          :Salutation: Mr.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Finance
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Tim
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (312) 596-1000
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LKuAAN
-          - 0033000000B1LKuAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: barr_tim@grandhotels.com
-          :MailingStreet: |-
-            2335 N. Michigan Avenue, Suite 1500
-            Chicago, IL 60601, USA
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (312) 596-1500
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: SVP, Administration and Finance
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (312) 596-1230
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Primary
-          :LeadSource: Partner Referral
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqPAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Bond
-          :Languages__c: English
-          :Birthdate: "1944-06-15"
-          :MailingCountry: 
-          :Salutation: Mr.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Facilities
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: John
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (312) 596-1000
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LKvAAN
-          - 0033000000B1LKvAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: bond_john@grandhotels.com
-          :MailingStreet: |-
-            2334 N. Michigan Avenue, Suite 1500
-            Chicago, IL 60601, USA
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (312) 596-1500
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: VP, Facilities
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (312) 596-1563
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Primary
-          :LeadSource: Phone Inquiry
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqQAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: (503) 421-6782
-          :OtherPostalCode: 
-          :LastName: Levy
-          :Languages__c: English
-          :Birthdate: "1925-07-15"
-          :MailingCountry: 
-          :Salutation: Ms.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Operations
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Babara
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (503) 421-7800
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LKwAAN
-          - 0033000000B1LKwAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: b.levy@expressl&t.net
-          :MailingStreet: |-
-            620 SW 5th Avenue Suite 400
-            Portland, Oregon 97204
-            United States
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (503) 421-7801
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: SVP, Operations
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (503) 421-5451
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: Ron Sage
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Secondary
-          :LeadSource: Phone Inquiry
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqQAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Davis
-          :Languages__c: English
-          :Birthdate: "1936-11-09"
-          :MailingCountry: 
-          :Salutation: Mr.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Warehouse Mgmt
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Josh
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (503) 421-7800
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LKxAAN
-          - 0033000000B1LKxAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: j.davis@expressl&t.net
-          :MailingStreet: |-
-            621 SW 5th Avenue Suite 400
-            Portland, Oregon 97204
-            United States
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (503) 421-7801
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: Director, Warehouse Mgmt
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (503) 421-4387
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Primary
-          :LeadSource: Phone Inquiry
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqRAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Grey
-          :Languages__c: English
-          :Birthdate: "1932-09-26"
-          :MailingCountry: 
-          :Salutation: Ms.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Administration
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Jane
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (520) 773-9050
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LKyAAN
-          - 0033000000B1LKyAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: jane_gray@uoa.edu
-          :MailingStreet: |-
-            888 N Euclid 
-            Hallis Center, Room 501
-            Tucson, AZ 85721
-            United States
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (520) 773-9060
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: Dean of Administration
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (520) 773-4539
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Secondary
-          :LeadSource: Purchased List
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqSAAQ
-          :n1__c: 
-          :LastModifiedDate: "2006-02-22T00:14:18.000Z"
-          :AssistantPhone: (212) 842-5464
-          :OtherPostalCode: 
-          :LastName: Song
-          :Languages__c: English
-          :Birthdate: "1940-03-25"
-          :MailingCountry: 
-          :Salutation: Mr.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Executive Team
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Arthur2
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (212) 842-5500
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LKzAAN
-          - 0033000000B1LKzAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-22T00:14:18.000Z"
-          :Email: asong@uog.com
-          :MailingStreet: |-
-            1301 Avenue of the Americas 
-            New York, NY 10019
-            USA
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (212) 842-5501
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: CEO
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (212) 842-4535
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: Pat Feinstein
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Primary
-          :LeadSource: Purchased List
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqSAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: (212) 842-5428
-          :OtherPostalCode: 
-          :LastName: Green
-          :Languages__c: English
-          :Birthdate: "1922-03-05"
-          :MailingCountry: 
-          :Salutation: Mr.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Finance
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Avi
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (212) 842-5500
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LL0AAN
-          - 0033000000B1LL0AAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: agreen@uog.com
-          :MailingStreet: |-
-            1302 Avenue of the Americas 
-            New York, NY 10019
-            USA
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (212) 842-5501
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: CFO
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (212) 842-2383
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: Chris Nobel
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Tertiary
-          :LeadSource: Purchased List
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqSAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: (212) 842-5589
-          :OtherPostalCode: 
-          :LastName: Pavlova
-          :Languages__c: English
-          :Birthdate: "1931-11-30"
-          :MailingCountry: 
-          :Salutation: Ms.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Production
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Stella
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (212) 842-5500
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LL1AAN
-          - 0033000000B1LL1AAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: spavlova@uog.com
-          :MailingStreet: |-
-            1303 Avenue of the Americas 
-            New York, NY 10019
-            USA
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (212) 842-5501
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: SVP, Production
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (212) 842-5501
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: Audrey Haynes
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: (212) 842-5543
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Secondary
-          :LeadSource: Purchased List
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqSAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Boyle
-          :Languages__c: English
-          :Birthdate: "1949-01-12"
-          :MailingCountry: 
-          :Salutation: Ms.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Technology
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Lauren
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (212) 842-5500
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LL2AAN
-          - 0033000000B1LL2AAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: lboyle@uog.com
-          :MailingStreet: |-
-            1304 Avenue of the Americas 
-            New York, NY 10019
-            USA
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (212) 842-5501
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: SVP, Technology
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (212) 842-5611
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Primary
-          :LeadSource: Purchased List
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqTAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: James
-          :Languages__c: English
-          :Birthdate: "1934-12-04"
-          :MailingCountry: 
-          :Salutation: Ms.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Finance
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Ashley
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: +44 191 4956203
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LL3AAN
-          - 0033000000B1LL3AAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: ajames@uog.com
-          :MailingStreet: |-
-            Kings Park, 17th Avenue, Team Valley Trading Estate,
-            Gateshead, Tyne and Wear NE26 3HS
-            United Kingdom
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: +44 191 4956620
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: VP, Finance
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: +44 191 3456234
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Primary
-          :LeadSource: Purchased List
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqUAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Ripley
-          :Languages__c: English
-          :Birthdate: "1939-02-01"
-          :MailingCountry: 
-          :Salutation: Mr.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Executive Team
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Tom
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (650) 450-8810
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LL4AAN
-          - 0033000000B1LL4AAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: tripley@uog.com
-          :MailingStreet: |-
-            9 Tagore Lane
-            Singapore, Singapore 787472
-            Singapore
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (650) 450-8820
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: Regional General Manager
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (650) 345-7636
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Secondary
-          :LeadSource: Purchased List
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqUAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: D'Cruz
-          :Languages__c: English
-          :Birthdate: "1950-05-13"
-          :MailingCountry: 
-          :Salutation: Ms.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Production
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Liz
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (650) 450-8810
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LL5AAN
-          - 0033000000B1LL5AAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: ldcruz@uog.com
-          :MailingStreet: |-
-            10 Tagore Lane
-            Singapore, Singapore 787472
-            Singapore
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (650) 450-8820
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: VP, Production
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (650) 345-6637
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: Primary
-          :LeadSource: Partner Referral
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqVAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Frank
-          :Languages__c: English
-          :Birthdate: "1930-10-18"
-          :MailingCountry: 
-          :Salutation: Ms.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: Technology
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Edna
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: (650) 867-3450
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LL6AAN
-          - 0033000000B1LL6AAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: efrank@genepoint.com
-          :MailingStreet: |-
-            345 Shoreline Park
-            Mountain View, CA 94043
-            USA
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: (650) 867-9895
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: VP, Technology
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: (650) 867-7686
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: "94087"
-          :AccountId: 00130000007qjqWAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Nedaerk
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: US
-          :Salutation: Ms.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Siddartha
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LL7AAN
-          - 0033000000B1LL7AAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: 
-          :MailingStreet: The Landmark @ One Market
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: San Francisco
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: CA
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 00130000007qjqWAAQ
-          :n1__c: 
-          :LastModifiedDate: "2005-08-11T00:30:01.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Llorrac
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: Mr.
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Jake
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000B1LL8AAN
-          - 0033000000B1LL8AAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2005-08-11T00:30:01.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2005-08-11T00:30:01.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-02-22T00:20:21.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: NewlyCreated2
-          :Languages__c: 
-          :Birthdate: "2006-02-21"
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Contact2
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000GVzBgAAL
-          - 0033000000GVzBgAAL
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-22T00:20:21.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-22T00:20:21.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-02-22T00:17:31.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: NewlyCreated
-          :Languages__c: 
-          :Birthdate: "2006-02-21"
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Contact
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000GVz9pAAD
-          - 0033000000GVz9pAAD
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-22T00:17:31.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-22T00:17:31.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-05-01T23:27:30.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: LN3
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: FN3_2
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000IdehMAAR
-          - 0033000000IdehMAAR
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-05-01T23:27:30.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-05-01T23:27:29.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-05-01T23:27:34.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: DutchTestLastName
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: DutchTestFirstName
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000IdebrAAB
-          - 0033000000IdebrAAB
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-05-01T23:27:34.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-05-01T23:27:34.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 555-555-1212
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 0013000000B6oe3AAB
-          :n1__c: 
-          :LastModifiedDate: "2006-02-02T16:22:53.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Chasman
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Mac
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000FlqcCAAR
-          - 0033000000FlqcCAAR
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-02T16:22:53.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-02T15:05:20.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-02-03T17:37:07.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Chasman
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Joyce
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 
-          :Id: 
-          - 0033000000FmehNAAR
-          - 0033000000FmehNAAR
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-03T17:37:07.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-03T17:37:07.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 0013000000B6oe3AAB
-          :n1__c: 
-          :LastModifiedDate: "2006-02-05T19:25:10.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Chasman
-          :Languages__c: 
-          :Birthdate: "2006-02-05"
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Richard
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000Fnac5AAB
-          - 0033000000Fnac5AAB
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-05T19:25:10.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-05T19:22:05.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-02-14T22:08:20.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: C2
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: D2
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000G5TujAAF
-          - 0033000000G5TujAAF
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-14T22:08:20.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-14T22:02:27.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-02-14T22:01:56.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: C
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: D
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000G5TVwAAN
-          - 0033000000G5TVwAAN
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-02-14T22:01:56.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-02-14T22:01:24.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 0013000000CmawWAAR
-          :n1__c: 
-          :LastModifiedDate: "2006-03-31T00:04:11.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Chasmanii
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Doug
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000HccEHAAZ
-          - 0033000000HccEHAAZ
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-31T00:04:11.000Z"
-          :Email: dchasman@salesforce.com
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-03-31T00:04:11.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
-        - :f1__c: 
-          :Level__c: 
-          :LeadSource: 
-          :MailingPostalCode: 
-          :AccountId: 
-          :n1__c: 
-          :LastModifiedDate: "2006-03-30T23:54:35.000Z"
-          :AssistantPhone: 
-          :OtherPostalCode: 
-          :LastName: Chasman
-          :Languages__c: 
-          :Birthdate: 
-          :MailingCountry: 
-          :Salutation: 
-          :LastModifiedById: 00530000000hYFzAAM
-          :Department: 
-          :ReportsToId: 
-          :OtherCountry: 
-          :FirstName: Dutch
-          :CustomUserRel__c: 
-          :Description: 
-          :Phone: 
-          :RecordTypeId: 012300000004pYzAAI
-          :Id: 
-          - 0033000000HcfkyAAB
-          - 0033000000HcfkyAAB
-          :type: Contact
-          :f2__c: "100.0"
-          :SystemModstamp: "2006-03-30T23:54:35.000Z"
-          :Email: 
-          :MailingStreet: 
-          :ShowContactViaASF__c: <a href="http://www.salesforce.com" target="_blank">Doug Chasman</a>
-          :OwnerId: 00530000000hYFzAAM
-          :Fax: 
-          :OtherStreet: 
-          :LastCURequestDate: 
-          :Title: 
-          :MailingCity: 
-          :CreatedDate: "2006-03-30T23:54:35.000Z"
-          :MobilePhone: 
-          :OtherCity: 
-          :LastCUUpdateDate: 
-          :AssistantName: 
-          :MailingState: 
-          :CreatedById: 00530000000hYFzAAM
-          :OtherPhone: 
-          :HomePhone: 
-          :OtherState: 
+        :size: "14"
         :done: "true"
+        :queryLocator: 
+        :records: 
 --- 
-delete(ids:0033000000IdebrAAB): !ruby/object:RForce::SoapResponse 
+delete(ids:003T0000008l3JoIAI): !ruby/object:RForce::SoapResponse 
   parsed: 
     :deleteResponse: 
       :result: 
-        :errors: 
         :success: "true"
-        :id: 0033000000IdebrAAB
+        :id: 003T0000008l3JoIAI

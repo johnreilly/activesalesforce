@@ -18,7 +18,7 @@
 require 'rubygems'
 
 #require_gem 'activesalesforce', '>= 0.4.3'
-require File.dirname(__FILE__) + '/../../lib/activesalesforce'
+require File.dirname(__FILE__) + '/../../lib/asf_adapter'
 
 require File.dirname(__FILE__) + '/recorded_test_case'
 require 'pp'
@@ -45,7 +45,7 @@ module Asf
       def initialize(test_method_name)
         super(test_method_name)
         
-        #force_recording :test_master_detail
+        #force_recording :test_create_a_contact
       end
       
       def setup
