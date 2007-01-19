@@ -132,6 +132,10 @@ module Asf
         contact.save
       end
       
+      def test_client_id
+        Contact.connection.binding.client_id = "testClient"
+        contact.save
+      end
       
  
       def test_add_notes_to_contact

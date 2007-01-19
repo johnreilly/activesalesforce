@@ -128,7 +128,7 @@ module RForce
   #Implements the connection to the SalesForce server.
   class Binding
     DEFAULT_BATCH_SIZE = 10
-    attr_accessor :batch_size, :url, :assignment_rule_id, :use_default_rule, :update_mru
+    attr_accessor :batch_size, :url, :assignment_rule_id, :use_default_rule, :update_mru, :client_id
 
     #Fill in the guts of this typical SOAP envelope
     #with the session ID and the body of the SOAP request.
@@ -157,6 +157,7 @@ module RForce
     AssignmentRuleHeaderUsingRuleId = '<partner:AssignmentRuleHeader soap:mustUnderstand="1"><partner:assignmentRuleId>%s</partner:assignmentRuleId></partner:AssignmentRuleHeader>'
     AssignmentRuleHeaderUsingDefaultRule = '<partner:AssignmentRuleHeader soap:mustUnderstand="1"><partner:useDefaultRule>true</partner:useDefaultRule></partner:AssignmentRuleHeader>'
     MruHeader = '<partner:MruHeader soap:mustUnderstand="1"><partner:updateMru>true</partner:updateMru></partner:MruHeader>'
+    ClientIdHeader = '<partner:CallOptions soap:mustUnderstand="1"><partner:client>%s</partner:client></partner:CallOptions>'
 
     #Connect to the server securely.
     def initialize(url, sid)
@@ -218,6 +219,7 @@ module RForce
       extra_headers << (AssignmentRuleHeaderUsingRuleId % assignment_rule_id) if assignment_rule_id
       extra_headers << AssignmentRuleHeaderUsingDefaultRule if use_default_rule
       extra_headers << MruHeader if update_mru
+      extra_headers << (ClientIdHeader % client_id) if client_id
 
       #Fill in the blanks of the SOAP envelope with our
       #session ID and the expanded XML of our request.

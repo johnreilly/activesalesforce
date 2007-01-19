@@ -50,11 +50,12 @@ module ActiveRecord
     def self.activesalesforce_connection(config) # :nodoc:
       debug("\nUsing ActiveSalesforce connection\n")
       
-      # Default to production system using 7.0 API
+      # Default to production system using 8.0 API
       url = config[:url]
-      url = "https://www.salesforce.com/services/Soap/u/7.0" unless url
+      url = "https://www.salesforce.com/services/Soap/u/8.0" unless url
       
       sid = config[:sid]
+      client_id = config[:client_id]
       username = config[:username].to_s
       password = config[:password].to_s
       
@@ -221,7 +222,7 @@ module ActiveRecord
         result
       end
       
-      
+       
       # Commits the transaction (and turns on auto-committing).
       def commit_db_transaction()   
         log("Committing boxcar with #{@command_boxcar.length} commands", 'commit_db_transaction()')
@@ -272,7 +273,7 @@ module ActiveRecord
           selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+FROM/mi) unless selectCountMatch 
           
           if selectCountMatch
-            soql = "SELECT id FROM#{selectCountMatch.post_match}"
+            soql = "SELECT COUNT() FROM#{selectCountMatch.post_match}"
           else 
             if sql.match(/SELECT\s+\*\s+FROM/mi)
               # Always convert SELECT * to select all columns (required for the AR attributes mechanism to work correctly)
@@ -283,6 +284,11 @@ module ActiveRecord
           end
           
           soql.sub!(/\s+FROM\s+\w+/mi, " FROM #{entity_def.api_name}")
+
+          if selectCountMatch
+            query_result = get_result(@connection.query(:queryString => soql), :query)
+            return [{ :count => query_result[:size] }]
+          end
           
           # Look for a LIMIT clause
           limit = extract_sql_modifier(soql, "LIMIT")
@@ -323,11 +329,7 @@ module ActiveRecord
             add_rows(entity_def, query_result, result, limit)
           end
           
-          if selectCountMatch
-            [{ :count => result.actual_size }]
-          else
-            result
-          end
+          result
         }
       end
       
