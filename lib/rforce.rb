@@ -191,11 +191,8 @@ module RForce
       @password = password
 
       response = call_remote(:login, [:username, user, :password, password])
-
-      unless response.loginResponse
-        pp response
-        raise "Incorrect user name / password [#{response.fault}]"
-      end
+      
+      raise "Incorrect user name / password [#{response.fault}]" unless response.loginResponse
 
       result = response[:loginResponse][:result]
       @session_id = result[:sessionId]
@@ -251,8 +248,6 @@ module RForce
 
       # Check to see if INVALID_SESSION_ID was raised and try to relogin in
       if method != :login and @session_id and content =~ /sf:INVALID_SESSION_ID/
-        puts "\n\nSession timeout error - auto relogin activated"
-
         login(@user, @password)
 
 		#  repackage and rencode request with the new session id
