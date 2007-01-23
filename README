@@ -19,9 +19,11 @@
 4. edit database.yml
 
 		adapter: activesalesforce
-  		url: https://www.salesforce.com/services/Soap/u/8.0
+  		url: https://www.salesforce.com
   		username: <salesforce user name goes here>
   		password: <salesforce password goes here>
+  		
+  		NOTE: If you want to access your Salesforce Sandbox account use https://test.salesforce.com as your url instead
   		
 5. proceed using standard Rails development techniques!  	
 
