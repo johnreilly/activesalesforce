@@ -38,13 +38,8 @@ module ActiveSalesforce
       params = controller.params
       sid = params[:sid]
       
-      puts "Checking for the presence of a SID for [#{@@klasses.to_a.join(', ')}]"
-      
       if sid
         api_server_url = params[:api_server_url]
-        api_server_url = 'http://na1-api.salesforce.com/services/Soap/u/7.0' unless api_server_url
-        
-        puts "asf_sid_authenticate(:sid => '#{sid}', :url => '#{api_server_url}')"
         
         # Iterate over all classes that have registered for SID auth support
         connection = nil
