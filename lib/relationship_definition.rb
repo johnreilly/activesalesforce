@@ -15,9 +15,6 @@
   limitations under the License.
 =end
 
-require 'rubygems'
-require_gem 'rails', ">= 1.0.0"
-
 require 'pp'
 
 

@@ -55,7 +55,7 @@ require 'stringio'
 require 'rexml/document'
 require 'rexml/xpath'
 require 'rubygems'
-require_gem 'builder', ">= 2.0.0"
+gem 'builder', ">= 2.0.0"
 
 
 module RForce

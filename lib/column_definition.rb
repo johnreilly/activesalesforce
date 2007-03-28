@@ -15,10 +15,8 @@
   limitations under the License.
 =end
 
-require 'rubygems'
-require_gem 'rails', ">= 1.0.0"
-
 require 'pp'
+require 'active_record/connection_adapters/abstract_adapter'
 
 
 module ActiveRecord  

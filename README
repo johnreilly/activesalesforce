@@ -13,7 +13,7 @@
 		Rails::Initializer.run do |config|
 		  ...
 		  
-		  require_gem 'activesalesforce'
+		  require 'activesalesforce'
 		end
 
 4. edit database.yml

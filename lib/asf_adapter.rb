@@ -15,11 +15,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 =end
 
-require 'rubygems'
-require_gem 'rails', ">= 1.0.0"
-
 require 'thread'  
 require 'benchmark'
+
+require 'active_record'
+require 'active_record/connection_adapters/abstract_adapter'
 
 require File.dirname(__FILE__) + '/rforce'
 require File.dirname(__FILE__) + '/column_definition'
@@ -32,7 +32,6 @@ require File.dirname(__FILE__) + '/sid_authentication_filter'
 require File.dirname(__FILE__) + '/recording_binding'
 require File.dirname(__FILE__) + '/result_array'
  
-
 
 module ActiveRecord    
   class Base   

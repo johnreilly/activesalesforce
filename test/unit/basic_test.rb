@@ -17,7 +17,7 @@
 
 require 'rubygems'
 
-#require_gem 'activesalesforce', '>= 0.4.3'
+#require_gem 'activesalesforce'
 require File.dirname(__FILE__) + '/../../lib/asf_adapter'
 
 require File.dirname(__FILE__) + '/recorded_test_case'
