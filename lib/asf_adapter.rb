@@ -57,8 +57,8 @@ module ActiveRecord
       uri.path = "/services/Soap/u/8.0"
       url = uri.to_s      
       
-      sid = config[:sid]
-      client_id = config[:client_id]
+      sid = config[:sid].to_s
+      client_id = config[:client_id].to_s
       username = config[:username].to_s
       password = config[:password].to_s
       
@@ -72,6 +72,9 @@ module ActiveRecord
         binding.client_id = client_id if client_id
         binding.login(username, password) unless sid
       end
+
+      # Check to insure that the second to last path component is a 'u' for Partner API
+      raise ActiveSalesforce::ASFError.new(logger, "Invalid salesforce server url '#{url}', must be a valid Parter API URL") unless url.match(/\/u\//mi)
       
       if sid
         binding = @@cache["sid=#{sid}"] unless binding
@@ -83,13 +86,10 @@ module ActiveRecord
           @@cache["sid=#{sid}"] = binding
           
           debug("Created new connection for [sid='#{sid}']")
+        else
+          debug("Reused existing connection for [sid='#{sid}']")
         end
-        
-        ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, sid], config)
       else
-        # Check to insure that the second to last path component is a 'u' for Partner API
-        raise ActiveSalesforce::ASFError.new(logger, "Invalid salesforce server url '#{url}', must be a valid Parter API URL") unless url.match(/\/u\//mi)
-        
         binding = @@cache["#{url}.#{username}.#{password}.#{client_id}"] unless binding
         
         unless binding
@@ -104,9 +104,10 @@ module ActiveRecord
           
           debug("Created new connection for ['#{url}', '#{username}', '#{client_id}'] in #{seconds} seconds")
         end
-        
-        ConnectionAdapters::SalesforceAdapter.new(binding, logger, [url, username, password, sid, client_id], config)
       end
+
+      ConnectionAdapters::SalesforceAdapter.new(binding, logger, config)
+
     end
   end
   
@@ -121,10 +122,11 @@ module ActiveRecord
       attr_accessor :batch_size
       attr_reader :entity_def_map, :keyprefix_to_entity_def_map, :config, :class_to_entity_map
       
-      def initialize(connection, logger, connection_options, config)
+      def initialize(connection, logger, config)
         super(connection, logger)
         
-        @connection_options, @config = connection_options, config
+        @connection_options = nil
+        @config = config
         
         @entity_def_map = {}
         @keyprefix_to_entity_def_map = {}
@@ -262,32 +264,31 @@ module ActiveRecord
       # DATABASE STATEMENTS ======================================
       
       def select_all(sql, name = nil) #:nodoc:
-        log(sql, name) {
-          raw_table_name = sql.match(/FROM (\w+)/mi)[1]
+        raw_table_name = sql.match(/FROM (\w+)/mi)[1]
           table_name, columns, entity_def = lookup(raw_table_name)
           
           column_names = columns.map { |column| column.api_name }
 
           # Check for SELECT COUNT(*) FROM query
-          
-          # Rails 1.1
-          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+AS\s+count_all\s+FROM/mi)
-          
-          # Rails 1.0
-          selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+FROM/mi) unless selectCountMatch 
-          
-          if selectCountMatch
-            soql = "SELECT COUNT() FROM#{selectCountMatch.post_match}"
-          else 
-            if sql.match(/SELECT\s+\*\s+FROM/mi)
-              # Always convert SELECT * to select all columns (required for the AR attributes mechanism to work correctly)
-              soql = sql.sub(/SELECT .+ FROM/mi, "SELECT #{column_names.join(', ')} FROM")
-            else
-              soql = sql
-            end
+        
+        # Rails 1.1
+        selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+AS\s+count_all\s+FROM/mi)
+        
+        # Rails 1.0
+        selectCountMatch = sql.match(/SELECT\s+COUNT\(\*\)\s+FROM/mi) unless selectCountMatch 
+        
+        if selectCountMatch
+          soql = "SELECT COUNT() FROM#{selectCountMatch.post_match}"
+        else 
+          if sql.match(/SELECT\s+\*\s+FROM/mi)
+            # Always convert SELECT * to select all columns (required for the AR attributes mechanism to work correctly)
+            soql = sql.sub(/SELECT .+ FROM/mi, "SELECT #{column_names.join(', ')} FROM")
+          else
+            soql = sql
           end
-          
-          soql.sub!(/\s+FROM\s+\w+/mi, " FROM #{entity_def.api_name}")
+        end
+        
+        soql.sub!(/\s+FROM\s+\w+/mi, " FROM #{entity_def.api_name}")
 
           if selectCountMatch
             query_result = get_result(@connection.query(:queryString => soql), :query)
@@ -295,26 +296,26 @@ module ActiveRecord
           end
           
           # Look for a LIMIT clause
-          limit = extract_sql_modifier(soql, "LIMIT")
-          limit = MAX_BOXCAR_SIZE unless limit
+        limit = extract_sql_modifier(soql, "LIMIT")
+        limit = MAX_BOXCAR_SIZE unless limit
+        
+        # Look for an OFFSET clause
+        offset = extract_sql_modifier(soql, "OFFSET")
+        
+        # Fixup column references to use api names
+        columns = entity_def.column_name_to_column
+        soql.gsub!(/((?:\w+\.)?\w+)(?=\s*(?:=|!=|<|>|<=|>=|like)\s*(?:'[^']*'|NULL|TRUE|FALSE))/mi) do |column_name| 
+          # strip away any table alias
+          column_name.sub!(/\w+\./, '')
           
-          # Look for an OFFSET clause
-          offset = extract_sql_modifier(soql, "OFFSET")
+          column = columns[column_name]
+          raise ActiveSalesforce::ASFError.new(@logger, "Column not found for #{column_name}!") unless column
           
-          # Fixup column references to use api names
-          columns = entity_def.column_name_to_column
-          soql.gsub!(/((?:\w+\.)?\w+)(?=\s*(?:=|!=|<|>|<=|>=|like)\s*(?:'[^']*'|NULL|TRUE|FALSE))/mi) do |column_name| 
-            # strip away any table alias
-            column_name.sub!(/\w+\./, '')
-            
-            column = columns[column_name]
-            raise ActiveSalesforce::ASFError.new(@logger, "Column not found for #{column_name}!") unless column
-            
-            column.api_name
-          end
-          
-          # Update table name references
-          soql.sub!(/#{raw_table_name}\./mi, "#{entity_def.api_name}.")
+          column.api_name
+        end
+        
+        # Update table name references
+        soql.sub!(/#{raw_table_name}\./mi, "#{entity_def.api_name}.")
 
           @connection.batch_size = @batch_size if @batch_size
           @batch_size = nil
@@ -326,15 +327,14 @@ module ActiveRecord
           add_rows(entity_def, query_result, result, limit)
           
           while ((query_result[:done].casecmp("true") != 0) and (result.size < limit or limit == 0))
-            # Now queryMore            
-            locator = query_result[:queryLocator];
-            query_result = get_result(@connection.queryMore(:queryLocator => locator), :queryMore)
-            
-            add_rows(entity_def, query_result, result, limit)
-          end
+          # Now queryMore            
+          locator = query_result[:queryLocator];
+          query_result = get_result(@connection.queryMore(:queryLocator => locator), :queryMore)
           
-          result
-        }
+          add_rows(entity_def, query_result, result, limit)
+        end
+        
+        result
       end
       
       def add_rows(entity_def, query_result, result, limit)
@@ -605,52 +605,50 @@ module ActiveRecord
           return cached_entity_def 
         end
         
-        log("Retrieving metadata for '#{entity_name}'", "get_entity_def()") {
-          cached_columns = []
-          cached_relationships = []
+        cached_columns = []
+        cached_relationships = []
+        
+        begin
+          metadata = get_result(@connection.describeSObject(:sObjectType => entity_name), :describeSObject)
+          custom = false
+        rescue ActiveSalesforce::ASFError => e
+          # Fallback and see if we can find a custom object with this name
+          debug("   Unable to find medata for '#{entity_name}', falling back to custom object name #{entity_name + "__c"}")
           
-          begin
-            metadata = get_result(@connection.describeSObject(:sObjectType => entity_name), :describeSObject)
-            custom = false
-          rescue ActiveSalesforce::ASFError => e
-            # Fallback and see if we can find a custom object with this name
-            debug("   Unable to find medata for '#{entity_name}', falling back to custom object name #{entity_name + "__c"}")
-            
-            metadata = get_result(@connection.describeSObject(:sObjectType => entity_name + "__c"), :describeSObject)
-            custom = true
-          end
+          metadata = get_result(@connection.describeSObject(:sObjectType => entity_name + "__c"), :describeSObject)
+          custom = true
+        end
+        
+        metadata[:fields].each do |field| 
+          column = SalesforceColumn.new(field) 
+          cached_columns << column
           
-          metadata[:fields].each do |field| 
-            column = SalesforceColumn.new(field) 
-            cached_columns << column
-            
-            cached_relationships << SalesforceRelationship.new(field, column) if field[:type] =~ /reference/mi
-          end
+          cached_relationships << SalesforceRelationship.new(field, column) if field[:type] =~ /reference/mi
+        end
+        
+        relationships = metadata[:childRelationships]
+        if relationships
+          relationships = [ relationships ] unless relationships.is_a? Array
           
-          relationships = metadata[:childRelationships]
-          if relationships
-            relationships = [ relationships ] unless relationships.is_a? Array
-            
-            relationships.each do |relationship|  
-              if relationship[:cascadeDelete] == "true"
-                r = SalesforceRelationship.new(relationship)
-                cached_relationships << r
-              end
+          relationships.each do |relationship|  
+            if relationship[:cascadeDelete] == "true"
+              r = SalesforceRelationship.new(relationship)
+              cached_relationships << r
             end
           end
-          
-          key_prefix = metadata[:keyPrefix]
-          
-          entity_def = ActiveSalesforce::EntityDefinition.new(self, entity_name, entity_klass,
-                                                              cached_columns, cached_relationships, custom, key_prefix)
-          
-          @entity_def_map[entity_name] = entity_def
-          @keyprefix_to_entity_def_map[key_prefix] = entity_def
-          
-          configure_active_record(entity_def)
-          
-          entity_def
-        }
+        end
+        
+        key_prefix = metadata[:keyPrefix]
+        
+        entity_def = ActiveSalesforce::EntityDefinition.new(self, entity_name, entity_klass,
+                                                            cached_columns, cached_relationships, custom, key_prefix)
+        
+        @entity_def_map[entity_name] = entity_def
+        @keyprefix_to_entity_def_map[key_prefix] = entity_def
+        
+        configure_active_record(entity_def)
+        
+        entity_def
       end
       
       
@@ -690,10 +688,6 @@ module ActiveRecord
             
             begin
               referenced_klass = class_from_entity_name(reference_to)
-              
-              # Verify that we found an ActiveRecord descendant that uses the SalesforceAdapter
-              referenced_klass = nil unless referenced_klass.connection.is_a?(SalesforceAdapter)
-
             rescue NameError => e
                 # Automatically create a least a stub for the referenced entity
                 debug("   Creating ActiveRecord stub for the referenced entity '#{reference_to}'")

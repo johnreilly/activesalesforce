@@ -169,7 +169,7 @@ module RForce
 
 
     def show_debug
-      $DEBUG or ENV['SHOWSOAP']
+      ENV['SHOWSOAP'] == 'true'
     end
 
 
