@@ -57,8 +57,8 @@ module ActiveRecord
       uri.path = "/services/Soap/u/8.0"
       url = uri.to_s      
       
-      sid = config[:sid].to_s
-      client_id = config[:client_id].to_s
+      sid = config[:sid]
+      client_id = config[:client_id]
       username = config[:username].to_s
       password = config[:password].to_s
       
