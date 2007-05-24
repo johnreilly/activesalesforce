@@ -77,7 +77,8 @@ module Asf
         binding = Contact.connection.binding
         binding.assignment_rule_id = nil
         binding.use_default_rule = false
-        binding.update_mru = false      
+        binding.update_mru = false
+        binding.trigger_user_email = false    
       end
 
 

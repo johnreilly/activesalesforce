@@ -128,7 +128,8 @@ module RForce
   #Implements the connection to the SalesForce server.
   class Binding
     DEFAULT_BATCH_SIZE = 10
-    attr_accessor :batch_size, :url, :assignment_rule_id, :use_default_rule, :update_mru, :client_id
+    attr_accessor :batch_size, :url, :assignment_rule_id, :use_default_rule, :update_mru, :client_id, :trigger_user_email, 
+      :trigger_other_email, :trigger_auto_response_email
 
     #Fill in the guts of this typical SOAP envelope
     #with the session ID and the body of the SOAP request.
@@ -217,6 +218,16 @@ module RForce
       extra_headers << AssignmentRuleHeaderUsingDefaultRule if use_default_rule
       extra_headers << MruHeader if update_mru
       extra_headers << (ClientIdHeader % client_id) if client_id
+      
+      if trigger_user_email or trigger_other_email or trigger_auto_response_email
+        extra_headers << '<partner:EmailHeader soap:mustUnderstand="1">'
+        
+        extra_headers << '<partner:triggerUserEmail>true</partner:triggerUserEmail>' if trigger_user_email
+        extra_headers << '<partner:triggerOtherEmail>true</partner:triggerOtherEmail>' if trigger_other_email
+        extra_headers << '<partner:triggerAutoResponseEmail>true</partner:triggerAutoResponseEmail>' if trigger_auto_response_email
+        
+        extra_headers << '</partner:EmailHeader>'
+      end
 
       #Fill in the blanks of the SOAP envelope with our
       #session ID and the expanded XML of our request.
