@@ -18,7 +18,7 @@
 require 'rubygems'
 
 #require_gem 'activesalesforce'
-require File.dirname(__FILE__) + '/../../lib/asf_adapter'
+require File.dirname(__FILE__) + '/../../lib/active_record/connection_adapters/activesalesforce_adapter'
 
 require File.dirname(__FILE__) + '/recorded_test_case'
 require 'pp'

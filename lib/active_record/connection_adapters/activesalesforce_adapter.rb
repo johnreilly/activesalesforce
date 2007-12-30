@@ -49,12 +49,12 @@ module ActiveRecord
     def self.activesalesforce_connection(config) # :nodoc:
       debug("\nUsing ActiveSalesforce connection\n")
       
-      # Default to production system using 8.0 API
+      # Default to production system using 11.0 API
       url = config[:url]
       url = "https://www.salesforce.com" unless url
 
       uri = URI.parse(url)
-      uri.path = "/services/Soap/u/8.0"
+      uri.path = "/services/Soap/u/11.0"
       url = uri.to_s      
       
       sid = config[:sid]
@@ -403,7 +403,7 @@ module ActiveRecord
       
       
       def update(sql, name = nil) #:nodoc:
-        log(sql, name) {
+        #log(sql, name) {
           # Convert sql to sobject
           table_name, columns, entity_def = lookup(sql.match(/UPDATE\s+(\w+)\s+/mi)[1])
           columns = entity_def.column_name_to_column
@@ -415,14 +415,14 @@ module ActiveRecord
           values.map! { |v| v.first == "'" ? v.slice(1, v.length - 2) : v == "NULL" ? nil : v }
           
           fields = get_fields(columns, names, values, :updateable)
-		  null_fields = get_null_fields(columns, names, values, :updateable)          
+		      null_fields = get_null_fields(columns, names, values, :updateable)          
           
           id = sql.match(/WHERE\s+id\s*=\s*'(\w+)'/mi)[1]
           
           sobject = create_sobject(entity_def.api_name, id, fields, null_fields)
           
           @command_boxcar << ActiveSalesforce::BoxcarCommand::Update.new(self, sobject)
-        }
+        #}
       end
       
       
@@ -529,7 +529,7 @@ module ActiveRecord
             
             value.gsub!(/''/, "'") if value.is_a? String
             
-            include_field = ((not value.empty?) and column.send(access_check))  
+            include_field = ((not value.empty?) and column.send(access_check))
             
             if (include_field)           
               case column.type
@@ -554,7 +554,7 @@ module ActiveRecord
 
  			if !value
  				column = columns[name]
- 				fields[column.api_name] = nil if column.send(access_check)
+ 				fields[column.api_name] = nil if column.send(access_check) && column.api_name.casecmp("ownerid") != 0
  			end
  		end
 
@@ -611,7 +611,7 @@ module ActiveRecord
         begin
           metadata = get_result(@connection.describeSObject(:sObjectType => entity_name), :describeSObject)
           custom = false
-        rescue ActiveSalesforce::ASFError => e
+        rescue ActiveSalesforce::ASFError
           # Fallback and see if we can find a custom object with this name
           debug("   Unable to find medata for '#{entity_name}', falling back to custom object name #{entity_name + "__c"}")
           
@@ -700,9 +700,9 @@ module ActiveRecord
             
             if referenced_klass
               if one_to_many
-                klass.has_many referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => false
+                klass.has_many referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => :nullify
               else
-                klass.belongs_to referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => false
+                klass.belongs_to referenceName.to_sym, :class_name => referenced_klass.name, :foreign_key => foreign_key, :dependent => :nullify
               end
               
               debug("   Created one-to-#{one_to_many ? 'many' : 'one' } relationship '#{referenceName}' from #{klass} to #{referenced_klass} using #{foreign_key}")
@@ -736,7 +736,6 @@ module ActiveRecord
         sobj << 'Id { :xmlns => "urn:sobject.partner.soap.sforce.com" }' << id if id    
         
         # add any changed fields
-        fieldValues = {}
         fields.each do | name, value |
           sobj << name.to_sym << value if value
         end
@@ -762,11 +761,9 @@ module ActiveRecord
         klass = @class_to_entity_map[table_name.upcase]
         
         entity_name = klass ? raw_table_name : table_name.camelize
-        
         entity_def = get_entity_def(entity_name)
-        columns = entity_def.columns
         
-        [table_name, columns, entity_def]
+        [table_name, entity_def.columns, entity_def]
       end
       
       
